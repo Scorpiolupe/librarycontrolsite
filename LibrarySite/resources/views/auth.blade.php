@@ -70,6 +70,16 @@
         </div>
     </form>
 
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form class="auth-form register-form" action="/kayit" method="POST">
         @csrf
         <h2 class="text-center mb-4">Kayıt Ol</h2>
@@ -78,6 +88,9 @@
         </div>
         <div class="mb-3">
             <input type="email" class="form-control" name="email" placeholder="E-posta" required>
+        </div>
+        <div class="mb-3">
+            <input type="tel" class="form-control" name="tel" placeholder="Telefon Numarası" required>
         </div>
         <div class="mb-3">
             <input type="password" class="form-control" name="password" placeholder="Şifre" required>
