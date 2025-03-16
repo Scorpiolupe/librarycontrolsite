@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 
 class RegisterController extends Controller
@@ -29,8 +30,8 @@ class RegisterController extends Controller
             'password'=>Hash::make($request->password),
 
         ]);
-
-        auth()->login($user);
+        
+        Auth::login($user);
 
         return redirect('/')->with('success','Kayıt başarılı hoşgeldiniz!');
 

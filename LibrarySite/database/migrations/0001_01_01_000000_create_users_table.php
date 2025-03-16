@@ -22,13 +22,16 @@ return new class extends Migration
             $table->string('favori_kitap')->nullable();
             $table->string('favori_kategori')->nullable();
             $table->rememberToken(); 
-            $table->timestamps();
+            $table->string('created_at')->nullable();
+            $table->string('updated_at')->nullable();
         });
 
        
 
         
     }
+
+
 
     /**
      * Reverse the migrations.

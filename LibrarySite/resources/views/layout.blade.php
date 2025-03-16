@@ -17,6 +17,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="/books">Kitaplar</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/discover">Keşfet</a>
                     </li>
                     <li class="nav-item">
