@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('borrowed_books', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
-            $table->integer('quantity');
-            $table->primary('book_id');
-            $table->timestamps();
-            
+            $table->dateTime('purchase_date');
+            $table->dateTime('return_date');
+            $table->string('status');
+            $table->integer('delay_day');
+            $table->integer('late_fee');
+
         });
     }
 
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('borrowed_books');
     }
 };
