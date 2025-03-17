@@ -2,6 +2,16 @@
 
 @section('title', 'Kitaplar')
 
+@section('css')
+<style>
+option{
+        color:black;
+    }
+
+</style>
+    
+@endsection
+
 @section('content')
 <div class="row">
     <!-- Filters -->
@@ -18,7 +28,7 @@
                             <option value="">Tümü</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
+                                    {{ $category->category_name }}
                                 </option>
                             @endforeach
                         </select>
@@ -29,7 +39,7 @@
                             <option value="">Tümü</option>
                             @foreach($genres as $genre)
                                 <option value="{{ $genre->id }}" {{ request('genre') == $genre->id ? 'selected' : '' }}>
-                                    {{ $genre->name }}
+                                    {{ $genre->genre_name }}
                                 </option>
                             @endforeach
                         </select>

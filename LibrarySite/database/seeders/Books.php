@@ -38,8 +38,8 @@ class Books extends Seeder
     ];
 
     $categories = Category::all();  
-
     foreach ($books as $book) {
+        
        
         Book::create([
             'book_name' => $book['book_name'],
