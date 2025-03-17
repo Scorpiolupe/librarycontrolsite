@@ -9,7 +9,9 @@ use App\Models\Category;
 
 class Books extends Seeder
 {
-    $books = [
+    public function run()
+    {
+        $books = [
         ['book_name' => '1984', 'author' => 'George Orwell', 'page_count' => 328, 'isbn' => '9780451524935', 'publisher' => 'Signet Classics', 'publish_year' => 1949, 'status' => 'Yayınlandı'],
         ['book_name' => 'To Kill a Mockingbird', 'author' => 'Harper Lee', 'page_count' => 281, 'isbn' => '9780061120084', 'publisher' => 'HarperCollins', 'publish_year' => 1960, 'status' => 'Yayınlandı'],
         ['book_name' => 'Pride and Prejudice', 'author' => 'Jane Austen', 'page_count' => 279, 'isbn' => '9780141040349', 'publisher' => 'Penguin Classics', 'publish_year' => 1813, 'status' => 'Yayınlandı'],
@@ -33,22 +35,21 @@ class Books extends Seeder
         ['book_name' => 'Dracula', 'author' => 'Bram Stoker', 'page_count' => 488, 'isbn' => '9780141439846', 'publisher' => 'Penguin Classics', 'publish_year' => 1897, 'status' => 'Yayınlandı'],
         ['book_name' => 'The Picture of Dorian Gray', 'author' => 'Oscar Wilde', 'page_count' => 254, 'isbn' => '9780141439570', 'publisher' => 'Penguin Classics', 'publish_year' => 1890, 'status' => 'Yayınlandı'],
         ['book_name' => 'The Call of the Wild', 'author' => 'Jack London', 'page_count' => 234, 'isbn' => '9780451530968', 'publisher' => 'Signet Classics', 'publish_year' => 1903, 'status' => 'Yayınlandı'],
-        // 50'ye kadar bu şekilde devam edebilirsiniz...
     ];
 
-    $categories = Category::all();  // Tüm kategorileri alıyoruz
+    $categories = Category::all();  
 
     foreach ($books as $book) {
-        // Kitapları kategorilerle ilişkilendirerek ekliyoruz
+       
         Book::create([
             'book_name' => $book['book_name'],
             'author' => $book['author'],
             'page_count' => $book['page_count'],
-            'category_id' => $categories->random()->id, // Rastgele kategori ataması
+            'category_id' => $categories->random()->id,
             'isbn' => $book['isbn'],
             'publisher' => $book['publisher'],
             'publish_year' => $book['publish_year'],
-            'status' => $book['status'],
         ]);
+        }
     }
 }
