@@ -17,6 +17,11 @@ class Book extends Model
         'publish_year',
         'status'
     ];
+    
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
 
     public function category()
     {
