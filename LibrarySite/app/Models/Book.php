@@ -17,6 +17,8 @@ class Book extends Model
         'publish_year',
         'status'
     ];
+
+    public $timestamps = false;
     
     protected $casts = [
         'created_at' => 'datetime',

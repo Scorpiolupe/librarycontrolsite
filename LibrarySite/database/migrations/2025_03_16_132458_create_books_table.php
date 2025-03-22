@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('publisher');
             $table->integer('publish_year');
             $table->string('status');
-            $table->timestamps();
         });
     }
 
