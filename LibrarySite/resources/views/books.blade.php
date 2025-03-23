@@ -4,88 +4,167 @@
 
 @section('css')
 <style>
-    .filter-card {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    .filter-card h5 {
-        font-size: 1.25rem;
-        font-weight: bold;
-    }
-    .filter-card .form-label {
-        font-weight: bold;
-    }
-    .filter-card .btn {
-        background-color: #007bff;
-        color: white;
-    }
-    .book-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        padding: 0;
-    }
-    .book-card {
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        width: calc(33.333% - 20px);
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .book-card h5 {
-        font-size: 1.25rem;
-        font-weight: bold;
-    }
-    .book-card p {
-        margin: 0;
-    }
-    .pagination {
-        justify-content: center;
-    }
-    .pagination .page-link {
-        font-size: 0.875rem;
-        padding: 0.5rem 0.75rem;
-    }
-    .pagination .page-item .page-link {
-        border-radius: 50%;
-    }
-    .content-wrapper {
-        display: flex;
-    }
-    .filter-wrapper {
-        flex: 1;
-        max-width: 300px;
-        margin-right: 20px;
-    }
-    .books-wrapper {
-        flex: 3;
-    }
-    .cart-button {
-        background-color: #28a745;
-        color: white;
-        margin-top: 10px;
-    }
-    .cart-animation {
-        position: fixed;
-        z-index: 9999;
-        pointer-events: none;
-        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-    }
+option {
+    color: black;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: auto;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.page-info {
+    text-align: center;
+    margin-top: 10px;
+    color: #6c757d;
+}
+
+.filter-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.filter-card h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.filter-card .form-label {
+    font-weight: bold;
+}
+
+.filter-card .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.book-card {
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card .card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.book-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+    background: #f8f9fa;
+    padding: 10px;
+}
+
+.book-card .btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.header {
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.footer {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.book-card .btn-details {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.book-card .btn-details:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.book-link:hover {
+    color: inherit;
+}
 </style>
 @endsection
 
 @section('content')
-<div class="container content-wrapper">
-    <!-- Filters and Search -->
-    <div class="filter-wrapper">
+<div class="header">
+    <h1>Kitaplar</h1>
+</div>
+
+<div class="row">
+    <!-- Filters -->
+    <div class="col-md-3 mb-4">
         <div class="filter-card">
-            <h5 class="mb-3">Filtreler ve Arama</h5>
+            <h5 class="mb-3">Filtreler</h5>
             <form action="/books" method="GET">
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>
@@ -115,111 +194,40 @@
     </div>
 
     <!-- Books List -->
-    <div class="books-wrapper">
-        <div class="book-list">
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach($books as $book)
-            <div class="book-card">
-                <div>
-                    <h5>{{ $book->book_name }}</h5>
-                    <p><strong>Yazar:</strong> {{ $book->author }}</p>
-                    <p><strong>Yayınevi:</strong> {{ $book->publisher }}</p>
-                </div>
-                <button type="button" class="btn btn-info mt-3" data-bs-toggle="modal" data-bs-target="#bookModal{{ $book->id }}">
-                    Detaylar
-                </button>
-                <button type="button" class="btn cart-button" onclick="addToCart(event, '{{ $book->id }}')">
-                    Sepete Ekle
-                </button>
-            </div>
-
-            <!-- Book Detail Modal -->
-            <div class="modal fade" id="bookModal{{ $book->id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ $book->book_name }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Yazar:</strong> {{ $book->author }}</p>
-                            <p><strong>Kategori:</strong> {{ $book->category->category_name ?? 'N/A' }}</p>
-                            <p><strong>Tür:</strong> {{ $book->genre->name ?? 'N/A' }}</p>
-                            <p><strong>Yayın Yılı:</strong> {{ $book->publish_year }}</p>
-                            <p><strong>ISBN:</strong> {{ $book->isbn }}</p>
-                            <p><strong>Sayfa Sayısı:</strong> {{ $book->page_count }}</p>
-                            <p><strong>Durum:</strong> {{ $book->status }}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <div class="col">
+                <a href="/books/{{ $book->id }}" class="book-link">
+                    <div class="card book-card h-100">
+                        <img src="{{ $book->book_cover }}" class="card-img-top" alt="{{ $book->book_name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $book->book_name }}</h5>
+                            <p class="card-text">{{ $book->author }}</p>
+                            <button type="button" class="btn btn-details">
+                                Detaylar
+                            </button>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             @endforeach
         </div>
 
-        <!-- Pagination -->
         <div class="mt-4">
-            <div class="text-center">
-                <div class="page-info mb-2">
-                    <span class="text-muted">
-                    Gösterilen: {{ $books->firstItem() ?? 0 }} - {{ $books->lastItem() ?? 0 }} / 
-                    Toplam: {{ $books->total() }} kitap
-                    </span>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="page-info">
+                    <p>Toplam {{ $books->total() }} kitap, {{ $books->lastPage() }} sayfa</p>
                 </div>
-                @if($books->hasPages())
-                    <nav aria-label="Sayfalama">
-                        <ul class="pagination">
-                            <li class="page-item {{ $books->onFirstPage() ? 'disabled' : '' }}">
-                                <a class="page-link" href="{{ $books->previousPageUrl() }}" aria-label="Önceki">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            @foreach ($books->getUrlRange(1, $books->lastPage()) as $page => $url)
-                                <li class="page-item {{ $books->currentPage() == $page ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                                </li>
-                            @endforeach
-                            <li class="page-item {{ $books->hasMorePages() ? '' : 'disabled' }}">
-                                <a class="page-link" href="{{ $books->nextPageUrl() }}" aria-label="Sonraki">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                @endif
+                <div class="pagination">
+                    {{ $books->links() }}
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    function addToCart(event, bookId) {
-        const button = event.target;
-        const cartIcon = document.querySelector('.cart-icon'); // Assuming there's a cart icon element with class 'cart-icon'
-        const rect = button.getBoundingClientRect();
-        const cartRect = cartIcon.getBoundingClientRect();
-
-        const animation = document.createElement('div');
-        animation.classList.add('cart-animation');
-        animation.style.left = `${rect.left}px`;
-        animation.style.top = `${rect.top}px`;
-        animation.style.width = `${rect.width}px`;
-        animation.style.height = `${rect.height}px`;
-        animation.style.backgroundColor = '#28a745';
-        animation.style.borderRadius = '50%';
-        document.body.appendChild(animation);
-
-        setTimeout(() => {
-            animation.style.transform = `translate(${cartRect.left - rect.left}px, ${cartRect.top - rect.top}px) scale(0.1)`;
-            animation.style.opacity = '0';
-        }, 10);
-
-        setTimeout(() => {
-            document.body.removeChild(animation);
-            // Add the book to the cart (this is just a placeholder, implement the actual logic)
-            console.log(`Book ${bookId} added to cart`);
-        }, 510);
-    }
-</script>
+<div class="footer">
+    <p>&copy; 2023 Library Control Site</p>
+</div>
 @endsection

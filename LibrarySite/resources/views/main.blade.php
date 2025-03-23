@@ -8,7 +8,7 @@
         <h1>Hoş Geldiniz</h1>
         <p class="lead">Kitapları keşfedin, arkadaşlarınızla paylaşın ve okuma deneyiminizi zenginleştirin.</p>
         <div class="mt-4">
-            <a href="/books" class="btn btn-primary me-2">Kitaplara Göz At</a>
+            <a href="/kesfet" class="btn btn-primary me-2">Keşfet</a>
             <a href="/auth" class="btn btn-outline-primary">Üye Ol</a>
         </div>
     </div>
