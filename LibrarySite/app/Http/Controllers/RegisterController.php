@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
-
 class RegisterController extends Controller
 {
     public function register(Request $request){
@@ -37,5 +36,20 @@ class RegisterController extends Controller
 
     }
 
-    
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            return redirect('/')->with('success', 'Giriş başarılı!');
+        }
+
+        return back()->withErrors(['email' => 'Giriş bilgileri hatalı'])->withInput();
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/')->with('success', 'Çıkış başarılı!');
+    }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('tel');
             $table->string('password');
             $table->string('rol')->nullable();
-            $table->string('avatar')->nullable();
+            $table->string('avatar')->nullable()->default('default-avatar.png');
             $table->string('favori_kitap')->nullable();
             $table->string('favori_kategori')->nullable();
             $table->rememberToken(); 
