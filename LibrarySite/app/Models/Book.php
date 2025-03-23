@@ -15,7 +15,8 @@ class Book extends Model
         'isbn',
         'publisher',
         'publish_year',
-        'status'
+        'status',
+        'description'
     ];
 
     public $timestamps = false;
@@ -28,5 +29,15 @@ class Book extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(BookReview::class);
+    }
+
+    public function ratings() 
+    {
+        return $this->hasMany(BookRating::class);
     }
 }
