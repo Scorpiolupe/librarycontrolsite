@@ -19,12 +19,19 @@ option {
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: bold;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .card-text {
+    font-size: 0.9rem;
     color: #6c757d;
+    margin-bottom: auto;
 }
 
 .modal-header {
@@ -75,15 +82,29 @@ option {
 .book-card {
     border-radius: 10px;
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .book-card .card-body {
-    padding: 20px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.book-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+    background: #f8f9fa;
+    padding: 10px;
 }
 
 .book-card .btn {
-    background-color: #17a2b8;
-    color: white;
+    margin-top: 10px;
+    width: 100%;
 }
 
 .header {
@@ -107,6 +128,29 @@ option {
     text-align: center;
     border-radius: 10px;
     margin-top: 20px;
+}
+
+.book-card .btn-details {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.book-card .btn-details:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.book-link:hover {
+    color: inherit;
 }
 </style>
 @endsection
@@ -154,39 +198,18 @@ option {
         <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach($books as $book)
             <div class="col">
-                <div class="card book-card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $book->book_name }}</h5>
-                        <p class="card-text">{{ $book->author }}</p>
-                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#bookModal{{ $book->id }}">
-                            Detaylar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Book Detail Modal -->
-            <div class="modal fade" id="bookModal{{ $book->id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ $book->book_name }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Yazar:</strong> {{ $book->author }}</p>
-                            <p><strong>Kategori:</strong> {{ $book->category->category_name ?? 'N/A' }}</p>
-                            <p><strong>Tür:</strong> {{ $book->genre->name ?? 'N/A' }}</p>
-                            <p><strong>Yayın Yılı:</strong> {{ $book->publish_year }}</p>
-                            <p><strong>ISBN:</strong> {{ $book->isbn }}</p>
-                            <p><strong>Sayfa Sayısı:</strong> {{ $book->page_count }}</p>
-                            <p><strong>Durum:</strong> {{ $book->status }}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <a href="/books/{{ $book->id }}" class="book-link">
+                    <div class="card book-card h-100">
+                        <img src="{{ $book->book_cover }}" class="card-img-top" alt="{{ $book->book_name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $book->book_name }}</h5>
+                            <p class="card-text">{{ $book->author }}</p>
+                            <button type="button" class="btn btn-details">
+                                Detaylar
+                            </button>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             @endforeach
         </div>

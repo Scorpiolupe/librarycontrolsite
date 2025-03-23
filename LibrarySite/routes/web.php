@@ -18,3 +18,6 @@ Route::get('/adminpanel', [AdminController::class, 'index']);
 Route::post('/kayit', [RegisterController::class, 'register']);
 
 Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
+Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
