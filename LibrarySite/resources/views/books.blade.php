@@ -219,12 +219,15 @@ option {
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Sayfa Sayısı</label>
-                    <input type="number" name="page_count" class="form-control" placeholder="Sayfa sayısı" value="{{ request('page_count') }}">
+                    <label class="form-label">Sayfa Sayısı Aralığı</label>
+                    <div class="d-flex">
+                        <input type="number" name="page_count_min" class="form-control me-2" placeholder="Min" value="{{ request('page_count_min') }}">
+                        <input type="number" name="page_count_max" class="form-control" placeholder="Max" value="{{ request('page_count_max') }}">
+                    </div>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Ara</button>
-                    @if(request('search') || request('category') || request('genre') || request('page_count'))
+                    @if(request('search') || request('category') || request('genre') || request('page_count_min') || request('page_count_max'))
                         <a href="/books" class="btn btn-secondary">Filtreleri Temizle</a>
                     @endif
                 </div>
