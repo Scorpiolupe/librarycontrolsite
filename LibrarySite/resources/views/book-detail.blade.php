@@ -127,6 +127,11 @@
                 <p><strong>ISBN:</strong> {{ $book->isbn }}</p>
                 <p><strong>Sayfa Sayısı:</strong> {{ $book->page_count }}</p>
                 <p><strong>Kategori:</strong> {{ $book->category->category_name }}</p>
+                <p><strong>Türler:</strong> 
+                    @foreach($book->genres as $genre)
+                        {{ $genre->genre_name }}@if(!$loop->last), @endif
+                    @endforeach
+                </p>
             </div>
             
             <div class="book-description">

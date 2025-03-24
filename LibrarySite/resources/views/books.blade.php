@@ -198,7 +198,7 @@ option {
                 <!-- Remove the search input from filters -->
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>
-                    <select name="category" class="form-select">
+                    <select name="category" class="form-select" id="categorySelect">
                         <option value="">Tümü</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -209,7 +209,7 @@ option {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Tür</label>
-                    <select name="genre" class="form-select">
+                    <select name="genre" class="form-select" id="genreSelect">
                         <option value="">Tümü</option>
                         @foreach($genres as $genre)
                             <option value="{{ $genre->id }}" {{ request('genre') == $genre->id ? 'selected' : '' }}>
@@ -218,9 +218,13 @@ option {
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Sayfa Sayısı</label>
+                    <input type="number" name="page_count" class="form-control" placeholder="Sayfa sayısı" value="{{ request('page_count') }}">
+                </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Ara</button>
-                    @if(request('search') || request('category') || request('genre'))
+                    @if(request('search') || request('category') || request('genre') || request('page_count'))
                         <a href="/books" class="btn btn-secondary">Filtreleri Temizle</a>
                     @endif
                 </div>
@@ -265,4 +269,26 @@ option {
 <div class="footer">
     <p>&copy; 2023 Library Control Site</p>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('categorySelect');
+    const genreSelect = document.getElementById('genreSelect');
+
+    categorySelect.addEventListener('change', function() {
+        const categoryId = this.value;
+        fetch(`/api/genres?category_id=${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                genreSelect.innerHTML = '<option value="">Tümü</option>';
+                data.forEach(genre => {
+                    const option = document.createElement('option');
+                    option.value = genre.id;
+                    option.textContent = genre.genre_name;
+                    genreSelect.appendChild(option);
+                });
+            });
+    });
+});
+</script>
 @endsection
