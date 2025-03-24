@@ -11,13 +11,56 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::paginate(9);
+        $query = Book::query();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('book_name', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%");
+        }
+
+        // Existing category and genre filters
+        if ($request->has('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->has('genre')) {
+            $query->where('genre_id', $request->genre);
+        }
+
+        $books = $query->paginate(9);
         $categories = Category::all();
         $genres = Genre::all();
 
         return view('books.index', compact('books', 'categories', 'genres'));
+    }
+
+    public function create()
+    {
+        $categories = Category::all();
+        $genres = Genre::all();
+        return view('books.create', compact('categories', 'genres'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'book_name' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'page_count' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'isbn' => 'required|string|max:13|unique:books',
+            'publisher' => 'required|string|max:255',
+            'publish_year' => 'required|integer',
+            'status' => 'required|string|max:255',
+        ]);
+
+        Book::create($request->all());
+
+        return redirect()->route('books.index')->with('success', 'Kitap başarıyla oluşturuldu.');
     }
 
     public function books(Request $request)
@@ -89,6 +132,7 @@ class BookController extends Controller
         return back()->with('success', 'Puanınız kaydedildi.');
     }
 
+
     public function create()
     {
         $categories = Category::all();
@@ -142,5 +186,19 @@ class BookController extends Controller
         $book->delete();
 
         return redirect()->route('books.index')->with('success', 'Kitap başarıyla silindi.');
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+        
+        $books = Book::where('book_name', 'like', "%{$query}%")
+                     ->orWhere('author', 'like', "%{$query}%")
+                     ->paginate(9);
+                     
+        $categories = Category::all();
+        $genres = Genre::all();
+
+        return view('books', compact('books', 'categories', 'genres'));
+
     }
 }
