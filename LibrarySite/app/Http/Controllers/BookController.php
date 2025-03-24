@@ -28,7 +28,14 @@ class BookController extends Controller
         }
 
         if ($request->has('genre')) {
-            $query->where('genre_id', $request->genre);
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genre_id', $request->genre);
+            });
+        }
+
+        // Page count filter
+        if ($request->has('page_count')) {
+            $query->where('page_count', $request->page_count);
         }
 
         $books = $query->paginate(9);

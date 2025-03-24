@@ -10,6 +10,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use Illuminate\Http\Request;
+use App\Models\Genre;
 
 Route::get('/', [PageController::class, 'index']);
 Route::get('/discover', [PageController::class, 'discover']);
@@ -62,6 +64,12 @@ Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
 
 Route::get('/profilim', [ProfileController::class, 'index'])->middleware('auth');
 Route::post('/profilim/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
+
+Route::get('/api/genres', function (Request $request) {
+    $categoryId = $request->get('category_id');
+    $genres = Genre::where('category_id', $categoryId)->get();
+    return response()->json($genres);
+});
 
 
 
