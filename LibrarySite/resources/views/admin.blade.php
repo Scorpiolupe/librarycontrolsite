@@ -14,7 +14,7 @@
         <div class="card bg-primary text-white">
             <div class="card-body">
                 <h5 class="card-title">Toplam Kitap</h5>
-                <h2 class="card-text">0</h2>
+                <h2 class="card-text">{{ $totalBooks }}</h2>
                 <small>Kütüphanedeki kitap sayısı</small>
             </div>
         </div>
@@ -24,7 +24,7 @@
         <div class="card bg-success text-white">
             <div class="card-body">
                 <h5 class="card-title">Aktif Üyeler</h5>
-                <h2 class="card-text">0</h2>
+                <h2 class="card-text">{{ $totalUsers }}</h2>
                 <small>Kayıtlı kullanıcı sayısı</small>
             </div>
         </div>
@@ -34,7 +34,7 @@
         <div class="card bg-warning text-dark">
             <div class="card-body">
                 <h5 class="card-title">Ödünç Kitaplar</h5>
-                <h2 class="card-text">0</h2>
+                <h2 class="card-text">{{ $borrowedBooks }}</h2>
                 <small>Ödünç verilen kitap sayısı</small>
             </div>
         </div>
@@ -44,7 +44,7 @@
         <div class="card bg-info text-white">
             <div class="card-body">
                 <h5 class="card-title">Kategoriler</h5>
-                <h2 class="card-text">0</h2>
+                <h2 class="card-text">{{ $totalCategories }}</h2>
                 <small>Toplam kategori sayısı</small>
             </div>
         </div>
@@ -58,9 +58,9 @@
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">Kitap Ekle</a>
-                    <a href="#" class="list-group-item list-group-item-action">Kitapları Listele</a>
-                    <a href="#" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
+                    <a href="{{ route('books.create') }}" class="list-group-item list-group-item-action">Kitap Ekle</a>
+                    <a href="{{ route('books.index') }}" class="list-group-item list-group-item-action">Kitapları Listele</a>
+                    <a href="{{ route('categories.index') }}" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
                 </div>
             </div>
         </div>
@@ -73,9 +73,9 @@
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">Üye Ekle</a>
-                    <a href="#" class="list-group-item list-group-item-action">Üyeleri Listele</a>
-                    <a href="#" class="list-group-item list-group-item-action">Üye Rolleri</a>
+                    <a href="{{ route('users.create') }}" class="list-group-item list-group-item-action">Üye Ekle</a>
+                    <a href="{{ route('users.index') }}" class="list-group-item list-group-item-action">Üyeleri Listele</a>
+                    <a href="{{ route('roles.index') }}" class="list-group-item list-group-item-action">Üye Rolleri</a>
                 </div>
             </div>
         </div>
@@ -99,9 +99,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="4" class="text-center">Henüz işlem bulunmuyor</td>
-                            </tr>
+                            @forelse ($recentActivities as $activity)
+                                <tr>
+                                    <td>{{ $activity->action }}</td>
+                                    <td>{{ $activity->user->name }}</td>
+                                    <td>{{ $activity->created_at->format('d-m-Y H:i') }}</td>
+                                    <td>{{ $activity->status }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">Henüz işlem bulunmuyor</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
