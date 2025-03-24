@@ -152,6 +152,24 @@ option {
 .book-link:hover {
     color: inherit;
 }
+
+/* Add these new styles */
+.search-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+}
+
+.search-form .form-control {
+    width: 300px;
+}
 </style>
 @endsection
 
@@ -160,12 +178,24 @@ option {
     <h1>Kitaplar</h1>
 </div>
 
+<!-- Move search section here -->
+<div class="search-section">
+    <form action="/books/search" method="GET" class="search-form">
+        <input type="text" name="query" class="form-control" placeholder="Kitap adı veya yazar ara..." value="{{ request('query') }}">
+        <button type="submit" class="btn btn-primary">Ara</button>
+        @if(request('query'))
+            <a href="/books" class="btn btn-secondary">Temizle</a>
+        @endif
+    </form>
+</div>
+
 <div class="row">
     <!-- Filters -->
     <div class="col-md-3 mb-4">
         <div class="filter-card">
             <h5 class="mb-3">Filtreler</h5>
             <form action="/books" method="GET">
+                <!-- Remove the search input from filters -->
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>
                     <select name="category" class="form-select">
@@ -188,7 +218,12 @@ option {
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="btn w-100">Filtrele</button>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Ara</button>
+                    @if(request('search') || request('category') || request('genre'))
+                        <a href="/books" class="btn btn-secondary">Filtreleri Temizle</a>
+                    @endif
+                </div>
             </form>
         </div>
     </div>
