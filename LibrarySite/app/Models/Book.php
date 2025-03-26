@@ -17,7 +17,7 @@ class Book extends Model
         'publish_year',
         'status',
         'description',
-        'book_cover' // Ensure this line is included
+        'book_cover'
     ];
 
     public $timestamps = false;

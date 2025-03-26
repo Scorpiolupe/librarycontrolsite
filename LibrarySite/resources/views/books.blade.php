@@ -194,11 +194,14 @@ option {
     <div class="col-md-3 mb-4">
         <div class="filter-card">
             <h5 class="mb-3">Filtreler</h5>
-            <form action="/books" method="GET">
-                <!-- Remove the search input from filters -->
+            <form action="{{ request()->is('books/search') ? '/books/search' : '/books' }}" method="GET">
+                @if(request()->has('query'))
+                    <input type="hidden" name="query" value="{{ request('query') }}">
+                @endif
+                
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>
-                    <select name="category" class="form-select" id="categorySelect">
+                    <select name="category" class="form-select">
                         <option value="">Tümü</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -207,28 +210,25 @@ option {
                         @endforeach
                     </select>
                 </div>
+
+                
+
                 <div class="mb-3">
-                    <label class="form-label">Tür</label>
-                    <select name="genre" class="form-select" id="genreSelect">
-                        <option value="">Tümü</option>
-                        @foreach($genres as $genre)
-                            <option value="{{ $genre->id }}" {{ request('genre') == $genre->id ? 'selected' : '' }}>
-                                {{ $genre->genre_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Sayfa Sayısı Aralığı</label>
-                    <div class="d-flex">
-                        <input type="number" name="page_count_min" class="form-control me-2" placeholder="Min" value="{{ request('page_count_min') }}">
-                        <input type="number" name="page_count_max" class="form-control" placeholder="Max" value="{{ request('page_count_max') }}">
+                    <label class="form-label">Sayfa Aralığı</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="min_pages" placeholder="Min" value="{{ request('min_pages') }}" min="0">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="max_pages" placeholder="Max" value="{{ request('max_pages') }}" min="0">
+                        </div>
                     </div>
                 </div>
+
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Ara</button>
-                    @if(request('search') || request('category') || request('genre') || request('page_count_min') || request('page_count_max'))
-                        <a href="/books" class="btn btn-secondary">Filtreleri Temizle</a>
+                    <button type="submit" class="btn btn-primary">Filtrele</button>
+                    @if(request()->anyFilled(['category', 'min_pages', 'max_pages', 'query']))
+                        <a href="{{ request()->is('books/search') ? '/books/search' : '/books' }}" class="btn btn-secondary">Filtreleri Temizle</a>
                     @endif
                 </div>
             </form>
@@ -268,30 +268,4 @@ option {
         </div>
     </div>
 </div>
-
-<div class="footer">
-    <p>&copy; 2023 Library Control Site</p>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const categorySelect = document.getElementById('categorySelect');
-    const genreSelect = document.getElementById('genreSelect');
-
-    categorySelect.addEventListener('change', function() {
-        const categoryId = this.value;
-        fetch(`/api/genres?category_id=${categoryId}`)
-            .then(response => response.json())
-            .then(data => {
-                genreSelect.innerHTML = '<option value="">Tümü</option>';
-                data.forEach(genre => {
-                    const option = document.createElement('option');
-                    option.value = genre.id;
-                    option.textContent = genre.genre_name;
-                    genreSelect.appendChild(option);
-                });
-            });
-    });
-});
-</script>
 @endsection

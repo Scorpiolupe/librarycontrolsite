@@ -21,49 +21,20 @@ Route::get('/friends', [FriendController::class, 'index']);
 
 Route::get('/adminpanel', [AdminController::class, 'index']);
 
-Route::post('/kayit', [RegisterController::class, 'register']);
-Route::post('/giris', [RegisterController::class, 'login']);
-Route::get('/cikis', [RegisterController::class, 'logout']);
-
+Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/login', [RegisterController::class, 'login']);
+Route::get('/logout', [RegisterController::class, 'logout']);
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/search', [BookController::class, 'search'])->name('books.search');
 Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
 Route::post('/books', [BookController::class, 'store'])->name('books.store');
-
 Route::get('/books/{id}', [BookController::class, 'show']);
 Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
 
-
-Route::post('/kayit', [RegisterController::class, 'register']);
-Route::post('/giris', [RegisterController::class, 'login']);
-Route::get('/cikis', [RegisterController::class, 'logout']);
-
-Route::post('/login', [RegisterController::class, 'login'])->name('login');
-Route::post('/logout', [RegisterController::class, 'logout'])->name('logout');
-
-// Add routes for books, categories, users, and roles
-Route::resource('books', BookController::class);
-Route::resource('categories', CategoryController::class);
-Route::resource('users', UserController::class);
-Route::resource('roles', RoleController::class);
-
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-
-Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
-Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
-
-
-Route::get('/profilim', [ProfileController::class, 'index'])->middleware('auth');
-Route::post('/profilim/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
+Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
+Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
 
 Route::get('/api/genres', function (Request $request) {
     $categoryId = $request->get('category_id');
