@@ -20,6 +20,8 @@ Route::get('/auth', [PageController::class, 'auth']);
 Route::get('/friends', [FriendController::class, 'index']);
 
 Route::get('/adminpanel', [AdminController::class, 'index']);
+Route::get('/adminpanel/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
+Route::get('/adminpanel/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [RegisterController::class, 'login']);
@@ -27,8 +29,7 @@ Route::get('/logout', [RegisterController::class, 'logout']);
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/search', [BookController::class, 'search'])->name('books.search');
-Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
-Route::post('/books', [BookController::class, 'store'])->name('books.store');
+Route::post('/books/create', [BookController::class, 'store'])->name('books.store');
 Route::get('/books/{id}', [BookController::class, 'show']);
 Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');

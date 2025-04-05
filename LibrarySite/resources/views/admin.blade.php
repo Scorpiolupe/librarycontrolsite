@@ -58,8 +58,8 @@
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">Kitap Ekle</a>
-                    <a href="#" class="list-group-item list-group-item-action">Kitapları Listele</a>
+                    <a href="/adminpanel/create-book" class="list-group-item list-group-item-action">Kitap Ekle</a>
+                    <a href="/adminpanel/list-books" class="list-group-item list-group-item-action">Kitapları Listele</a>
                     <a href="#" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
                 </div>
             </div>

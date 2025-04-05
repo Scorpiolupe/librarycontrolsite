@@ -59,6 +59,8 @@ class BookController extends Controller
             'isbn' => 'required|string|max:13|unique:books',
             'publisher' => 'required|string|max:255',
             'publish_year' => 'required|integer',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|string|max:255',
         ]);
 
