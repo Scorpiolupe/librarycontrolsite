@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\BookReview;
 use App\Models\BookRating;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
@@ -127,15 +129,32 @@ class BookController extends Controller
             'rating' => 'required|numeric|between:0.5,5.0'
         ]);
 
-        $rating = BookRating::updateOrCreate(
-            [
-                'user_id' => auth()->id(),
-                'book_id' => $id,
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            ['rating' => $request->rating]
-        );
+        $book = Book::findOrFail($id);
+        $existingRating = BookRating::where('user_id', Auth::id())
+            ->where('book_id', $id)
+            ->first();
+        if ($existingRating) {
+            $existingRating->update(['rating' => $request->rating]);
+        } else {
+            $rating = BookRating::updateOrCreate(
+                [
+                    'user_id' => Auth::id(),
+                    'book_id' => $id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                ['rating' => $request->rating]
+            );
+        }
+        
+        Activity::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'rating',
+            'activity_description' => 'Rated book: ' . $book->book_name . ' with ' . $request->rating . ' stars',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
 
         return back()->with('success', 'Puanınız kaydedildi.');
     }

@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Book;
 use App\Models\Category;
+use Database\Seeders\Books;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        return view('admin');
+        $activities = Activity::all();
+        return view('admin', compact('activities'));
     }
 
     public function createBook()
@@ -21,13 +24,15 @@ class AdminController extends Controller
 
     public function listBooks()
     {
-        $books = Book::all();
+        $books = Book::with('category', 'genres')->paginate(10);
+        
         return view('admin.books.list', compact('books'));
     }
 
     public function manageCategories()
     {
-        return view('admin.categories.index');
+        $categories = Category::all();;
+        return view('admin.categories.index', compact('categories'));     
     }
 
     public function addUser()

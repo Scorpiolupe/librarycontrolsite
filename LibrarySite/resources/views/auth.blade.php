@@ -80,7 +80,7 @@
     </div>
     @endif
 
-    <form class="auth-form register-form" action="/kayit" method="POST">
+    <form class="auth-form register-form" action="/register" method="POST">
         @csrf
         <h2 class="text-center mb-4">Kayıt Ol</h2>
         <div class="mb-3">

@@ -13,9 +13,16 @@ class CategoryController extends Controller
         return view('categories.index', compact('categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('categories.create');
+        $validation = [
+            'category_name' => 'required|string|max:255',
+        ];
+        $request->validate($validation);
+        $category = new Category();
+        $category->category_name = $request->category_name;
+        $category->save();
+        return redirect()->route('admin.manageCategories')->with('success', 'Kategori başarıyla oluşturuldu.');
     }
 
     public function store(Request $request)

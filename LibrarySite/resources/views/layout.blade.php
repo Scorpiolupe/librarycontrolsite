@@ -28,6 +28,11 @@
                 </ul>
                 <ul class="navbar-nav">
                     @auth
+                        @if(auth()->user()->isAdmin())
+                            <li class="nav-item">
+                                <a class="nav-link" href="/adminpanel">Yönetim Paneli</a>
+                            </li>
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="/profile">Profilim</a>
                         </li>
@@ -53,7 +58,7 @@
 
     <footer class="bg-dark text-white text-center py-3">
         <div class="container">
-            <p class="mb-0">&copy; {{ date('Y') }} Kütüphane Otomasyonu. Tüm hakları saklıdır<a style="text-decoration: none; color: white" href="/adminpanel">.</a></p>
+            <p class="mb-0">&copy; {{ date('Y') }} Kütüphane Otomasyonu. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 

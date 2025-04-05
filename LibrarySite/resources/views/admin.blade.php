@@ -60,7 +60,7 @@
                 <div class="list-group">
                     <a href="/adminpanel/create-book" class="list-group-item list-group-item-action">Kitap Ekle</a>
                     <a href="/adminpanel/list-books" class="list-group-item list-group-item-action">Kitapları Listele</a>
-                    <a href="#" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
+                    <a href="/adminpanel/manage-categories" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
                 </div>
             </div>
         </div>
@@ -92,16 +92,29 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>İşlem</th>
+                                <th>İşlem ID</th>
+                                <th>İşlem Türü</th>
+                                <th>İşlem Detayı</th>
                                 <th>Kullanıcı</th>
                                 <th>Tarih</th>
-                                <th>Durum</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="4" class="text-center">Henüz işlem bulunmuyor</td>
-                            </tr>
+                            @if($activities->count() > 0)
+                                @foreach($activities as $activity)
+                                <tr>
+                                    <td>{{ $activity->id }}</td>
+                                    <td>{{ $activity->activity_type }}</td>
+                                    <td>{{ $activity->activity_description }}</td>
+                                    <td>{{ $activity->user ? $activity->user->name : 'Silinmiş Kullanıcı' }}</td>
+                                    <td>{{ $activity->created_at->format('d/m/Y H:i') }}</td>
+                                </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="6" class="text-center">Henüz işlem bulunmuyor</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
