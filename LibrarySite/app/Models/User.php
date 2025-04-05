@@ -12,11 +12,16 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
     protected $fillable=[
-        'name','email','tel','password',
+        'name','email','tel', 'is_admin','avatar','favori_kitap','favori_kategori'
     ];
 
     protected $hidden =[
         'password',
     ];
+
+    public function isAdmin()
+    {
+        return (bool) $this->is_admin;
+    }
 
 }

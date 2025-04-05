@@ -8,7 +8,7 @@
         <h1>Hoş Geldiniz</h1>
         <p class="lead">Kitapları keşfedin, arkadaşlarınızla paylaşın ve okuma deneyiminizi zenginleştirin.</p>
         <div class="mt-4">
-            <a href="/kesfet" class="btn btn-primary me-2">Kitaplara Göz At</a>
+            <a href="/books" class="btn btn-primary me-2">Kitaplara Göz At</a>
             @if (auth()->check())
                 <a href="/profile" class="btn btn-outline-primary">Profilim</a>
             @else

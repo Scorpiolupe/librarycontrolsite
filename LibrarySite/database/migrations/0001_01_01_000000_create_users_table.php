@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('tel');
             $table->string('password');
-            $table->string('rol')->nullable();
+            $table->boolean('is_admin')->default(false);
             $table->string('avatar')->nullable();
             $table->string('favori_kitap')->nullable();
             $table->string('favori_kategori')->nullable();

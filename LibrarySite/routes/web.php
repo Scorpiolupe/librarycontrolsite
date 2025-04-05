@@ -22,6 +22,9 @@ Route::get('/friends', [FriendController::class, 'index']);
 Route::get('/adminpanel', [AdminController::class, 'index']);
 Route::get('/adminpanel/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
 Route::get('/adminpanel/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
+Route::get('/adminpanel/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
+
+Route::post('/adminpanel/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [RegisterController::class, 'login']);

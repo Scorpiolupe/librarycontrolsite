@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             Categories::class,
             Genres::class,
             Books::class,
+            Admin::class,
         ]);
     }
 }
