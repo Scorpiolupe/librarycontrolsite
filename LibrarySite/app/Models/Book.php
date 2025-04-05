@@ -46,4 +46,8 @@ class Book extends Model
     {
         return $this->hasMany(BookRating::class);
     }
+
+    public function stock(){
+        return $this->hasOne(Stock::class, 'book_id');
+    }
 }

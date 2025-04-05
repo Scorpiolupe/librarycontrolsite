@@ -35,6 +35,14 @@ class BookController extends Controller
             $query->whereBetween('page_count', [$request->page_count_min, $request->page_count_max]);
         }
 
+        $books= Book::with('stock')
+        ->whereHas('Stock',function ($query){
+            $query->where('quantity', '>=', 1);
+        })
+        ->paginate(9);
+
+       
+
         $books = $query->paginate(9);
         $categories = Category::all();
         $genres = Genre::all();
