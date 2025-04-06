@@ -21,7 +21,7 @@ class BookController extends Controller
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where('book_name', 'like', "%{$search}%")
-                  ->orWhere('author', 'like', "%{$search}%");
+            ->orWhere('author', 'like', "%{$search}%");
         }
 
         if ($request->has('category')) {
@@ -66,6 +66,7 @@ class BookController extends Controller
             'book_name' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'page_count' => 'required|integer',
+            'Quantity' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
             'isbn' => 'required|string|max:13',
             'publisher' => 'required|string|max:255',
@@ -78,7 +79,7 @@ class BookController extends Controller
         $existingBook = Book::where('isbn', $request->isbn)->first();
 
         if ($existingBook) {
-            Stock::where('book_id', $existingBook->id)->increment('quantity');
+            Stock::where('book_id', $existingBook->id)->increment('quantity', $request->Quantity);
             return redirect()->route('admin.listBooks')
                 ->with('info', 'Bu kitap stokta zaten mevcut. Stok miktarı güncellendi.');
         }
@@ -96,7 +97,7 @@ class BookController extends Controller
 
         Stock::create([
             'book_id' => $book->id,
-            'quantity' => 1
+            'quantity' => $request->Quantity,
         ]);
 
         Activity::create([

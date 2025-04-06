@@ -50,6 +50,11 @@
             </div>
 
             <div class="col-md-4 mb-3">
+                <label for="page_count" class="form-label">Miktar</label>
+                <input type="number" class="form-control" id="Quantity" name="Quantity" value="{{ old('Quantity') }}" required>
+            </div>
+
+            <div class="col-md-4 mb-3">
                 <label for="category_id" class="form-label">Kategori</label>
                 <select class="form-select" id="category_id" name="category_id" required>
                     <option value="">Kategori Seçin</option>
