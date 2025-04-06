@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Genre;
 use App\Models\BookReview;
 use App\Models\BookRating;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,7 +67,7 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'page_count' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
-            'isbn' => 'required|string|max:13|unique:books',
+            'isbn' => 'required|string|max:13',
             'publisher' => 'required|string|max:255',
             'publish_year' => 'required|integer',
             'description' => 'nullable|string',
@@ -74,9 +75,39 @@ class BookController extends Controller
             'status' => 'required|string|max:255',
         ]);
 
-        Book::create($request->all());
+        $existingBook = Book::where('isbn', $request->isbn)->first();
 
-        return redirect()->route('books.index')->with('success', 'Kitap başarıyla oluşturuldu.');
+        if ($existingBook) {
+            Stock::where('book_id', $existingBook->id)->increment('quantity');
+            return redirect()->route('admin.listBooks')
+                ->with('info', 'Bu kitap stokta zaten mevcut. Stok miktarı güncellendi.');
+        }
+
+        $data = $request->all();
+        
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->extension();
+            $image->move(public_path('storage/books'), $imageName);
+            $data['image'] = 'books/' . $imageName;
+        }
+
+        $book = Book::create($data);
+
+        Stock::create([
+            'book_id' => $book->id,
+            'quantity' => 1
+        ]);
+
+        Activity::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'book_creation',
+            'activity_description' => 'Created book: ' . $request->book_name,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla oluşturuldu.');
     }
 
     public function books(Request $request)
@@ -97,7 +128,7 @@ class BookController extends Controller
         $categories = Category::all();
         $genres = Genre::all();
 
-        return view('books', compact('books', 'categories', 'genres')); // Changed from 'books.index'
+        return view('books', compact('books', 'categories', 'genres'));
     }
 
     public function show($id)
@@ -106,9 +137,9 @@ class BookController extends Controller
         $book->average_rating = $book->ratings()->avg('rating') ?? 0;
         $book->ratings_count = $book->ratings()->count();
         
-        if (auth()->check()) {
+        if (Auth::check()) {
             $book->user_rating = $book->ratings()
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())
                 ->first();
         }
         
@@ -122,7 +153,7 @@ class BookController extends Controller
         ]);
 
         BookReview::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'book_id' => $id,
             'comment' => $request->comment,
             'comment_date' => now()
@@ -193,6 +224,22 @@ class BookController extends Controller
 
     public function destroy(Book $book)
     {
+        if ($book->stock) {
+            $book->stock->delete();
+        }
+        if ($book->ratings) {
+            $book->ratings()->delete();
+        }
+        if ($book->comments) {
+            $book->comments()->delete();
+        }
+        if ($book->image) {
+            $imagePath = public_path('storage/' . $book->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
         $book->delete();
 
         return redirect()->route('books.index')->with('success', 'Kitap başarıyla silindi.');
@@ -210,6 +257,46 @@ class BookController extends Controller
         $genres = Genre::all();
 
         return view('books', compact('books', 'categories', 'genres'));
+    }
 
+    public function toggleStatus($id)
+    {
+        $book = Book::findOrFail($id);
+        $book->status = $book->status === 'available' ? 'borrowed' : 'available';
+        $book->save();
+
+        return response()->json([
+            'success' => true,
+            'newStatus' => $book->status,
+            'message' => 'Kitap durumu başarıyla güncellendi.'
+        ]);
+    }
+
+    public function ajaxDelete($id)
+    {
+        $book = Book::findOrFail($id);
+        
+        if ($book->stock) {
+            $book->stock->delete();
+        }
+        if ($book->ratings) {
+            $book->ratings()->delete();
+        }
+        if ($book->comments) {
+            $book->comments()->delete();
+        }
+        if ($book->image) {
+            $imagePath = public_path('storage/' . $book->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $book->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kitap başarıyla silindi.'
+        ]);
     }
 }

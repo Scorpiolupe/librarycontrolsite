@@ -3,6 +3,9 @@
 @section('title', 'Keşfet - Kütüphane')
 
 @section('content')
+    <div class="header">
+        <h1>Keşfet</h1>
+    </div>
     <!-- Post Creation Section -->
     <div class="card mb-4">
         <div class="card-body">

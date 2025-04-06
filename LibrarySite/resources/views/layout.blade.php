@@ -6,8 +6,37 @@
     <title>@yield('title', 'Kütüphane Otomasyonu')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     @yield('css')
+    <style>
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .notification-card {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            width: 350px;
+            z-index: 1000;
+            transition: right 0.5s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-card.show {
+            right: 20px;
+        }
+    </style>
 </head>
-<body>
+<body>  
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="/">Kütüphane</a>
@@ -53,6 +82,30 @@
     </nav>
 
     <main class="container my-4">
+        @if(session('success'))
+            <div class="notification-card card bg-success text-white" id="successCard">
+                <div class="card-body">
+                    <h5 class="card-title">Başarılı!</h5>
+                    <p class="card-text">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="notification-card card bg-danger text-white" id="errorCard">
+                <div class="card-body">
+                    <h5 class="card-title">Hata!</h5>
+                    <p class="card-text text-white">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
+        @if(session('info'))
+            <div class="notification-card card bg-info text-white" id="infoCard">
+                <div class="card-body">
+                    <h5 class="card-title">Bilgi</h5>
+                    <p class="card-text text-white">{{ session('info') }}</p>
+                </div>
+            </div>
+        @endif
         @yield('content')
     </main>
 
@@ -63,6 +116,30 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const successCard = document.getElementById('successCard');
+            const errorCard = document.getElementById('errorCard');
+
+            function showNotification(element) {
+                if (element) {
+                    setTimeout(() => {
+                        element.classList.add('show');
+                        setTimeout(() => {
+                            element.classList.remove('show');
+                            setTimeout(() => {
+                                element.remove();
+                            }, 500);
+                        }, 3000);
+                    }, 100);
+                }
+            }
+
+            showNotification(successCard);
+            showNotification(errorCard);
+            showNotification(infoCard);
+        });
+    </script>
     @yield('js')
 </body>
 </html>

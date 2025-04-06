@@ -14,7 +14,7 @@ class Books extends Seeder
     {
         $categories = Category::all();
         $genres = Genre::all();
-
+        
         $books = [
             ['book_name' => '1984', 'author' => 'George Orwell', 'page_count' => 328, 'category_id' => $categories->random()->id, 'isbn' => '9780451524935', 'publisher' => 'Penguin Books', 'publish_year' => '1949', 'status' => 'available', 'book_cover' => 'https://images.penguinrandomhouse.com/cover/9780451524935'],
             ['book_name' => 'Bülbülü Öldürmek', 'author' => 'Harper Lee', 'page_count' => 281, 'category_id' => $categories->random()->id, 'isbn' => '9780446310789', 'publisher' => 'Grand Central', 'publish_year' => '1960', 'status' => 'available', 'book_cover' => 'https://images.penguinrandomhouse.com/cover/9780446310789'],

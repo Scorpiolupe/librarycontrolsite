@@ -107,20 +107,6 @@ option {
     width: 100%;
 }
 
-.header {
-    background-color: #343a40;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 2rem;
-}
-
 .footer {
     background-color: #343a40;
     color: white;

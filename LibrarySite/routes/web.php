@@ -37,6 +37,10 @@ Route::get('/books/{id}', [BookController::class, 'show']);
 Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
 
+// Yeni route tanımlamaları
+Route::delete('/adminpanel/books/{id}/delete', [BookController::class, 'ajaxDelete'])->name('books.ajaxDelete');
+Route::post('/adminpanel/books/{id}/toggle-status', [BookController::class, 'toggleStatus'])->name('books.toggleStatus');
+
 Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
 Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
 

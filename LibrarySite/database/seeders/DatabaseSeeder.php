@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             Categories::class,
             Genres::class,
-            Books::class,
+            //Books::class,
             Admin::class,
         ]);
     }

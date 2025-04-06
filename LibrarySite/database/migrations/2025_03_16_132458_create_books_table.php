@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('publisher');
             $table->integer('publish_year');
             $table->string('status');
-            $table->string('book_cover')->nullable(); // Ensure this line is included
+            $table->string('book_cover')->nullable();
             $table->text('description')->nullable();
         });
     }
