@@ -22,36 +22,27 @@
         <div class="col-12">
             <h3 class="mb-4">Öne Çıkan Kitaplar</h3>
         </div>
+        @foreach($featuredBooks as $book)
         <div class="col-md-4 mb-3">
             <div class="card h-100">
-                <img src="https://via.placeholder.com/350x200" class="card-img-top" alt="Kitap 1">
+                <img src="{{ $book->book_cover ?? 'https://via.placeholder.com/350x200' }}" class="card-img-top" alt="{{ $book->book_name }}">
                 <div class="card-body">
-                    <h5 class="card-title">Suç ve Ceza</h5>
-                    <p class="card-text">Dostoyevski'nin ünlü klasiği, suç ve vicdan arasındaki çatışmayı ele alır.</p>
-                    <div class="text-warning mb-2">⭐⭐⭐⭐⭐</div>
+                    <h5 class="card-title">{{ $book->book_name }}</h5>
+                    <p class="card-text">{{ $book->author }}</p>
+                    <div class="text-warning mb-2">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= round($book->ratings_avg_rating))
+                                ⭐
+                            @else
+                                ☆
+                            @endif
+                        @endfor
+                        ({{ number_format($book->ratings_avg_rating, 1) }})
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <img src="https://via.placeholder.com/350x200" class="card-img-top" alt="Kitap 2">
-                <div class="card-body">
-                    <h5 class="card-title">1984</h5>
-                    <p class="card-text">George Orwell'in distopik başyapıtı, totaliter bir dünyayı anlatır.</p>
-                    <div class="text-warning mb-2">⭐⭐⭐⭐</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <img src="https://via.placeholder.com/350x200" class="card-img-top" alt="Kitap 3">
-                <div class="card-body">
-                    <h5 class="card-title">Küçük Prens</h5>
-                    <p class="card-text">Saint-Exupéry'nin zamansız klasiği, tüm yaşlar için bir başyapıt.</p>
-                    <div class="text-warning mb-2">⭐⭐⭐⭐⭐</div>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     <!-- Recent Activities Section -->
@@ -61,20 +52,19 @@
         </div>
         <div class="col-md-8">
             <div class="list-group">
+                @forelse($recentActivities as $activity)
                 <div class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">Ahmet yeni bir kitap ekledi</h6>
-                        <small class="text-muted">3 saat önce</small>
+                        <h6 class="mb-1">{{ $activity->user ? $activity->user->name : 'Silinmiş Kullanıcı' }} {{ $activity->activity_type }}</h6>
+                        <small class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
                     </div>
-                    <p class="mb-1">Yüzüklerin Efendisi: Yüzük Kardeşliği</p>
+                    <p class="mb-1">{{ $activity->activity_description }}</p>
                 </div>
+                @empty
                 <div class="list-group-item">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">Ayşe bir yorum yaptı</h6>
-                        <small class="text-muted">5 saat önce</small>
-                    </div>
-                    <p class="mb-1">"Harika bir kitaptı, kesinlikle tavsiye ederim!"</p>
+                    <p class="mb-1">Henüz aktivite bulunmuyor</p>
                 </div>
+                @endforelse
             </div>
         </div>
     </div>

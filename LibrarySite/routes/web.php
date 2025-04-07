@@ -12,17 +12,22 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use App\Models\Genre;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', [PageController::class, 'index']);
+Route::get('/', [HomeController::class, 'index']);
 Route::get('/discover', [PageController::class, 'discover']);
 Route::get('/auth', [PageController::class, 'auth']);
 
 Route::get('/friends', [FriendController::class, 'index']);
 
-Route::get('/adminpanel', [AdminController::class, 'index']);
+Route::get('/adminpanel', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/adminpanel/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
 Route::get('/adminpanel/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
 Route::get('/adminpanel/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
+Route::get('/adminpanel/manage-authors', [AdminController::class, 'manageAuthors'])->name('admin.manageAuthors');
+Route::post('/adminpanel/create-author', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
+Route::get('/adminpanel/manage-publishers', [AdminController::class, 'managePublishers'])->name('admin.managePublishers');
+Route::post('/adminpanel/create-publisher', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
 
 Route::post('/adminpanel/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
 

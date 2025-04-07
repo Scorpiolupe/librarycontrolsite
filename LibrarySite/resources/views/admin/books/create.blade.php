@@ -1,10 +1,10 @@
 @extends('layout')
 
-@section('title', 'Yeni Kitap Ekle')
+@section('title', 'Yeni Kitap Tanıt')
 
 @section('content')
 <div class="container">
-    <h2 class="mb-4">Yeni Kitap Ekle</h2>
+    <h2 class="mb-4">Yeni Kitap Tanıt</h2>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -26,22 +26,19 @@
 
             <div class="col-md-6 mb-3">
                 <label for="author" class="form-label">Yazar</label>
-                <input type="text" class="form-control" id="author" name="author" value="{{ old('author') }}" required>
+                <select class="form-select" id="author" name="author" required>
+                    <option value="">Yazar Seçin</option>
+                    @foreach($authors as $author)
+                        <option value="{{ $author->id }}" {{ old('author') == $author->id ? 'selected' : '' }}>
+                            {{ $author->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="col-md-4 mb-3">
+            <div class="col-md-8 mb-3">
                 <label for="isbn" class="form-label">ISBN</label>
                 <input type="text" class="form-control" id="isbn" name="isbn" value="{{ old('isbn') }}" required>
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label for="publisher" class="form-label">Yayınevi</label>
-                <input type="text" class="form-control" id="publisher" name="publisher" value="{{ old('publisher') }}" required>
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label for="publish_year" class="form-label">Yayın Yılı</label>
-                <input type="number" class="form-control" id="publish_year" name="publish_year" value="{{ old('publish_year') }}" required>
             </div>
 
             <div class="col-md-4 mb-3">
@@ -49,12 +46,24 @@
                 <input type="number" class="form-control" id="page_count" name="page_count" value="{{ old('page_count') }}" required>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <label for="page_count" class="form-label">Miktar</label>
-                <input type="number" class="form-control" id="Quantity" name="Quantity" value="{{ old('Quantity') }}" required>
+            <div class="col-md-6 mb-3">
+                <label for="publisher" class="form-label">Yayınevi</label>
+                <select class="form-select" id="publisher" name="publisher" required>
+                    <option value="">Yayınevi Seçin</option>
+                    @foreach($publishers as $publisher)
+                        <option value="{{ $publisher->id }}" {{ old('publisher') == $publisher->id ? 'selected' : '' }}>
+                            {{ $publisher->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="publish_year" class="form-label">Yayın Yılı</label>
+                <input type="number" class="form-control" id="publish_year" name="publish_year" value="{{ old('publish_year') }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
                 <label for="category_id" class="form-label">Kategori</label>
                 <select class="form-select" id="category_id" name="category_id" required>
                     <option value="">Kategori Seçin</option>
@@ -66,12 +75,15 @@
                 </select>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <label for="status" class="form-label">Durum</label>
-                <select class="form-select" id="status" name="status" required>
-                    <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>Mevcut</option>
-                    <option value="borrowed" {{ old('status') == 'borrowed' ? 'selected' : '' }}>Ödünç Verilmiş</option>
-                    <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Bakımda</option>
+            <div class="col-md-6 mb-3">
+                <label for="language_id" class="form-label">Dil</label>
+                <select class="form-select" id="language_id" name="language_id" required>
+                    <option value="">Dil Seçin</option>
+                    @foreach($languages as $language)
+                        <option value="{{ $language->id }}" {{ old('language_id') == $language->id ? 'selected' : '' }}>
+                            {{ $language->name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
@@ -87,7 +99,7 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Kitap Ekle</button>
-                <a href="{{ route('books.index') }}" class="btn btn-secondary">İptal</a>
+                <a href="{{ route('admin.index') }}" class="btn btn-secondary">İptal</a>
             </div>
         </div>
     </form>

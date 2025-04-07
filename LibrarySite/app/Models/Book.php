@@ -50,4 +50,14 @@ class Book extends Model
     public function stock(){
         return $this->hasOne(Stock::class, 'book_id');
     }
+
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating') ?? 0;
+    }
+
+    public function ratingsCount() 
+    {
+        return $this->ratings()->count();
+    }
 }

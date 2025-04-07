@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row mb-4">
         <div class="col">
-            <h2>Kitap Listesi</h2>
+            <h2 class="mb-4">Kitap Listesi</h2>
             <a href="{{ url('/adminpanel/create-book') }}" class="btn btn-primary">Yeni Kitap Ekle</a>
         </div>
     </div>
@@ -41,7 +41,7 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ url('/adminpanel/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
+                                    <a href="{{ url('/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
                                         <i class="bi bi-eye"></i> Detay
                                     </a>
                                     <a href="{{ url('/adminpanel/books/'.$book->id.'/edit') }}" class="btn btn-warning btn-sm" title="Düzenle">

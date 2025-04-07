@@ -64,16 +64,15 @@ class BookController extends Controller
     {
         $request->validate([
             'book_name' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
+            'author_id' => 'required|exists:authors,id',
+            'language' => 'required|string|max:255',
             'page_count' => 'required|integer',
-            'Quantity' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
             'isbn' => 'required|string|max:13',
-            'publisher' => 'required|string|max:255',
+            'publisher_id' => 'required|exists:publishers,id',
             'publish_year' => 'required|integer',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required|string|max:255',
         ]);
 
         $existingBook = Book::where('isbn', $request->isbn)->first();
@@ -94,11 +93,6 @@ class BookController extends Controller
         }
 
         $book = Book::create($data);
-
-        Stock::create([
-            'book_id' => $book->id,
-            'quantity' => $request->Quantity,
-        ]);
 
         Activity::create([
             'user_id' => Auth::id(),
@@ -278,7 +272,7 @@ class BookController extends Controller
         $book = Book::findOrFail($id);
         $quantity = $request->input('quantity');
 
-        // Tümünü silme durumu
+        // Tümünü silme
         if ($quantity === 'all') {
             if ($book->stock) {
                 $book->stock->delete();
@@ -304,12 +298,11 @@ class BookController extends Controller
             ]);
         }
 
-        // Kısmi silme durumu
+        // Bir kısmı silme
         $quantity = (int)$quantity;
         if ($book->stock) {
             $currentQuantity = $book->stock->quantity;
             if ($quantity >= $currentQuantity) {
-                // Tüm stok silinecekse kitabı tamamen sil
                 $book->stock->delete();
                 $book->delete();
                 return response()->json([

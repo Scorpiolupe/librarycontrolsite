@@ -61,6 +61,8 @@
                     <a href="/adminpanel/create-book" class="list-group-item list-group-item-action">Kitap Ekle</a>
                     <a href="/adminpanel/list-books" class="list-group-item list-group-item-action">Kitapları Listele</a>
                     <a href="/adminpanel/manage-categories" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
+                    <a href="/adminpanel/manage-authors" class="list-group-item list-group-item-action">Yazarları Yönet</a>
+                    <a href="/adminpanel/manage-publishers" class="list-group-item list-group-item-action">Yayınevlerini Yönet</a>
                 </div>
             </div>
         </div>
@@ -76,10 +78,29 @@
                     <a href="#" class="list-group-item list-group-item-action">Üye Ekle</a>
                     <a href="#" class="list-group-item list-group-item-action">Üyeleri Listele</a>
                     <a href="#" class="list-group-item list-group-item-action">Üye Rolleri</a>
+                    <a href="/adminpanel/manage-fines" class="list-group-item list-group-item-action">Cezaları Yönet</a>
+                    <a href="/adminpanel/manage-reviews" class="list-group-item list-group-item-action">Yorumları Yönet</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Stok Yönetimi</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="/adminpanel/manage-stocks" class="list-group-item list-group-item-action">Stokları Yönet</a>
+                    <a href="/adminpanel/manage-borrowings" class="list-group-item list-group-item-action">Ödünç İşlemleri</a>
+                    <a href="/adminpanel/manage-returns" class="list-group-item list-group-item-action">İade İşlemleri</a>
+                    <a href="/adminpanel/manage-reservations" class="list-group-item list-group-item-action">Rezervasyon İşlemleri</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <!-- Son İşlemler Tablosu -->
     <div class="col-12">

@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             Genres::class,
             //Books::class,
             Admin::class,
+            Publishers::class,
+            Authors::class,
+            Languages::class,
         ]);
     }
 }
