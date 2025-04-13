@@ -18,14 +18,10 @@ return new class extends Migration
             $table->foreignId('language_id')->constrained();
             $table->integer('page_count');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('isbn');
             $table->foreignId('publisher_id')->constrained()->onDelete('cascade');
             $table->integer('publish_year');
-            $table->string('status')->default('available');
             $table->string('book_cover')->nullable();
-            $table->text('description')->nullable();
-            $table->string('shelf')->nullable();
-            $table->string('barcode')->nullable();
+            $table->text('description')->nullable();    
             $table->dateTimeTz('created_at')->nullable();
             $table->dateTimeTz('updated_at')->nullable();
         });

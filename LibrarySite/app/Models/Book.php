@@ -15,7 +15,6 @@ class Book extends Model
         'isbn',
         'publisher_id',
         'publish_year',
-        'status',
         'description',
         'book_cover',
         'language_id'
@@ -27,6 +26,11 @@ class Book extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
+
+    public function bookDetails()
+    {
+        return $this->hasMany(BookDetail::class);
+    }
 
     public function category()
     {
