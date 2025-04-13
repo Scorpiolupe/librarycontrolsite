@@ -165,6 +165,20 @@
                     @endauth
                 </div>
 
+                @auth
+                    @if($bookCopy->status === 'available')
+                        <form action="{{ route('books.borrow', $bookCopy->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">Ödünç Al</button>
+                        </form>
+                    @elseif($bookCopy->status === 'borrowed')
+                        <form action="{{ route('books.return', $bookCopy->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-secondary">İade Et</button>
+                        </form>
+                    @endif
+                @endauth
+
                 <div class="comments-section">
                     <h3>Yorumlar</h3>
                     <form class="comment-form" action="/books/{{ $book->id }}/comment" method="POST">

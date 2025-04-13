@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\Book;
+use App\Models\BookCopy;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\BookReview;
 use App\Models\BookRating;
 use App\Models\Stock;
+use App\Models\BorrowedBook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,29 +18,33 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Book::query();
+        $query = BookCopy::with('book')->where('status', 'available');
 
         if ($request->has('search')) {
             $search = $request->get('search');
-            $query->where('book_name', 'like', "%{$search}%")
-            ->orWhere('author', 'like', "%{$search}%");
+            $query->whereHas('book', function ($q) use ($search) {
+                $q->where('book_name', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%");
+            });
         }
 
         if ($request->has('category')) {
-            $query->where('category_id', $request->category);
+            $query->whereHas('book', function ($q) use ($request) {
+                $q->where('category_id', $request->category);
+            });
         }
 
         if ($request->has('genre')) {
-            $query->whereHas('genres', function ($q) use ($request) {
+            $query->whereHas('book.genres', function ($q) use ($request) {
                 $q->where('genre_id', $request->genre);
             });
         }
 
         if ($request->has('page_count_min') && $request->has('page_count_max')) {
-            $query->whereBetween('page_count', [$request->page_count_min, $request->page_count_max]);
+            $query->whereHas('book', function ($q) use ($request) {
+                $q->whereBetween('page_count', [$request->page_count_min, $request->page_count_max]);
+            });
         }
-
-       
 
         $books = $query->paginate(9);
         $categories = Category::all();
@@ -47,6 +53,7 @@ class BookController extends Controller
         return view('books', compact('books', 'categories', 'genres'));
     }
 
+    // KİTAP TANITIMI SAYFASI
     public function create()
     {
         $categories = Category::all();
@@ -54,6 +61,7 @@ class BookController extends Controller
         return view('books.create', compact('categories', 'genres'));
     }
 
+    // KİTAP TANITIMI FORM
     public function store(Request $request)
     {
         $request->validate([
@@ -96,6 +104,16 @@ class BookController extends Controller
         ]);
 
         return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla oluşturuldu.');
+    }
+
+    public function addBook(Request $request)
+    {
+        $book = Book::findOrFail($request->id);
+        BookCopy::create([
+            'book_id' => $book->id,
+            'copy_number' => $request->copy_number,
+            'status' => 'available',
+        ]);
     }
 
     public function books(Request $request)
@@ -268,9 +286,48 @@ class BookController extends Controller
             'success' => true,
             'message' => 'Kitap başarıyla silindi.'
         ]);
+    }
+
+    public function borrowBook(Request $request, $copyId)
+    {
+        $bookCopy = BookCopy::findOrFail($copyId);
+
+        if ($bookCopy->status !== 'available') {
+            return back()->with('error', 'Bu kitap şu anda ödünç alınamaz.');
         }
 
-        // Bir kısmı silme
-        
+        $bookCopy->update(['status' => 'borrowed']);
+
+        BorrowedBook::create([
+            'user_id' => Auth::id(),
+            'book_id' => $bookCopy->book_id,
+            'purchase_date' => now(),
+            'return_date' => now()->addDays(14), // 14 gün sonra iade tarihi
+            'status' => 'borrowed',
+            'delay_day' => 0,
+            'late_fee' => 0,
+        ]);
+
+        return back()->with('success', 'Kitap başarıyla ödünç alındı.');
     }
+
+    public function returnBook(Request $request, $copyId)
+    {
+        $bookCopy = BookCopy::findOrFail($copyId);
+
+        if ($bookCopy->status !== 'borrowed') {
+            return back()->with('error', 'Bu kitap şu anda iade edilemez.');
+        }
+
+        $borrowedBook = BorrowedBook::where('book_id', $bookCopy->book_id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'borrowed')
+            ->firstOrFail();
+
+        $borrowedBook->update(['status' => 'returned']);
+        $bookCopy->update(['status' => 'available']);
+
+        return back()->with('success', 'Kitap başarıyla iade edildi.');
+    }
+}
 

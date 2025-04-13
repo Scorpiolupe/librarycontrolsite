@@ -45,8 +45,8 @@
                                     <a href="{{ url('/adminpanel/edit-book/'.$book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
                                         <i class="bi bi-pencil"></i> Düzenle
                                     </a>
-                                    <a href="{{ url('/adminpanel/increase-quantity/'.$book->id) }}" class="btn btn-primary btn-sm" title="Stok Artır">
-                                        <i class="bi bi-plus"></i> Stok Artır
+                                    <a href="{{ url('/adminpanel/addBook/'.$book->id) }}" class="btn btn-primary btn-sm" title="Stok Ekle">
+                                        <i class="bi bi-plus"></i> Stok Ekle
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-book" data-id="{{ $book->id }}" title="Sil">
                                         <i class="bi bi-trash"></i> Sil
@@ -85,6 +85,68 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
                 <button type="button" class="btn btn-danger" id="deletePartial">Seçilen Miktarı Sil</button>
                 <button type="button" class="btn btn-danger" id="deleteAll">Tümünü Sil</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Stock Modal -->
+<div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStockModalLabel">Kitap Kopyası Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStockForm">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="barcode" class="form-label">Barkod*</label>
+                            <input type="text" class="form-control" id="barcode" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="shelf_location" class="form-label">Raf Konumu</label>
+                            <input type="text" class="form-control" id="shelf_location">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="condition" class="form-label">Durum</label>
+                            <select class="form-select" id="condition">
+                                <option value="Yeni">Yeni</option>
+                                <option value="İyi">İyi</option>
+                                <option value="Orta">Orta</option>
+                                <option value="Kötü">Kötü</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="acquisition_date" class="form-label">Edinme Tarihi</label>
+                            <input type="date" class="form-control" id="acquisition_date">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_reference">
+                                <label class="form-check-label" for="is_reference">
+                                    Başvuru Kitabı
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="notes" class="form-label">Notlar</label>
+                            <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="saveBookCopy">Kaydet</button>
             </div>
         </div>
     </div>
@@ -188,6 +250,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 alert('Bir hata oluştu.');
             });
+        });
+    });
+
+    // Stok ekleme modalı için
+    const addStockModal = new bootstrap.Modal(document.getElementById('addStockModal'));
+
+    // Stok Ekle butonuna tıklandığında
+    document.querySelectorAll('a[href*="/adminpanel/addBook/"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentBookId = this.href.split('/').pop();
+            addStockModal.show();
+        });
+    });
+
+    // Kitap kopyası kaydetme
+    document.getElementById('saveBookCopy').addEventListener('click', function() {
+        const formData = {
+            book_id: currentBookId,
+            barcode: document.getElementById('barcode').value,
+            shelf_location: document.getElementById('shelf_location').value,
+            condition: document.getElementById('condition').value,
+            is_reference: document.getElementById('is_reference').checked,
+            acquisition_date: document.getElementById('acquisition_date').value,
+            notes: document.getElementById('notes').value
+        };
+
+        fetch('/adminpanel/books/add-copy', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                addStockModal.hide();
+                document.getElementById('addStockForm').reset();
+                alert('Kitap kopyası başarıyla eklendi.');
+                // Sayfayı yenile veya tabloyu güncelle
+                location.reload();
+            } else {
+                alert(data.message || 'Bir hata oluştu.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Bir hata oluştu.');
         });
     });
 });

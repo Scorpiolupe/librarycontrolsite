@@ -11,7 +11,7 @@ class BorrowedBooks extends Model
     ];
 
     public function user(){
-        return $this->belon
+        return $this->belongsTo(User::class);
     }
 
 }

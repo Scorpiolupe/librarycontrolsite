@@ -41,10 +41,13 @@ Route::post('/books/create', [BookController::class, 'store'])->name('books.stor
 Route::get('/books/{id}', [BookController::class, 'show']);
 Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
+Route::post('/books/{copyId}/borrow', [BookController::class, 'borrowBook'])->name('books.borrow');
+Route::post('/books/{copyId}/return', [BookController::class, 'returnBook'])->name('books.return');
 
 // Yeni route tanımlamaları
 Route::delete('/adminpanel/books/{id}/delete', [BookController::class, 'ajaxDelete'])->name('books.ajaxDelete');
 Route::post('/adminpanel/books/{id}/toggle-status', [BookController::class, 'toggleStatus'])->name('books.toggleStatus');
+Route::get('/adminpanel/addBook/', [BookController::class, 'addBook'])->name('books.addBook');
 
 Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
 Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
