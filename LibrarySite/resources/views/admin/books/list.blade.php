@@ -141,10 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 if (data.remaining === 0) {
-                    document.querySelector(`tr[data-book-id="${bookId}"]`).remove();
+                    document.querySelector(`tr[data-copy-id="${data.copyId}"]`).remove();
                 } else {
-                    // Stok miktarını güncelle
-                    const stockCell = document.querySelector(`tr[data-book-id="${bookId}"] td:nth-child(5)`);
+                    const stockCell = document.querySelector(`tr[data-copy-id="${data.copyId}"] td:nth-child(5)`);
                     if (stockCell) {
                         stockCell.textContent = data.remaining;
                     }

@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Genre;
 use App\Models\BookReview;
 use App\Models\BookRating;
-use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,7 +61,7 @@ class BookController extends Controller
             'language_id' => 'required|exists:languages,id',
             'page_count' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
-            'isbn' => 'required|string|max:13',
+            'isbn' => 'required|string|max:13|unique:books,isbn',
             'publisher_id' => 'required|exists:publishers,id',
             'publish_year' => 'required|integer',
             'description' => 'nullable|string',
@@ -212,9 +211,11 @@ class BookController extends Controller
 
     public function destroy(Book $book)
     {
-        if ($book->stock) {
-            $book->stock->delete();
+        foreach ($book->bookCopies as $copy) {
+            $copy->stockHistories()->delete();
+            $copy->delete();
         }
+
         if ($book->ratings) {
             $book->ratings()->delete();
         }

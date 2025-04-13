@@ -58,8 +58,9 @@
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="/adminpanel/create-book" class="list-group-item list-group-item-action">Kitap Ekle</a>
-                    <a href="/adminpanel/list-books" class="list-group-item list-group-item-action">Kitapları Listele</a>
+                    
+                    <a href="/adminpanel/list-books" class="list-group-item list-group-item-action">Kitapları Yönet</a>
+                    <a href="/adminpanel/manage-copies" class="list-group-item list-group-item-action">Kitap Kopyalarını Yönet</a>
                     <a href="/adminpanel/manage-categories" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
                     <a href="/adminpanel/manage-authors" class="list-group-item list-group-item-action">Yazarları Yönet</a>
                     <a href="/adminpanel/manage-publishers" class="list-group-item list-group-item-action">Yayınevlerini Yönet</a>
