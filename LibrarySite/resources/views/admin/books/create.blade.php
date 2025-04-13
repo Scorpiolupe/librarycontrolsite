@@ -26,7 +26,7 @@
 
             <div class="col-md-6 mb-3">
                 <label for="author" class="form-label">Yazar</label>
-                <select class="form-select" id="author" name="author" required>
+                <select class="form-select" id="author_id" name="author_id" required>
                     <option value="">Yazar Seçin</option>
                     @foreach($authors as $author)
                         <option value="{{ $author->id }}" {{ old('author') == $author->id ? 'selected' : '' }}>
@@ -48,7 +48,7 @@
 
             <div class="col-md-6 mb-3">
                 <label for="publisher" class="form-label">Yayınevi</label>
-                <select class="form-select" id="publisher" name="publisher" required>
+                <select class="form-select" id="publisher_id" name="publisher_id" required>
                     <option value="">Yayınevi Seçin</option>
                     @foreach($publishers as $publisher)
                         <option value="{{ $publisher->id }}" {{ old('publisher') == $publisher->id ? 'selected' : '' }}>

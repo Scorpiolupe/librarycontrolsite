@@ -65,7 +65,7 @@ class BookController extends Controller
         $request->validate([
             'book_name' => 'required|string|max:255',
             'author_id' => 'required|exists:authors,id',
-            'language' => 'required|string|max:255',
+            'language_id' => 'required|exists:languages,id',
             'page_count' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
             'isbn' => 'required|string|max:13',

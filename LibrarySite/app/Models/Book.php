@@ -9,15 +9,16 @@ class Book extends Model
 {
     protected $fillable = [
         'book_name',
-        'author',
+        'author_id',
         'page_count',
         'category_id',
         'isbn',
-        'publisher',
+        'publisher_id',
         'publish_year',
         'status',
         'description',
-        'book_cover'
+        'book_cover',
+        'language_id'
     ];
 
     public $timestamps = false;
@@ -59,5 +60,15 @@ class Book extends Model
     public function ratingsCount() 
     {
         return $this->ratings()->count();
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class, 'language_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(Author::class, 'author_id');
     }
 }

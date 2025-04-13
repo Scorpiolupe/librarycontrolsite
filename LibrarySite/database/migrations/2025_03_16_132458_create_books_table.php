@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('book_name');
             $table->foreignId('author_id')->constrained()->onDelete('cascade');
-            $table->string('language');
+            $table->foreignId('language_id')->constrained();
             $table->integer('page_count');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('isbn');
@@ -26,8 +26,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('shelf')->nullable();
             $table->string('barcode')->nullable();
-            $table->dateTimeTz('created_at');
-            $table->dateTimeTz('updated_at');
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 
