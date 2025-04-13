@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('barcode');
             $table->string('shelf_number');
             $table->string('status');
-            $table->timestamps();
+            $table->dateTimeTz('created_at');
+            $table->dateTimeTz('updated_at');
         });
     }
 
