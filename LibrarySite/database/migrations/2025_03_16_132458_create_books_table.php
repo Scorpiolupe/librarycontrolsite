@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('book_name');
+            $table->string('isbn')->unique();
             $table->foreignId('author_id')->constrained()->onDelete('cascade');
             $table->foreignId('language_id')->constrained();
             $table->string('isbn')->unique();
@@ -22,7 +23,8 @@ return new class extends Migration
             $table->foreignId('publisher_id')->constrained()->onDelete('cascade');
             $table->integer('publish_year');
             $table->string('book_cover')->nullable();
-            $table->text('description')->nullable();    
+            $table->text('description')->nullable(); 
+            $table->string('edition')->nullable();   
             $table->dateTimeTz('created_at')->nullable();
             $table->dateTimeTz('updated_at')->nullable();
         });

@@ -27,9 +27,9 @@ class Book extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function bookDetails()
+    public function bookCopy()
     {
-        return $this->hasMany(BookDetail::class);
+        return $this->hasMany(BookCopy::class);
     }
 
     public function category()
