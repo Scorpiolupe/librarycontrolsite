@@ -231,7 +231,7 @@ option {
                         <img src="{{ $book->book_cover }}" class="card-img-top" alt="{{ $book->book_name }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ $book->book_name }}</h5>
-                            <p class="card-text">{{ $book->author }}</p>
+                            <p class="card-text">{{ $book->author->name }}</p>
                             <button type="button" class="btn btn-details">
                                 Detaylar
                             </button>

@@ -38,12 +38,6 @@ class BookController extends Controller
             $query->whereBetween('page_count', [$request->page_count_min, $request->page_count_max]);
         }
 
-        $books= Book::with('stock')
-        ->whereHas('Stock',function ($query){
-            $query->where('quantity', '>=', 1);
-        })
-        ->paginate(9);
-
        
 
         $books = $query->paginate(9);
@@ -78,9 +72,7 @@ class BookController extends Controller
         $existingBook = Book::where('isbn', $request->isbn)->first();
 
         if ($existingBook) {
-            Stock::where('book_id', $existingBook->id)->increment('quantity', $request->Quantity);
-            return redirect()->route('admin.listBooks')
-                ->with('info', 'Bu kitap stokta zaten mevcut. Stok miktarı güncellendi.');
+            return redirect()->back()->with('error', 'Bu ISBN numarasına sahip bir kitap zaten mevcut.');
         }
 
         $data = $request->all();
@@ -270,61 +262,14 @@ class BookController extends Controller
     public function ajaxDelete($id, Request $request)
     {
         $book = Book::findOrFail($id);
-        $quantity = $request->input('quantity');
-
-        // Tümünü silme
-        if ($quantity === 'all') {
-            if ($book->stock) {
-                $book->stock->delete();
-            }
-            if ($book->ratings) {
-                $book->ratings()->delete();
-            }
-            if ($book->comments) {
-                $book->comments()->delete();
-            }
-            if ($book->image) {
-                $imagePath = public_path('storage/' . $book->image);
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
-            $book->delete();
-            
-            return response()->json([
-                'success' => true,
-                'remaining' => 0,
-                'message' => 'Kitap başarıyla silindi.'
-            ]);
+        $book->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Kitap başarıyla silindi.'
+        ]);
         }
 
         // Bir kısmı silme
-        $quantity = (int)$quantity;
-        if ($book->stock) {
-            $currentQuantity = $book->stock->quantity;
-            if ($quantity >= $currentQuantity) {
-                $book->stock->delete();
-                $book->delete();
-                return response()->json([
-                    'success' => true,
-                    'remaining' => 0,
-                    'message' => 'Kitap başarıyla silindi.'
-                ]);
-            } else {
-                // Stoktan düş
-                $book->stock->quantity -= $quantity;
-                $book->stock->save();
-                return response()->json([
-                    'success' => true,
-                    'remaining' => $book->stock->quantity,
-                    'message' => 'Stok güncellendi.'
-                ]);
-            }
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'İşlem gerçekleştirilemedi.'
-        ], 400);
+        
     }
-}
+

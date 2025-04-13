@@ -21,7 +21,6 @@
                             <th>Kitap Adı</th>
                             <th>Yazar</th>
                             <th>Kategori</th>
-                            <th>Stok</th>
                             <th>Durum</th>
                             <th>İşlemler</th>
                         </tr>
@@ -31,9 +30,8 @@
                         <tr data-book-id="{{ $book->id }}">
                             <td>{{ $book->id }}</td>
                             <td>{{ $book->book_name }}</td>
-                            <td>{{ $book->author }}</td>
+                            <td>{{ $book->author->name }}</td>
                             <td>{{ $book->category->category_name }}</td>
-                            <td>{{ $book->stock->quantity }}</td>
                             <td>
                                 <span class="badge {{ $book->status == 'available' ? 'bg-success' : 'bg-warning' }}">
                                     {{ $book->status }}
