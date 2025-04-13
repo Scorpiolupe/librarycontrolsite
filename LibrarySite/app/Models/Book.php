@@ -75,4 +75,9 @@ class Book extends Model
     {
         return $this->belongsTo(Author::class, 'author_id');
     }
+
+    public function publisher()
+    {
+        return $this->belongsTo(Publisher::class, 'publisher_id');
+    }
 }

@@ -42,12 +42,12 @@
                                     <a href="{{ url('/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
                                         <i class="bi bi-eye"></i> Detay
                                     </a>
-                                    <a href="{{ url('/adminpanel/books/'.$book->id.'/edit') }}" class="btn btn-warning btn-sm" title="Düzenle">
+                                    <a href="{{ url('/adminpanel/edit-book/'.$book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
                                         <i class="bi bi-pencil"></i> Düzenle
                                     </a>
-                                    <button type="button" class="btn btn-secondary btn-sm status-change" data-id="{{ $book->id }}" title="Bakıma Al">
-                                        <i class="bi bi-arrow-repeat"></i> Bakım
-                                    </button>
+                                    <a href="{{ url('/adminpanel/increase-quantity/'.$book->id) }}" class="btn btn-primary btn-sm" title="Stok Artır">
+                                        <i class="bi bi-plus"></i> Stok Artır
+                                    </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-book" data-id="{{ $book->id }}" title="Sil">
                                         <i class="bi bi-trash"></i> Sil
                                     </button>

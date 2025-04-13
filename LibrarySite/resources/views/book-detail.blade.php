@@ -121,8 +121,8 @@
         <div class="col-md-8 book-info">
             <h1>{{ $book->book_name }}</h1>
             <div class="book-meta">
-                <p><strong>Yazar:</strong> {{ $book->author }}</p>
-                <p><strong>Yayınevi:</strong> {{ $book->publisher }}</p>
+                <p><strong>Yazar:</strong> {{ $book->author->name }}</p>
+                <p><strong>Yayınevi:</strong> {{ $book->publisher->name }}</p>
                 <p><strong>Yayın Yılı:</strong> {{ $book->publish_year }}</p>
                 <p><strong>ISBN:</strong> {{ $book->isbn }}</p>
                 <p><strong>Sayfa Sayısı:</strong> {{ $book->page_count }}</p>
