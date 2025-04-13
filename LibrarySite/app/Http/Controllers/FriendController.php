@@ -30,7 +30,7 @@ class FriendController extends Controller
             return redirect()->back()->with('error', 'Kendinizi arkadaş olarak ekleyemezsiniz.');
         }
 
-        $friend = Friend::where('id', $request->friend_id)->first();
+        $friend = Friend::where('id', $request->friend_id);
         if (!$friend) {
             return redirect()->back()->with('error', 'Bu kullanıcı bulunamadı.');
         }

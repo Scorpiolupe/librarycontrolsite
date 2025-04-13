@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('NO ACTION');
             $table->foreignId('friend_id')->constrained('users')->onDelete('NO ACTION');
-            $table->dateTimeTz('created_at');
-            $table->dateTimeTz('updated_at');
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 
