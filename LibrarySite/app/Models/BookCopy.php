@@ -14,6 +14,8 @@ class BookCopy extends Model
         'status',
         'is_reference',
         'acquisition_date',
+        'acquisition_source',
+        'acquisition_cost',
         'cover_image',
         'notes',
     ];
@@ -33,10 +35,14 @@ class BookCopy extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
     public function stockHistory()
     {
         return $this->hasMany(StockHistory::class, 'copy_id');
     }
+
+
+
     public function getCoverImageUrlAttribute()
     {
         return $this->cover_image ? asset('storage/' . $this->cover_image) : null;

@@ -20,14 +20,25 @@ Route::get('/auth', [PageController::class, 'auth']);
 
 Route::get('/friends', [FriendController::class, 'index']);
 
-Route::get('/adminpanel', [AdminController::class, 'index'])->name('admin.index');
-Route::get('/adminpanel/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
-Route::get('/adminpanel/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
-Route::get('/adminpanel/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
-Route::get('/adminpanel/manage-authors', [AdminController::class, 'manageAuthors'])->name('admin.manageAuthors');
-Route::post('/adminpanel/create-author', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
-Route::get('/adminpanel/manage-publishers', [AdminController::class, 'managePublishers'])->name('admin.managePublishers');
-Route::post('/adminpanel/create-publisher', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
+Route::prefix('adminpanel')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
+    Route::get('/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
+    Route::get('/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
+    Route::get('/manage-authors', [AdminController::class, 'manageAuthors'])->name('admin.manageAuthors');
+    Route::post('/create-author', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
+    Route::get('/manage-publishers', [AdminController::class, 'managePublishers'])->name('admin.managePublishers');
+    Route::post('/create-publisher', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
+    Route::get('/manage-copies', [AdminController::class, 'manageCopies'])->name('admin.manageCopies');
+
+    Route::get('/create-copy', [AdminController::class, 'createCopy'])->name('admin.createCopy');
+    Route::post('/store-copy', [AdminController::class, 'storeCopy'])->name('admin.storeCopy');
+    Route::get('/edit-copy/{id}', [AdminController::class, 'editCopy'])->name('admin.editCopy');
+    Route::post('/update-copy/{id}', [AdminController::class, 'updateCopy'])->name('admin.updateCopy');
+    Route::delete('/copies/{id}', [AdminController::class, 'deleteCopy'])->name('admin.deleteCopy');
+
+    Route::get('/books/{bookId}/isbns', [AdminController::class, 'getBookIsbns']);
+});
 
 Route::post('/adminpanel/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
 
