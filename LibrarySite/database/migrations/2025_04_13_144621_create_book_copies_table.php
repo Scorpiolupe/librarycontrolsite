@@ -22,7 +22,8 @@ return new class extends Migration
             $table->date('acquisition_date')->nullable();
             $table->string('cover_image')->nullable();
             $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->dateTimeTz('created_at');
+            $table->dateTimeTz('updated_at');
         });
     }
 

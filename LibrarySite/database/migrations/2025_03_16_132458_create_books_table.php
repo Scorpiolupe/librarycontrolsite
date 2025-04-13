@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('isbn')->unique();
             $table->foreignId('author_id')->constrained()->onDelete('cascade');
             $table->foreignId('language_id')->constrained();
-            $table->string('isbn')->unique();
             $table->integer('page_count');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('publisher_id')->constrained()->onDelete('cascade');

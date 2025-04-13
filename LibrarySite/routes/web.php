@@ -49,6 +49,8 @@ Route::post('/adminpanel/books/{id}/toggle-status', [BookController::class, 'tog
 Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
 Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->middleware('auth');
 
+Route::post('/friends/add', [FriendController::class, 'add'])->name('friends.add');
+
 Route::get('/api/genres', function (Request $request) {
     $categoryId = $request->get('category_id');
     $genres = Genre::where('category_id', $categoryId)->get();

@@ -86,10 +86,6 @@ class BookController extends Controller
 
         $book = Book::create($data);
 
-        Stock::create([
-            'book_id' => $book->id,
-            'quantity' => 0
-        ]);
 
         Activity::create([
             'user_id' => Auth::id(),

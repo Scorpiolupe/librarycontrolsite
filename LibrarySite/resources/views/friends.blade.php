@@ -23,8 +23,8 @@
                     @foreach($friends ?? [] as $friend)
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="mb-1">{{ $friend->name }}</h5>
-                            <small class="text-muted">ID: {{ $friend->id }}</small>
+                            <h5 class="mb-1">{{ $friend->friend->name }}</h5>
+                            <small class="text-muted">ID: {{ $friend->friend->id }}</small>
                         </div>
                         <form action="/friends/remove/{{ $friend->id }}" method="POST" class="d-inline">
                             @csrf

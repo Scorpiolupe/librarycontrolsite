@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('event_type');
             $table->string('old_shelf')->nullable();
             $table->string('new_shelf')->nullable();
-            $table->timestamp('event_date')->useCurrent();
+            $table->dateTimeTz('event_date')->useCurrent();
             $table->text('note')->nullable();
         });
     }
