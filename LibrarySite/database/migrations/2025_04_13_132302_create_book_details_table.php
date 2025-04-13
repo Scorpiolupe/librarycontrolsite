@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
             $table->string('barcode');
             $table->string('shelf_number');
+            $table->string('status');
             $table->timestamps();
         });
     }

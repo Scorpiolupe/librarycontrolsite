@@ -19,5 +19,20 @@ class Categories extends Seeder
         Category::create(['category_name' => 'Felsefe']);
         Category::create(['category_name' => 'Teknoloji']);
         Category::create(['category_name' => 'Tarih']);
+        Category::create(['category_name' => 'Sanat']);
+        Category::create(['category_name' => 'Psikoloji']);
+        Category::create(['category_name' => 'Ekonomi']);
+        Category::create(['category_name' => 'Siyaset']);
+        Category::create(['category_name' => 'Spor']);
+        Category::create(['category_name' => 'Müzik']);
+        Category::create(['category_name' => 'Sinema']);
+        Category::create(['category_name' => 'Sağlık']);
+        Category::create(['category_name' => 'Eğitim']);
+        Category::create(['category_name' => 'Din']);
+        Category::create(['category_name' => 'Mimari']);
+        Category::create(['category_name' => 'Coğrafya']);
+        Category::create(['category_name' => 'Biyografi']);
+        Category::create(['category_name' => 'Gezi']);
+        Category::create(['category_name' => 'Yemek']);
     }
 }
