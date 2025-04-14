@@ -89,7 +89,7 @@ class AdminController extends Controller
             'acquisition_date' => 'nullable|date',
             'acquisition_source' => 'nullable|in:Satın Alım,Bağış',
             'acquisition_cost' => 'nullable|numeric',
-            'condition' => 'required|in:yıpranmış,az yıpranmış,yıpranmış,çok yıpranmış',
+            'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
             'status' => 'required|in:available,borrowed,reserved,lost',
         ]);
 
