@@ -32,6 +32,11 @@ class Book extends Model
         return $this->hasMany(BookCopy::class);
     }
 
+    public function bookCopies()
+    {
+        return $this->hasMany(BookCopy::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

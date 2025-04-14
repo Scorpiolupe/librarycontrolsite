@@ -55,6 +55,8 @@ Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middlewa
 Route::post('/books/{copyId}/borrow', [BookController::class, 'borrowBook'])->name('books.borrow');
 Route::post('/books/{copyId}/return', [BookController::class, 'returnBook'])->name('books.return');
 
+Route::get('/adminpanel/manage-stocks', [AdminController::class, 'manageStocks'])->name('admin.manageStocks');
+
 // Yeni route tanımlamaları
 Route::delete('/adminpanel/books/{id}/delete', [BookController::class, 'ajaxDelete'])->name('books.ajaxDelete');
 Route::post('/adminpanel/books/{id}/toggle-status', [BookController::class, 'toggleStatus'])->name('books.toggleStatus');

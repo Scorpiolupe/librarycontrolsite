@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Language;
 use App\Models\Publisher;
 use App\Models\BookCopy;
+use App\Models\User;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,9 +21,15 @@ class AdminController extends Controller
         if (!Auth::check() || Auth::user()->is_admin == 0) {
             return back()->with('error', 'Bu sayfaya erişim izniniz yok.');
         }
+        $totalBooks = Book::count();
+        $totalCopies = BookCopy::count();
+        $totalUsers = User::count();
+        $totalActivities = Activity::count();
+        $totalBorrowedBooks = BookCopy::where('status', 'borrowed')->count();
+        $totalAvailableBooks = BookCopy::where('status', 'available')->count();
 
         $activities = Activity::all();
-        return view('admin', compact('activities'));
+        return view('admin', compact('activities', 'totalBooks', 'totalCopies', 'totalUsers', 'totalActivities', 'totalBorrowedBooks', 'totalAvailableBooks'));
     }
 
     public function createBook()
@@ -32,6 +39,26 @@ class AdminController extends Controller
         $authors = Author::all();
         $languages = Language::all();
         return view('admin.books.create', compact('categories', 'publishers', 'authors', 'languages')); 
+    }
+
+    public function manageStocks(Request $request)
+    {
+        $sort = $request->get('sort', 'name');
+        
+        if ($sort == 'name') {
+            $books = Book::select('book_name')
+                ->selectRaw('COUNT(book_copies.id) as copies_count')
+                ->leftJoin('book_copies', 'books.id', '=', 'book_copies.book_id')
+                ->groupBy('book_name')
+                ->orderBy('book_name');
+        } else {
+            $books = Book::select('book_name', 'isbn')
+                ->withCount('bookCopies as copies_count')
+                ->orderBy('isbn');
+        }
+
+        $books = $books->get();
+        return view('admin.stocks.manage-stocks', compact('books', 'sort'));
     }
 
     public function listBooks()

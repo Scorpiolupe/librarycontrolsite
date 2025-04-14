@@ -9,33 +9,14 @@
         <hr>
     </div>
 
-    <!-- İstatistikler -->
+
     <div class="col-md-3 mb-4">
         <div class="card bg-primary text-white">
             <div class="card-body">
                 <h5 class="card-title">Toplam Kitap</h5>
-                <h2 class="card-text">0</h2>
-                <small>Kütüphanedeki kitap sayısı</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title">Aktif Üyeler</h5>
-                <h2 class="card-text">0</h2>
-                <small>Kayıtlı kullanıcı sayısı</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="card bg-warning text-dark">
-            <div class="card-body">
-                <h5 class="card-title">Ödünç Kitaplar</h5>
-                <h2 class="card-text">0</h2>
-                <small>Ödünç verilen kitap sayısı</small>
+                <h2 class="card-text">
+                    {{ $totalBooks }}
+                </h2>
             </div>
         </div>
     </div>
@@ -43,12 +24,58 @@
     <div class="col-md-3 mb-4">
         <div class="card bg-info text-white">
             <div class="card-body">
-                <h5 class="card-title">Kategoriler</h5>
-                <h2 class="card-text">0</h2>
-                <small>Toplam kategori sayısı</small>
+                <h5 class="card-title">Toplam Stok</h5>
+                <h2 class="card-text">
+                    {{ $totalCopies }}
+                </h2>
             </div>
         </div>
     </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">Toplam Kullanıcı</h5>
+                <h2 class="card-text">
+                    {{ $totalUsers }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Toplam Aktivite</h5>
+                <h2 class="card-text">
+                    {{ $totalActivities }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">Ödünç Alınan Kitap Sayısı</h5>
+                <h2 class="card-text">
+                    {{ $totalBorrowedBooks }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Elde Bulunan Kitap Sayısı</h5>
+                <h2 class="card-text">
+                    {{ $totalAvailableBooks }}
+                </h2>
+            </div>
+        </div>
+    </div>
+    
 
     <!-- Yönetim Kartları -->
     <div class="col-md-6 mb-4">

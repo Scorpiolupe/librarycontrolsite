@@ -19,8 +19,14 @@
                         <tr>
                             <th>ID</th>
                             <th>Kitap Adı</th>
+                            <th>ISBN</th>
                             <th>Yazar</th>
+                            <th>Dil</th>
+                            <th>Sayfa</th>
                             <th>Kategori</th>
+                            <th>Yayınevi</th>
+                            <th>Yayın Yılı</th>
+                            <th>Baskı</th>
                             <th>Durum</th>
                             <th>İşlemler</th>
                         </tr>
@@ -30,8 +36,14 @@
                         <tr data-book-id="{{ $book->id }}">
                             <td>{{ $book->id }}</td>
                             <td>{{ $book->book_name }}</td>
+                            <td>{{ $book->isbn }}</td>
                             <td>{{ $book->author->name }}</td>
+                            <td>{{ $book->language->name }}</td>
+                            <td>{{ $book->page_count }}</td>
                             <td>{{ $book->category->category_name }}</td>
+                            <td>{{ $book->publisher->name }}</td>
+                            <td>{{ $book->publish_year }}</td>
+                            <td>{{ $book->edition ?? '-' }}</td>
                             <td>
                                 <span class="badge {{ $book->status == 'available' ? 'bg-success' : 'bg-warning' }}">
                                     {{ $book->status }}
@@ -40,23 +52,23 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ url('/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
-                                        <i class="bi bi-eye"></i> Detay
+                                        <i class="bi bi-eye"></i>
                                     </a>
                                     <a href="{{ url('/adminpanel/edit-book/'.$book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
-                                        <i class="bi bi-pencil"></i> Düzenle
+                                        <i class="bi bi-pencil"></i>
                                     </a>
                                     <a href="{{ url('/adminpanel/addBook/'.$book->id) }}" class="btn btn-primary btn-sm" title="Stok Ekle">
-                                        <i class="bi bi-plus"></i> Stok Ekle
+                                        <i class="bi bi-plus"></i>
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-book" data-id="{{ $book->id }}" title="Sil">
-                                        <i class="bi bi-trash"></i> Sil
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center">Henüz kitap eklenmemiş</td>
+                            <td colspan="12" class="text-center">Henüz kitap eklenmemiş</td>
                         </tr>
                         @endforelse
                     </tbody>
