@@ -19,19 +19,18 @@ option {
 }
 
 .card-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 12px;
+    line-height: 1.4;
 }
 
 .card-text {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: auto;
+    font-size: 1rem;
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 .modal-header {
@@ -80,18 +79,50 @@ option {
 }
 
 .book-card {
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden;
-    height: 100%;
+    height: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #f3f4f6);
+    border: none;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.08);
 }
 
-.book-card .card-body {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
+.book-card:hover {
+    transform: scale(1.02);
+    box-shadow: 8px 8px 20px rgba(0,0,0,0.12);
+    background: linear-gradient(145deg, #ffffff, #e8f0fe);
+}
+
+.card-body {
+    padding: 20px;
     flex-grow: 1;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-bottom: 15px;
+}
+
+.status-available {
+    background: linear-gradient(145deg, #34d399, #10b981);
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.status-borrowed {
+    background: linear-gradient(145deg, #f87171, #ef4444);
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .book-card img {
@@ -116,20 +147,6 @@ option {
     margin-top: 20px;
 }
 
-.book-card .btn-details {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
-
-.book-card .btn-details:hover {
-    transform: scale(1.05);
-    background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
 .book-link {
     text-decoration: none;
     color: inherit;
@@ -137,6 +154,20 @@ option {
 
 .book-link:hover {
     color: inherit;
+}
+
+.book-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.book-details strong {
+    color: #374151;
+    font-weight: 600;
 }
 
 /* Add these new styles */
@@ -223,18 +254,26 @@ option {
 
     <!-- Books List -->
     <div class="col-md-9">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach($books as $book)
-            <div class="col">
-                <a href="/books/{{ $book->id }}" class="book-link">
-                    <div class="card book-card h-100">
-                        <img src="{{ $book->book_cover }}" class="card-img-top" alt="{{ $book->book_name }}">
+        <div class="row">
+            @foreach($copies as $copy)
+            <div class="col-12">
+                <a href="/books/{{ $copy->book->id }}" class="book-link">
+                    <div class="card book-card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ $book->book_name }}</h5>
-                            <p class="card-text">{{ $book->author->name }}</p>
-                            <button type="button" class="btn btn-details">
-                                Detaylar
-                            </button>
+                            <h5 class="card-title mb-2">{{ $copy->book->book_name }}</h5>
+                            <p class="card-text mb-2">{{ $copy->book->author->name }}</p>
+                           
+                            <div class="book-details">
+                                <p><strong>ISBN:</strong> {{ $copy->book->isbn }} | 
+                                <strong>Kategori:</strong> {{ $copy->book->category->category_name }} | 
+                                <strong>Sayfa:</strong> {{ $copy->book->page_count }} |  
+                                <strong>Yayınevi:</strong> {{ $copy->book->publisher->name }} | 
+                                <strong>Yayın Yılı:</strong> {{ $copy->book->publish_year }} | 
+                                <strong>Raf:</strong> {{ $copy->shelf_location ?? 'Belirtilmemiş' }} | <br>
+                                <strong>Durum:</strong> {{ $copy->status == 'available' ? 'Müsait' : 'Ödünç Alındı' }} 
+                            </p>
+
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -245,10 +284,10 @@ option {
         <div class="mt-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="page-info">
-                    <p>Toplam {{ $books->total() }} kitap, {{ $books->lastPage() }} sayfa</p>
+                    <p>Toplam {{ $copies->total() }} kitap, {{ $copies->lastPage() }} sayfa</p>
                 </div>
                 <div class="pagination">
-                    {{ $books->links() }}
+                    {{ $copies->links() }}
                 </div>
             </div>
         </div>

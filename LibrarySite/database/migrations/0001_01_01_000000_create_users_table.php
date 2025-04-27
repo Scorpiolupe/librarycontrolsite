@@ -15,29 +15,23 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('tel');
+            $table->string('tel')->nullable();
+            $table->text('address')->nullable();
             $table->string('password');
             $table->boolean('is_admin')->default(false);
             $table->string('avatar')->nullable();
             $table->string('favori_kitap')->nullable();
             $table->string('favori_kategori')->nullable();
-            $table->rememberToken(); 
-            $table->string('created_at')->nullable();
-            $table->string('updated_at')->nullable();
+            $table->rememberToken();
+            $table->timestamps(); // created_at ve updated_at timestamp olarak eklenir
         });
-
-       
-
-        
     }
-
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');    
+        Schema::dropIfExists('users');
     }
 };

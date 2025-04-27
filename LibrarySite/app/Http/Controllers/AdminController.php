@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -258,7 +259,8 @@ class AdminController extends Controller
 
     public function listUsers()
     {
-        return view('admin.members.list');
+        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.members.list', compact('users'));
     }
 
     public function userRoles()
@@ -422,5 +424,68 @@ class AdminController extends Controller
             'success' => false,
             'message' => 'Telefon numarası gerekli'
         ]);
+    }
+
+    public function createUser()
+    {
+        return view('admin.members.create');
+    }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'tel' => 'required|string|max:20',
+            'is_admin' => 'boolean'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'tel' => $request->tel,
+            'is_admin' => $request->has('is_admin')
+        ]);
+
+        return redirect()->route('admin.listUsers')->with('success', 'Üye başarıyla oluşturuldu.');
+    }
+
+    public function editUser($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.members.edit', compact('user'));
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'tel' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $data = $request->only(['name', 'email', 'tel', 'address']);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        
+        $user->update($data);
+        $user->is_admin = $request->has('is_admin');
+        $user->save();
+
+        return redirect()->route('admin.listUsers')->with('success', 'Üye başarıyla güncellendi.');
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return response()->json(['success' => true]);
     }
 }

@@ -45,6 +45,13 @@ Route::prefix('adminpanel')->group(function () {
     Route::post('/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
     Route::get('/manage-stocks', [AdminController::class, 'manageStocks'])->name('admin.manageStocks');
     Route::get('/manage-borrowings', [AdminController::class, 'manageBorrowings'])->name('admin.manageBorrowings');
+    Route::get('/create-user', [AdminController::class, 'createUser'])->name('admin.createUser');
+    Route::post('/store-user', [AdminController::class, 'storeUser'])->name('admin.storeUser');
+    Route::get('/list-users', [AdminController::class, 'listUsers'])->name('admin.listUsers');
+    Route::get('/user-roles', [AdminController::class, 'userRoles'])->name('admin.userRoles');
+    Route::get('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
+    Route::post('/update-user/{id}', [AdminController::class, 'updateUser'])->name('admin.updateUser');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
 });
 
 Route::post('/register', [RegisterController::class, 'register']);

@@ -17,35 +17,53 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Book::query();
+        // BookCopy modelinden başlayıp book ilişkisini yüklüyoruz
+        $query = BookCopy::with(['book' => function($q) {
+            // Book ile ilişkili diğer modelleri de yüklüyoruz
+            $q->with(['category', 'genres', 'author']);
+        }]);
 
+        // Arama filtresi - kitap adı veya yazar adına göre
         if ($request->has('search')) {
             $search = $request->get('search');
-            $query->where('book_name', 'like', "%{$search}%")
-            ->orWhere('author', 'like', "%{$search}%");
+            $query->whereHas('book', function($q) use ($search) {
+                $q->where('book_name', 'like', "%{$search}%")
+                  ->orWhereHas('author', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
         }
 
+        // Kategori filtresi
         if ($request->has('category')) {
-            $query->where('category_id', $request->category);
+            $query->whereHas('book', function($q) use ($request) {
+                $q->where('category_id', $request->category);
+            });
         }
 
+        // Tür filtresi
         if ($request->has('genre')) {
-            $query->whereHas('genres', function ($q) use ($request) {
+            $query->whereHas('book.genres', function($q) use ($request) {
                 $q->where('genre_id', $request->genre);
             });
         }
 
+        // Sayfa sayısı filtresi
         if ($request->has('page_count_min') && $request->has('page_count_max')) {
-            $query->whereBetween('page_count', [$request->page_count_min, $request->page_count_max]);
+            $query->whereHas('book', function($q) use ($request) {
+                $q->whereBetween('page_count', [
+                    $request->page_count_min, 
+                    $request->page_count_max
+                ]);
+            });
         }
 
-       
-
-        $books = $query->paginate(9);
+        // Kopyaları paginate ile getir
+        $copies = $query->paginate(9);
         $categories = Category::all();
         $genres = Genre::all();
 
-        return view('books', compact('books', 'categories', 'genres'));
+        return view('books', compact('copies', 'categories', 'genres'));
     }
 
     public function create()

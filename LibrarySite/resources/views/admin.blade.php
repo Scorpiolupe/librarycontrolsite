@@ -103,9 +103,9 @@
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">Üye Ekle</a>
-                    <a href="#" class="list-group-item list-group-item-action">Üyeleri Listele</a>
-                    <a href="#" class="list-group-item list-group-item-action">Üye Rolleri</a>
+                    <a href="{{ route('admin.createUser') }}" class="list-group-item list-group-item-action">Üye Ekle</a>
+                    <a href="{{ route('admin.listUsers') }}" class="list-group-item list-group-item-action">Üyeleri Listele</a>
+                    <a href="{{ route('admin.userRoles') }}" class="list-group-item list-group-item-action">Üye Rolleri</a>
                     <a href="/adminpanel/manage-fines" class="list-group-item list-group-item-action">Cezaları Yönet</a>
                     <a href="/adminpanel/manage-reviews" class="list-group-item list-group-item-action">Yorumları Yönet</a>
                 </div>
