@@ -12,6 +12,7 @@ use App\Models\BookCopy;
 use App\Models\User;
 use App\Models\BorrowedBook;
 use App\Models\ShelfLocation;
+use App\Models\BorrowRequest;
 use Illuminate\Support\Facades\DB;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
@@ -392,5 +393,34 @@ class AdminController extends Controller
                 'message' => 'Süre uzatma işlemi başarısız oldu'
             ]);
         }
+    }
+
+    public function searchUsers(Request $request)
+    {
+        if ($request->has('phone')) {
+            $phone = $request->get('phone');
+            $user = User::where('tel', 'LIKE', '%' . $phone . '%')->first();
+            
+            if ($user) {
+                return response()->json([
+                    'success' => true,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'tel' => $user->tel
+                    ]
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Kullanıcı bulunamadı'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Telefon numarası gerekli'
+        ]);
     }
 }

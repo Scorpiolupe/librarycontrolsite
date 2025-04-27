@@ -20,29 +20,32 @@ Route::get('/auth', [PageController::class, 'auth']);
 
 Route::get('/friends', [FriendController::class, 'index']);
 
-Route::get('/adminpanel', [AdminController::class, 'index'])->name('admin.index');
-Route::get('/adminpanel/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
-Route::get('/adminpanel/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
-Route::get('/adminpanel/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
-Route::get('/adminpanel/manage-authors', [AdminController::class, 'manageAuthors'])->name('admin.manageAuthors');
-Route::post('/adminpanel/create-author', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
-Route::get('/adminpanel/manage-publishers', [AdminController::class, 'managePublishers'])->name('admin.managePublishers');
-Route::post('/adminpanel/create-publisher', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
-Route::get('/adminpanel/manage-copies', [AdminController::class, 'manageCopies'])->name('admin.manageCopies');
-Route::get('/adminpanel/create-copy', [AdminController::class, 'createCopy'])->name('admin.createCopy');
-Route::post('/adminpanel/store-copy', [AdminController::class, 'storeCopy'])->name('admin.storeCopy');
-Route::get('/adminpanel/edit-copy/{id}', [AdminController::class, 'editCopy'])->name('admin.editCopy');
-Route::post('/adminpanel/update-copy/{id}', [AdminController::class, 'updateCopy'])->name('admin.updateCopy');
-Route::delete('/adminpanel/copies/{id}', [AdminController::class, 'deleteCopy'])->name('admin.deleteCopy');
-Route::get('/adminpanel/books/{bookId}/isbns', [AdminController::class, 'getBookIsbns']);
-Route::post('/adminpanel/copies/{id}/borrow', [AdminController::class, 'borrowBook'])->name('admin.borrowBook');
-Route::post('/adminpanel/copies/{id}/return', [AdminController::class, 'returnBook'])->name('admin.returnBook');
-Route::get('/adminpanel/copies/{id}/due-date', [AdminController::class, 'getDueDate'])->name('admin.getDueDate');
-Route::post('/adminpanel/copies/{id}/extend', [AdminController::class, 'extendDueDate'])->name('admin.extendDueDate');
-Route::get('/adminpanel/users/search', [AdminController::class, 'searchUsers']);
-
-
-Route::post('/adminpanel/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
+Route::prefix('adminpanel')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/create-book', [AdminController::class, 'createBook'])->name('admin.createBook');
+    Route::get('/list-books', [AdminController::class, 'listBooks'])->name('admin.listBooks');
+    Route::get('/manage-categories', [AdminController::class, 'manageCategories'])->name('admin.manageCategories');
+    Route::get('/manage-authors', [AdminController::class, 'manageAuthors'])->name('admin.manageAuthors');
+    Route::post('/create-author', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
+    Route::get('/manage-publishers', [AdminController::class, 'managePublishers'])->name('admin.managePublishers');
+    Route::post('/create-publisher', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
+    Route::get('/manage-copies', [AdminController::class, 'manageCopies'])->name('admin.manageCopies');
+    Route::get('/create-copy', [AdminController::class, 'createCopy'])->name('admin.createCopy');
+    Route::post('/store-copy', [AdminController::class, 'storeCopy'])->name('admin.storeCopy');
+    Route::get('/edit-copy/{id}', [AdminController::class, 'editCopy'])->name('admin.editCopy');
+    Route::post('/update-copy/{id}', [AdminController::class, 'updateCopy'])->name('admin.updateCopy');
+    Route::delete('/copies/{id}', [AdminController::class, 'deleteCopy'])->name('admin.deleteCopy');
+    Route::get('/books/{bookId}/isbns', [AdminController::class, 'getBookIsbns']);
+    Route::post('/copies/{id}/borrow', [AdminController::class, 'borrowBook'])->name('admin.borrowBook');
+    Route::post('/copies/{id}/return', [AdminController::class, 'returnBook'])->name('admin.returnBook');
+    Route::get('/copies/{id}/due-date', [AdminController::class, 'getDueDate'])->name('admin.getDueDate');
+    Route::post('/copies/{id}/extend', [AdminController::class, 'extendDueDate'])->name('admin.extendDueDate');
+    Route::get('/users/search', [AdminController::class, 'searchUsers']);
+    Route::get('/search-users', [AdminController::class, 'searchUsers'])->name('admin.searchUsers');
+    Route::post('/create-category', [CategoryController::class, 'create'])->name('admin.createCategory');
+    Route::get('/manage-stocks', [AdminController::class, 'manageStocks'])->name('admin.manageStocks');
+    Route::get('/manage-borrowings', [AdminController::class, 'manageBorrowings'])->name('admin.manageBorrowings');
+});
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [RegisterController::class, 'login']);
@@ -56,9 +59,6 @@ Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('au
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
 Route::post('/books/{copyId}/borrow', [BookController::class, 'borrowBook'])->name('books.borrow');
 Route::post('/books/{copyId}/return', [BookController::class, 'returnBook'])->name('books.return');
-
-Route::get('/adminpanel/manage-stocks', [AdminController::class, 'manageStocks'])->name('admin.manageStocks');
-Route::get('/adminpanel/manage-borrowings', [AdminController::class, 'manageBorrowings'])->name('admin.manageBorrowings');
 
 // Yeni route tanımlamaları
 Route::delete('/adminpanel/books/{id}/delete', [BookController::class, 'ajaxDelete'])->name('books.ajaxDelete');
