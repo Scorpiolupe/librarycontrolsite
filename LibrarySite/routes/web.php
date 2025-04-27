@@ -73,6 +73,12 @@ Route::get('/api/genres', function (Request $request) {
     return response()->json($genres);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::post('/books/{id}/request-borrow', [BookController::class, 'requestBorrow'])->name('books.requestBorrow');
+    Route::post('/admin/borrow-requests/{id}/update', [AdminController::class, 'updateBorrowRequest'])->name('admin.updateBorrowRequest');
+    Route::get('/admin/borrow-requests', [AdminController::class, 'borrowRequests'])->name('admin.borrowRequests');
+});
+
 
 
 

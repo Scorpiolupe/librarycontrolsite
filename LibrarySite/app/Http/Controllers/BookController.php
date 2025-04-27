@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Genre;
 use App\Models\BookReview;
 use App\Models\BookRating;
+use App\Models\BorrowRequest;
+use App\Models\BookCopy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -120,7 +122,7 @@ class BookController extends Controller
 
     public function show($id)
     {
-        $book = Book::with(['category', 'comments.user', 'ratings'])->findOrFail($id);
+        $book = Book::with(['category', 'comments.user', 'ratings', 'bookCopies', 'publisher', 'author', 'genres'])->findOrFail($id);
         $book->average_rating = $book->ratings()->avg('rating') ?? 0;
         $book->ratings_count = $book->ratings()->count();
         
@@ -269,9 +271,8 @@ class BookController extends Controller
             'success' => true,
             'message' => 'Kitap başarıyla silindi.'
         ]);
-        }
-
-        // Bir kısmı silme
-        
     }
+
+    
+}
 

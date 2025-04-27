@@ -21,7 +21,7 @@
                             <th>Kitap Adı</th>
                             <th>ISBN</th>
                             <th>Barkod</th>
-                            <th>Raf Konumu</th>
+                            <th class="location-column">Yer Bilgisi</th>
                             <th>Edinme Tarihi</th>
                             <th>Edinme Türü</th>
                             <th>Edinme Maliyeti(₺)</th>
@@ -38,7 +38,7 @@
                             <td>{{ $copy->book->book_name }}</td>
                             <td>{{ $copy->book->isbn }}</td>
                             <td>{{ $copy->barcode }}</td>
-                            <td>{{ $copy->shelf_location ?? 'Belirtilmemiş' }}</td>
+                            <td class="location-column">{{ $copy->shelf_location ?? 'Belirtilmemiş' }}</td>
                             <td>{{ $copy->acquisition_date }}</td>
                             <td>{{ $copy->acquisition_source }}</td>
                             <td>{{ $copy->acquisition_cost }}</td>
@@ -97,6 +97,12 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<style>
+    .table th.location-column,
+    .table td.location-column {
+        min-width: 150px;
+    }
+</style>
 @endsection
 
 @section('js')
