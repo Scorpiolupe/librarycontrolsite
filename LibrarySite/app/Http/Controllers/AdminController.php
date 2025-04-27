@@ -10,9 +10,13 @@ use App\Models\Language;
 use App\Models\Publisher;
 use App\Models\BookCopy;
 use App\Models\User;
+use App\Models\BorrowedBook;
+use App\Models\BorrowRequest;
+use App\Models\ShelfLocation;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -85,17 +89,61 @@ class AdminController extends Controller
     {
         $request->validate([
             'book_id' => 'required|exists:books,id',
+            'block' => 'required|in:A,B',
+            'floor' => 'required|in:0,1,2',
+            'row' => 'required|integer|min:1|max:21',
+            'shelf' => 'required|integer|min:1|max:20',
+            'position' => 'required|integer|min:1|max:150',
             'shelf_location' => 'nullable|string|max:255',
             'acquisition_date' => 'nullable|date',
             'acquisition_source' => 'nullable|in:Satın Alım,Bağış',
             'acquisition_cost' => 'nullable|numeric',
-            'condition' => 'required|in:yıpranmış,az yıpranmış,yıpranmış,çok yıpranmış',
+            'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
             'status' => 'required|in:available,borrowed,reserved,lost',
         ]);
 
-        BookCopy::create($request->all());
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('admin.manageCopies')->with('success', 'Kitap kopyası başarıyla eklendi.');
+            // Formatlı raf konumu oluştur
+            $formattedLocation = sprintf(
+                "%s-%d-%d-%d-%d",
+                $request->block,
+                $request->floor,
+                $request->row,
+                $request->shelf,
+                $request->position
+            );
+
+            // Kitap kopyasını oluştur
+            $bookCopy = BookCopy::create([
+                'book_id' => $request->book_id,
+                'shelf_location' => $formattedLocation, // Formatlı konumu kaydet
+                'status' => $request->status,
+                'condition' => $request->condition,
+                'acquisition_date' => $request->acquisition_date,
+                'acquisition_source' => $request->acquisition_source,
+                'acquisition_cost' => $request->acquisition_cost,
+            ]);
+
+            // Detaylı raf konumu bilgisini kaydet
+            ShelfLocation::create([
+                'book_copy_id' => $bookCopy->id,
+                'block' => $request->block,
+                'floor' => $request->floor,
+                'row' => $request->row,
+                'shelf' => $request->shelf,
+                'position' => $request->position
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.manageCopies')
+                ->with('success', 'Kitap kopyası başarıyla oluşturuldu.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Hata: ' . $e->getMessage());
+        }
     }
 
     public function editCopy($id)
@@ -210,5 +258,67 @@ class AdminController extends Controller
         }
 
         return response()->json(['books' => $result]);
+    }
+
+    public function manageBorrows()
+    {
+        $borrowedBooks = BorrowedBook::with(['user', 'bookCopy.book'])
+            ->where('status', 'borrowed')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $pendingCount = BorrowRequest::where('status', 'pending')->count();
+
+        return view('admin.stocks.manage-borrowings', compact('borrowedBooks', 'pendingCount'));
+    }
+
+    public function borrowRequests()
+    {
+        $requests = BorrowRequest::with(['user', 'bookCopy.book'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('admin.borrows.requests', compact('requests'));
+    }
+
+    public function updateBorrowRequest(Request $request, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $borrowRequest = BorrowRequest::with('bookCopy.book')->findOrFail($id);
+            
+            if ($borrowRequest->status !== 'pending') {
+                \DB::rollback();
+                return back()->with('error', 'Bu istek zaten işlenmiş!');
+            }
+
+            if ($request->status === 'approved') {
+                if (!$borrowRequest->bookCopy || $borrowRequest->bookCopy->status !== 'available') {
+                    \DB::rollback();
+                    return back()->with('error', 'Bu kitap kopyası artık müsait değil!');
+                }
+
+                $borrowRequest->bookCopy->update(['status' => 'borrowed']);
+                
+                BorrowedBook::create([
+                    'user_id' => $borrowRequest->user_id,
+                    'book_id' => $borrowRequest->bookCopy->book_id,
+                    'purchase_date' => now(),
+                    'return_date' => now()->addDays(15),
+                    'status' => 'borrowed',
+                    'delay_day' => 0,
+                    'late_fee' => 0
+                ]);
+            }
+            
+            $borrowRequest->update(['status' => $request->status]);
+            
+            \DB::commit();
+            return back()->with('success', 'İstek ' . ($request->status === 'approved' ? 'onaylandı' : 'reddedildi'));
+
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return back()->with('error', 'Bir hata oluştu: ' . $e->getMessage());
+        }
     }
 }

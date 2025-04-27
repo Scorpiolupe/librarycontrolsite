@@ -41,10 +41,7 @@
                 <input type="text" class="form-control" id="publisher" name="publisher" readonly>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="shelf_location" class="form-label">Raf Konumu</label>
-                <input type="text" class="form-control" id="shelf_location" name="shelf_location" placeholder="Raf konumunu girin">
-            </div>
+            
 
             <div class="col-md-6 mb-3">
                 <label for="acquisition_date" class="form-label">Edinme Tarihi</label>
@@ -82,6 +79,60 @@
                     <option value="reserved">Rezerve</option>
                     <option value="lost">Kayıp</option>
                 </select>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Yer Bilgisi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="block" class="form-label">Blok</label>
+                                <select class="form-select" id="block" name="block" required>
+                                    <option value="">Blok Seçin</option>
+                                    <option value="A">A Blok</option>
+                                    <option value="B">B Blok</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="floor" class="form-label">Kat</label>
+                                <select class="form-select" id="floor" name="floor" required>
+                                    <option value="">Kat Seçin</option>
+                                    <option value="0">Zemin Kat</option>
+                                    <option value="1">1. Kat</option>
+                                    <option value="2">2. Kat</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="row" class="form-label">Sıra No</label>
+                                <select class="form-select" id="row" name="row" required>
+                                    <option value="">Sıra Seçin</option>
+                                    @for($i = 1; $i <= 21; $i++)
+                                        <option value="{{ $i }}">{{ $i }}. Sıra</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="shelf" class="form-label">Raf No</label>
+                                <select class="form-select" id="shelf" name="shelf" required>
+                                    <option value="">Raf Seçin</option>
+                                    @for($i = 1; $i <= 20; $i++)
+                                        <option value="{{ $i }}">{{ $i }}. Raf</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="position" class="form-label">Pozisyon</label>
+                                <input type="number" class="form-control" id="position" name="position" 
+                                       min="1" max="150" required 
+                                       oninput="this.value = this.value > 150 ? 150 : Math.abs(this.value)">
+                                <small class="form-text text-muted">1-150 arası bir değer girin</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
