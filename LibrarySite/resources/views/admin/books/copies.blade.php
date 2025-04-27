@@ -7,7 +7,16 @@
     <div class="row mb-4">
         <div class="col">
             <h2 class="mb-4">Kitap Kopyaları Listesi</h2>
-            <a href="{{ url('/adminpanel/create-copy') }}" class="btn btn-primary">Yeni Kitap Kopyası Ekle</a>
+            <div class="d-flex justify-content-between mb-3">
+                <a href="{{ url('/adminpanel/create-copy') }}" class="btn btn-primary">Yeni Kitap Kopyası Ekle</a>
+                <form class="d-flex gap-2" method="GET" action="{{ route('admin.manageCopies') }}">
+                    <input type="text" name="search" class="form-control" placeholder="ISBN veya Barkod ile ara..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-outline-primary">Ara</button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.manageCopies') }}" class="btn btn-outline-secondary">Temizle</a>
+                    @endif
+                </form>
+            </div>
         </div>
     </div>
 

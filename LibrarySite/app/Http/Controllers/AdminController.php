@@ -11,12 +11,19 @@ use App\Models\Publisher;
 use App\Models\BookCopy;
 use App\Models\User;
 use App\Models\BorrowedBook;
+<<<<<<< Updated upstream
 use App\Models\BorrowRequest;
 use App\Models\ShelfLocation;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+=======
+use Database\Seeders\Books;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+>>>>>>> Stashed changes
 
 class AdminController extends Controller
 {
@@ -72,9 +79,36 @@ class AdminController extends Controller
         return view('admin.books.list', compact('books'));
     }
 
-    public function manageCopies() {
-        $copies= BookCopy::with('book')->paginate(10);
+    public function manageCopies(Request $request) {
+        $search = $request->search;
+        
+        $copies = BookCopy::with('book')
+            ->when($search, function($query) use ($search) {
+                $query->whereHas('book', function($q) use ($search) {
+                    $q->where('isbn', 'like', '%'.$search.'%');
+                })->orWhere('barcode', 'like', '%'.$search.'%');
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+            
         return view('admin.books.copies', compact('copies'));
+    }
+
+    public function manageBorrowings(Request $request) {
+        $search = $request->search;
+        
+        $copies = BookCopy::with('book')
+            ->when($search, function($query) use ($search) {
+                $query->whereHas('book', function($q) use ($search) {
+                    $q->where('isbn', 'like', '%'.$search.'%');
+                })->orWhere('barcode', 'like', '%'.$search.'%');
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+            
+        return view('admin.stocks.manage-borrowings', compact('copies'));
     }
 
     public function createCopy()
@@ -260,6 +294,7 @@ class AdminController extends Controller
         return response()->json(['books' => $result]);
     }
 
+<<<<<<< Updated upstream
     public function manageBorrows()
     {
         $borrowedBooks = BorrowedBook::with(['user', 'bookCopy.book'])
@@ -319,6 +354,112 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
             return back()->with('error', 'Bir hata oluştu: ' . $e->getMessage());
+=======
+    public function searchUsers(Request $request)
+    {
+        if($request->has('phone')) {
+            $user = User::where('tel', 'LIKE', '%'.$request->phone.'%')->first();
+            return response()->json(['user' => $user]);
+        }
+
+        $term = $request->get('term', '');
+        $users = User::where('name', 'LIKE', "%{$term}%")
+            ->orWhere('email', 'LIKE', "%{$term}%")
+            ->get();
+        return response()->json($users);
+    }
+
+    public function borrowBook(Request $request, $id)
+    {
+        $copy = BookCopy::findOrFail($id);
+        $copy->status = 'borrowed';
+        $copy->save();
+
+        BorrowedBook::create([
+            'copy_id' => $id,
+            'user_id' => $request->user_id,
+            'purchase_date' => now(),
+            'return_date' => now()->addDays(14),
+            'status' => 'borrowed'
+        ]);
+
+        return redirect()->route('admin.manageBorrowings')->with('success', 'Kitap başarıyla ödünç verildi.');
+    }
+
+    public function returnBook($id)
+    {
+        $copy = BookCopy::findOrFail($id);
+        $copy->status = 'available';
+        $copy->save();
+
+        $borrowedBook = BorrowedBook::where('copy_id', $id)
+            ->whereNull('returned_at')
+            ->latest()
+            ->first();
+
+        if ($borrowedBook) {
+            $returnedAt = now();
+            $borrowedBook->returned_at = $returnedAt;
+            $borrowedBook->status = 'returned';
+            
+            // Gecikme günü ve ceza hesaplama
+            if ($returnedAt > $borrowedBook->return_date) {
+                $delayDays = $returnedAt->diffInDays($borrowedBook->return_date);
+                $borrowedBook->delay_day = $delayDays;
+                $borrowedBook->late_fee = $delayDays * 5; // Günlük 5₺ ceza
+            }
+            
+            $borrowedBook->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getDueDate($id)
+    {
+        $borrowedBook = BorrowedBook::where('copy_id', $id)
+            ->whereNull('returned_at')
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'due_date' => $borrowedBook ? $borrowedBook->due_date->format('d.m.Y') : null
+        ]);
+    }
+
+    public function extendDueDate(Request $request, $id)
+    {
+        $request->validate([
+            'days' => 'required|integer|min:1'
+        ]);
+
+        $borrowedBook = BorrowedBook::where('copy_id', $id)
+            ->whereNull('returned_at')
+            ->where('status', 'borrowed')
+            ->latest()
+            ->first();
+
+        if (!$borrowedBook) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ödünç alma kaydı bulunamadı'
+            ]);
+        }
+
+        try {
+            $borrowedBook->return_date = $borrowedBook->return_date->addDays($request->days);
+            $borrowedBook->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Süre başarıyla uzatıldı'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Süre uzatma işlemi başarısız oldu'
+            ]);
+>>>>>>> Stashed changes
         }
     }
 }
