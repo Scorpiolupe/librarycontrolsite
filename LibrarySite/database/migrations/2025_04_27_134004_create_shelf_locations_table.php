@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('row')->comment('Sıra numarası');
             $table->integer('shelf')->comment('Raf numarası');
             $table->integer('position')->comment('Raftaki pozisyon');
-            $table->timestamps();
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
 
             // Benzersiz konum için index
             $table->unique(['block', 'floor', 'row', 'shelf', 'position']);

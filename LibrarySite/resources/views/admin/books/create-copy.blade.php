@@ -71,16 +71,6 @@
                 </select>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="status" class="form-label">Durum</label>
-                <select class="form-select" id="status" name="status" required>
-                    <option value="available">Mevcut</option>
-                    <option value="borrowed">Ödünç Verildi</option>
-                    <option value="reserved">Rezerve</option>
-                    <option value="lost">Kayıp</option>
-                </select>
-            </div>
-
             <div class="col-md-12 mb-3">
                 <div class="card">
                     <div class="card-header">

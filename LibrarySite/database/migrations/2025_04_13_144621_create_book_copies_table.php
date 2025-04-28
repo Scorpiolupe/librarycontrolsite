@@ -17,15 +17,15 @@ return new class extends Migration
             $table->string('barcode')->unique();
             $table->string('shelf_location')->nullable();
             $table->string('condition')->default('Yeni');
-            $table->enum('status', ['available', 'borrowed', 'reserved', 'lost'])->default('available');
+            $table->enum('status', ['available', 'borrowed', 'reserved', 'lost'])->default('available'); // not nullable, has default
             $table->boolean('is_reference')->default(false);
             $table->date('acquisition_date')->nullable();
             $table->string('acquisition_source')->nullable();
             $table->integer('acquisition_cost')->nullable();
             $table->string('cover_image')->nullable();
             $table->text('notes')->nullable();
-            $table->dateTimeTz('created_at');
-            $table->dateTimeTz('updated_at');
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 

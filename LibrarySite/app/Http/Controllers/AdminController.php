@@ -128,7 +128,6 @@ class AdminController extends Controller
             'acquisition_source' => 'nullable|in:Satın Alım,Bağış',
             'acquisition_cost' => 'nullable|numeric',
             'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
-            'status' => 'required|in:available,borrowed,reserved,lost',
         ]);
 
         try {
@@ -153,6 +152,7 @@ class AdminController extends Controller
                 'acquisition_date' => $request->acquisition_date,
                 'acquisition_source' => $request->acquisition_source,
                 'acquisition_cost' => $request->acquisition_cost,
+                'status' => 'available',
             ]);
 
             // Detaylı raf konumu bilgisini kaydet

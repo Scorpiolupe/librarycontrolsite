@@ -28,4 +28,9 @@ class User extends Authenticatable
         return (bool) $this->is_admin;
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
 }

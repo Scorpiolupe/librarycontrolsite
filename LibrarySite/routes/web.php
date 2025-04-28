@@ -13,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use App\Models\Genre;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/discover', [PageController::class, 'discover']);
@@ -54,6 +55,8 @@ Route::prefix('adminpanel')->group(function () {
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
 });
 
+Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');
+
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [RegisterController::class, 'login']);
 Route::get('/logout', [RegisterController::class, 'logout']);
@@ -84,6 +87,10 @@ Route::get('/api/genres', function (Request $request) {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::post('/books/{id}/request-borrow', [BookController::class, 'requestBorrow'])->name('books.requestBorrow');
     Route::post('/admin/borrow-requests/{id}/update', [AdminController::class, 'updateBorrowRequest'])->name('admin.updateBorrowRequest');
     Route::get('/admin/borrow-requests', [AdminController::class, 'borrowRequests'])->name('admin.borrowRequests');

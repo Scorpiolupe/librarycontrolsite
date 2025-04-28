@@ -3,12 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Notification extends Model
 {
-    protected $fillable=['user_id','message','notification_type','read'];
+    use HasFactory;
 
-    public function user(){
+    protected $fillable = [
+        'user_id',
+        'message',
+        'notification_type',
+        'read',
+        'data'
+    ];
+
+    protected $casts = [
+        'read' => 'boolean',
+        'data' => 'array'
+    ];
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

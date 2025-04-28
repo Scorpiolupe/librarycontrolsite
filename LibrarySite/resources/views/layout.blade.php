@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Kütüphane Otomasyonu')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     @yield('css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .header {
             background-color: #343a40;
@@ -21,18 +23,43 @@
             font-size: 2rem;
         }
 
-        .notification-card {
-            position: fixed;
-            top: 20px;
-            right: -400px;
-            width: 350px;
-            z-index: 1000;
-            transition: right 0.5s ease-in-out;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .notifications-wrapper {
+            position: relative !important;
         }
 
-        .notification-card.show {
-            right: 20px;
+        .notifications-container {
+            position: absolute;
+            top: 100% !important;
+            right: 0;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: 4px;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+            z-index: 9999;
+            display: none;
+        }
+
+        .notifications-container.show {
+            display: block;
+        }
+
+        .notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            opacity: 0.8;
+        }
+
+        .notification-item.unread {
+            background-color: #f0f8ff;
+            opacity: 1;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -62,6 +89,30 @@
                                 <a class="nav-link" href="/adminpanel">Yönetim Paneli</a>
                             </li>
                         @endif
+                        <!-- Navbar içindeki notification wrapper'ı güncelle -->
+                        <li class="nav-item notifications-wrapper dropdown">
+                            <a class="nav-link position-relative" href="{{ route('notifications.markAllAsRead') }}" id="notificationBtn" role="button">
+                                <i class="fas fa-bell"></i>
+                                @if(auth()->user()->notifications()->where('read', false)->count() > 0)
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ auth()->user()->notifications()->where('read', false)->count() }}
+                                    </span>
+                                @endif
+                            </a>
+                            <div class="notifications-container">
+                                @if(auth()->user()->notifications()->count() > 0)
+                                    @foreach(auth()->user()->notifications()->orderBy('created_at', 'desc')->get() as $notification)
+                                    <div class="notification-item {{ !$notification->read ? 'unread' : '' }}" data-notification-id="{{ $notification->id }}">
+                                        {{ $notification->message }}
+                                    </div>
+                                    @endforeach
+                                @else
+                                    <div class="notification-item text-muted">
+                                        Bildiriminiz bulunmamaktadır.
+                                    </div>
+                                @endif
+                            </div>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/profile">Profilim</a>
                         </li>
@@ -118,26 +169,90 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const successCard = document.getElementById('successCard');
-            const errorCard = document.getElementById('errorCard');
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationsContainer = notificationBtn.nextElementSibling;
 
-            function showNotification(element) {
-                if (element) {
-                    setTimeout(() => {
-                        element.classList.add('show');
-                        setTimeout(() => {
-                            element.classList.remove('show');
-                            setTimeout(() => {
-                                element.remove();
-                            }, 500);
-                        }, 3000);
-                    }, 100);
-                }
+            // CSRF Token'ı ayarla
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            if(notificationBtn && notificationsContainer) {
+                // Bildirim tıklama olayını ekle
+                notificationsContainer.addEventListener('click', function(e) {
+                    const notificationItem = e.target.closest('.notification-item');
+                    if (notificationItem && notificationItem.dataset.notificationId) {
+                        fetch(`/notifications/${notificationItem.dataset.notificationId}/mark-as-read`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                notificationItem.classList.remove('unread');
+                                // Bildirim sayısını güncelle
+                                const badge = notificationBtn.querySelector('.badge');
+                                if (badge) {
+                                    const currentCount = parseInt(badge.textContent);
+                                    if (currentCount > 1) {
+                                        badge.textContent = currentCount - 1;
+                                    } else {
+                                        badge.remove();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+
+                notificationBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Okunmamış bildirimleri okundu olarak işaretle
+                    fetch('/notifications/mark-all-as-read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Tüm unread class'larını kaldır
+                            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                                item.classList.remove('unread');
+                            });
+                            
+                            // Bildirim rozetini kaldır
+                            const badge = notificationBtn.querySelector('.badge');
+                            if (badge) {
+                                badge.remove();
+                            }
+                        }
+                    });
+
+                    const isVisible = notificationsContainer.classList.contains('show');
+                    
+                    // Tüm açık dropdownları kapat
+                    document.querySelectorAll('.notifications-container.show').forEach(container => {
+                        if(container !== notificationsContainer) {
+                            container.classList.remove('show');
+                        }
+                    });
+                    
+                    notificationsContainer.classList.toggle('show');
+                });
+
+                // Dışarı tıklandığında kapat
+                document.addEventListener('click', function(e) {
+                    if (!notificationsContainer.contains(e.target) && !notificationBtn.contains(e.target)) {
+                        notificationsContainer.classList.remove('show');
+                    }
+                });
             }
-
-            showNotification(successCard);
-            showNotification(errorCard);
-            showNotification(infoCard);
         });
     </script>
     @yield('js')

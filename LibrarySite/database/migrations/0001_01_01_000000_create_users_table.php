@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('favori_kitap')->nullable();
             $table->string('favori_kategori')->nullable();
             $table->rememberToken();
-            $table->timestamps(); // created_at ve updated_at timestamp olarak eklenir
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 
