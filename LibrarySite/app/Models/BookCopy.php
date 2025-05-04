@@ -11,13 +11,7 @@ class BookCopy extends Model
         'barcode',
         'shelf_location',
         'condition',
-        'status',
-        'is_reference',
-        'acquisition_date',
-        'acquisition_source',
-        'acquisition_cost',
-        'cover_image',
-        'notes',
+        'status'
     ];
 
     protected static function booted()
@@ -41,7 +35,15 @@ class BookCopy extends Model
         return $this->hasMany(StockHistory::class, 'copy_id');
     }
 
+    public function acquisition()
+    {
+        return $this->hasOne(Acquisition::class, 'book_copy_id');
+    }
 
+    public function shelfLocation()
+    {
+        return $this->hasOne(ShelfLocation::class, 'book_copy_id');
+    }
 
     public function getCoverImageUrlAttribute()
     {

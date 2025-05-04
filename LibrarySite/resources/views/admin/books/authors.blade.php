@@ -56,9 +56,7 @@
                             <td>{{ Str::limit($author->description, 100) }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ url('/adminpanel/authors/'.$author->id.'/edit') }}" class="btn btn-warning btn-sm" title="Düzenle">
-                                        <i class="bi bi-pencil"></i> Düzenle
-                                    </a>
+                                    
                                     <button type="button" class="btn btn-danger btn-sm delete-author" data-id="{{ $author->id }}" title="Sil">
                                         <i class="bi bi-trash"></i> Sil
                                     </button>
@@ -89,25 +87,25 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
             const authorId = this.dataset.id;
-            if(confirm('Bu yazarı silmek istediğinizden emin misiniz? Bu işlem yazara ait kitapları etkileyebilir.')) {
+            if(confirm('Bu yazarı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
                 fetch(`/adminpanel/authors/${authorId}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'Accept': 'application/json'
                     }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if(data.success) {
-                        window.location.reload();
+                        this.closest('tr').remove();
                     } else {
-                        alert('Yazar silinirken bir hata oluştu!');
+                        alert('Bu yazar silinemiyor çünkü bağlı kitaplar var.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Bir hata oluştu!');
+                    alert('Silme işlemi başarısız oldu.');
                 });
             }
         });

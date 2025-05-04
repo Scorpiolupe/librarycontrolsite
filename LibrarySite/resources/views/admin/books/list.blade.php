@@ -54,11 +54,8 @@
                                     <a href="{{ url('/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ url('/adminpanel/edit-book/'.$book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
+                                    <a href="{{ route('admin.editBook', $book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
                                         <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{{ url('/adminpanel/addBook/'.$book->id) }}" class="btn btn-primary btn-sm" title="Stok Ekle">
-                                        <i class="bi bi-plus"></i>
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-book" data-id="{{ $book->id }}" title="Sil">
                                         <i class="bi bi-trash"></i>
@@ -80,23 +77,19 @@
 </div>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Kitap Silme</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Kitap Silme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="deleteQuantity" class="form-label">Silinecek Miktar</label>
-                    <input type="number" class="form-control" id="deleteQuantity" min="1">
-                </div>
+                <p>Bu kitabı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                <button type="button" class="btn btn-danger" id="deletePartial">Seçilen Miktarı Sil</button>
-                <button type="button" class="btn btn-danger" id="deleteAll">Tümünü Sil</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Sil</button>
             </div>
         </div>
     </div>
@@ -185,52 +178,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Kısmi silme işlemi
-    document.getElementById('deletePartial').addEventListener('click', function() {
-        const quantity = document.getElementById('deleteQuantity').value;
-        if (!quantity || quantity < 1) {
-            alert('Lütfen geçerli bir miktar girin');
-            return;
-        }
-
-        deleteBooks(currentBookId, quantity);
-    });
-
-    // Tümünü silme işlemi
-    document.getElementById('deleteAll').addEventListener('click', function() {
-        deleteBooks(currentBookId, 'all');
-    });
-
-    function deleteBooks(bookId, quantity) {
-        fetch(`/adminpanel/books/${bookId}/delete`, {
+    // Silme işlemini onayla
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        fetch(`/adminpanel/delete-book/${currentBookId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ quantity: quantity })
+                'Accept': 'application/json'
+            }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                if (data.remaining === 0) {
-                    document.querySelector(`tr[data-copy-id="${data.copyId}"]`).remove();
-                } else {
-                    const stockCell = document.querySelector(`tr[data-copy-id="${data.copyId}"] td:nth-child(5)`);
-                    if (stockCell) {
-                        stockCell.textContent = data.remaining;
-                    }
-                }
+                document.querySelector(`tr[data-book-id="${currentBookId}"]`).remove();
                 deleteModal.hide();
-                alert('İşlem başarıyla tamamlandı.');
+                alert('Kitap başarıyla silindi.');
+            } else {
+                alert(data.message || 'Silme işlemi başarısız oldu.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Bir hata oluştu.');
         });
-    }
+    });
 
     // Durum değiştirme işlemi için
     const statusButtons = document.querySelectorAll('.status-change');

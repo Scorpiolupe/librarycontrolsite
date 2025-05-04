@@ -13,7 +13,12 @@ use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use App\Models\Genre;
 use App\Http\Controllers\HomeController;
+
 use App\Http\Controllers\NotificationController;
+
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\PublisherController;
+
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/discover', [PageController::class, 'discover']);
@@ -36,6 +41,7 @@ Route::prefix('adminpanel')->group(function () {
     Route::get('/edit-copy/{id}', [AdminController::class, 'editCopy'])->name('admin.editCopy');
     Route::post('/update-copy/{id}', [AdminController::class, 'updateCopy'])->name('admin.updateCopy');
     Route::delete('/copies/{id}', [AdminController::class, 'deleteCopy'])->name('admin.deleteCopy');
+    Route::get('/copies/{id}', [AdminController::class, 'showCopy'])->name('admin.showCopy');
     Route::get('/books/{bookId}/isbns', [AdminController::class, 'getBookIsbns']);
     Route::post('/copies/{id}/borrow', [AdminController::class, 'borrowBook'])->name('admin.borrowBook');
     Route::post('/copies/{id}/return', [AdminController::class, 'returnBook'])->name('admin.returnBook');
@@ -53,6 +59,7 @@ Route::prefix('adminpanel')->group(function () {
     Route::get('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
     Route::post('/update-user/{id}', [AdminController::class, 'updateUser'])->name('admin.updateUser');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+
     Route::get('/adminpanel/user-profiles', [UserController::class, 'userProfiles'])->name('admin.userProfiles');
     Route::get('/user-detail/{id}', [UserController::class, 'userDetail'])->name('admin.userDetail');
     Route::post('/user/{id}/borrow-book', [UserController::class, 'userBorrowBook'])->name('admin.userBorrowBook');
@@ -60,6 +67,30 @@ Route::prefix('adminpanel')->group(function () {
     Route::post('/borrowed-books/{id}/extend', [UserController::class, 'extendDueDate'])->name('admin.extendDueDate');
     Route::post('/return-book/{id}', [UserController::class, 'returnBook'])->name('admin.returnBook');
     Route::post('/extend-book/{id}', [UserController::class, 'extendDueDate'])->name('admin.extendDueDate');
+
+    Route::get('/acquisition-sources', [AdminController::class, 'manageAcquisitionSources'])->name('admin.manageAcquisitionSources');
+    Route::post('/acquisition-sources', [AdminController::class, 'storeAcquisitionSource'])->name('admin.storeAcquisitionSource');
+    Route::get('/edit-book/{id}', [BookController::class, 'edit'])->name('admin.editBook');
+    Route::post('/update-book/{id}', [BookController::class, 'update'])->name('admin.updateBook');
+    Route::delete('/delete-book/{id}', [BookController::class, 'delete'])->name('admin.deleteBook');
+
+    // Kategori rotaları
+    Route::post('/categories/store', [AdminController::class, 'createCategory'])->name('admin.createCategory');
+    Route::delete('/deleteCategory/{id}', [AdminController::class, 'deleteCategory'])->name('admin.deleteCategory');
+
+    // Yazar rotaları
+    Route::post('/authors', [AuthorController::class, 'store'])->name('admin.authors.store');
+    Route::delete('/authors/{id}', [AuthorController::class, 'destroy'])->name('admin.authors.destroy');
+    Route::put('/authors/{id}', [AuthorController::class, 'update'])->name('admin.authors.update');
+    Route::post('/authors/store', [AdminController::class, 'createAuthor'])->name('admin.createAuthor');
+    Route::delete('/authors/{id}', [AdminController::class, 'deleteAuthor'])->name('admin.deleteAuthor');
+
+    // Yayınevi rotaları
+    Route::post('/publishers', [PublisherController::class, 'store'])->name('admin.publishers.store');
+    Route::delete('/publishers/{id}', [PublisherController::class, 'destroy'])->name('admin.publishers.destroy');
+    Route::put('/publishers/{id}', [PublisherController::class, 'update'])->name('admin.publishers.update');
+    Route::post('/publishers/store', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
+    Route::delete('/publishers/{id}', [AdminController::class, 'deletePublisher'])->name('admin.deletePublisher');
 });
 
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');

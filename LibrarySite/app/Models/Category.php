@@ -14,4 +14,10 @@ class Category extends Model
     {
         return $this->hasMany(Genre::class);
     }
+
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
+
 }

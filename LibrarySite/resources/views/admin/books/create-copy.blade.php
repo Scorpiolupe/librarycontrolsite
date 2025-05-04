@@ -41,25 +41,36 @@
                 <input type="text" class="form-control" id="publisher" name="publisher" readonly>
             </div>
 
-            
-
-            <div class="col-md-6 mb-3">
-                <label for="acquisition_date" class="form-label">Edinme Tarihi</label>
-                <input type="date" class="form-control" id="acquisition_date" name="acquisition_date">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="acquisition_source_id" class="form-label">Edinme Türü</label>
+                    <select class="form-select" name="acquisition_source_id" required>
+                        <option value="">Seçiniz</option>
+                        @foreach($acquisitionSources as $source)
+                            <option value="{{ $source->id }}">{{ $source->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="acquisition_date" class="form-label">Edinme Tarihi</label>
+                    <input type="date" class="form-control" name="acquisition_date" required>
+                </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="acquisition_source" class="form-label">Edinme Türü</label>
-                <select class="form-select" id="acquisition_source" name="acquisition_source" required>
-                    <option value="Satın Alım">Satın Alım</option>
-                    <option value="Bağış">Bağış</option>
-                </select>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="acquisition_cost" class="form-label">Edinme Maliyeti</label>
+                    <input type="number" class="form-control" name="acquisition_cost" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label for="acquisition_place" class="form-label">Edinme Yeri</label>
+                    <input type="text" class="form-control" name="acquisition_place">
+                </div>
+                <div class="col-md-4">
+                    <label for="acquisition_invoice" class="form-label">Fatura No</label>
+                    <input type="text" class="form-control" name="acquisition_invoice">
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="acquisition_cost" class="form-label">Edinme Maliyeti (₺)</label>
-                <input value="0" type="number" class="form-control" id="acquisition_cost" name="acquisition_cost" placeholder="Maliyeti girin" step="0.01">
-            </div>  
 
             <div class="col-md-6 mb-3">
                 <label for="condition" class="form-label">Yıpranma Durumu</label>

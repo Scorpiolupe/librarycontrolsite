@@ -91,6 +91,7 @@
                     <a href="/adminpanel/manage-categories" class="list-group-item list-group-item-action">Kategorileri Yönet</a>
                     <a href="/adminpanel/manage-authors" class="list-group-item list-group-item-action">Yazarları Yönet</a>
                     <a href="/adminpanel/manage-publishers" class="list-group-item list-group-item-action">Yayınevlerini Yönet</a>
+                    <a href="/adminpanel/acquisition-sources" class="list-group-item list-group-item-action">Edinme İşlemlerini Yönet</a>
                 </div>
             </div>
         </div>

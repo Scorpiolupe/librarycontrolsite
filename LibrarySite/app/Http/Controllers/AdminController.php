@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Models\BorrowedBook;
 use App\Models\ShelfLocation;
 use App\Models\BorrowRequest;
+use App\Models\AcquisitionSource;
+use App\Models\Acquisition;
 use Illuminate\Support\Facades\DB;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
@@ -77,7 +79,7 @@ class AdminController extends Controller
     public function manageCopies(Request $request) {
         $search = $request->search;
         
-        $copies = BookCopy::with('book')
+        $copies = BookCopy::with(['book', 'acquisition.source'])
             ->when($search, function($query) use ($search) {
                 $query->whereHas('book', function($q) use ($search) {
                     $q->where('isbn', 'like', '%'.$search.'%');
@@ -108,10 +110,9 @@ class AdminController extends Controller
 
     public function createCopy()
     {
-        $books = Book::select('book_name')
-            ->distinct()
-            ->get();
-        return view('admin.books.create-copy', compact('books'));
+        $books = Book::select('book_name')->distinct()->get();
+        $acquisitionSources = AcquisitionSource::all();
+        return view('admin.books.create-copy', compact('books', 'acquisitionSources'));
     }
 
     public function storeCopy(Request $request)
@@ -123,17 +124,19 @@ class AdminController extends Controller
             'row' => 'required|integer|min:1|max:21',
             'shelf' => 'required|integer|min:1|max:20',
             'position' => 'required|integer|min:1|max:150',
-            'shelf_location' => 'nullable|string|max:255',
-            'acquisition_date' => 'nullable|date',
-            'acquisition_source' => 'nullable|in:Satın Alım,Bağış',
-            'acquisition_cost' => 'nullable|numeric',
             'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
+            'status' => 'required|in:available,borrowed,reserved,lost',
+            'acquisition_source_id' => 'required|exists:acquisition_sources,id',
+            'acquisition_date' => 'required|date',
+            'acquisition_cost' => 'nullable|numeric',
+            'acquisition_place' => 'nullable|string',
+            'acquisition_invoice' => 'nullable|string'
+
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Formatlı raf konumu oluştur
             $formattedLocation = sprintf(
                 "%s-%d-%d-%d-%d",
                 $request->block,
@@ -143,19 +146,24 @@ class AdminController extends Controller
                 $request->position
             );
 
-            // Kitap kopyasını oluştur
             $bookCopy = BookCopy::create([
                 'book_id' => $request->book_id,
-                'shelf_location' => $formattedLocation, // Formatlı konumu kaydet
+                'shelf_location' => $formattedLocation,
                 'status' => $request->status,
-                'condition' => $request->condition,
-                'acquisition_date' => $request->acquisition_date,
-                'acquisition_source' => $request->acquisition_source,
-                'acquisition_cost' => $request->acquisition_cost,
-                'status' => 'available',
+                'condition' => $request->condition
             ]);
 
-            // Detaylı raf konumu bilgisini kaydet
+            // Edinme bilgilerini kaydet
+            Acquisition::create([
+                'book_copy_id' => $bookCopy->id,
+                'acquisition_source_id' => $request->acquisition_source_id,
+                'acquisition_date' => $request->acquisition_date,
+                'acquisition_cost' => $request->acquisition_cost,
+                'acquisition_place' => $request->acquisition_place,
+                'acquisition_invoice' => $request->acquisition_invoice
+
+            ]);
+
             ShelfLocation::create([
                 'book_copy_id' => $bookCopy->id,
                 'block' => $request->block,
@@ -175,36 +183,129 @@ class AdminController extends Controller
         }
     }
 
+    public function showCopy($id)
+    {
+        $copy = BookCopy::with(['book', 'acquisition.source'])->findOrFail($id);
+        
+        // Eğer raf konumu varsa parçalara ayır
+        if ($copy->shelf_location) {
+            $locationParts = explode('-', $copy->shelf_location);
+            $copy->locationDetails = [
+                'block' => $locationParts[0] ?? '',
+                'floor' => $locationParts[1] ?? '',
+                'row' => $locationParts[2] ?? '',
+                'shelf' => $locationParts[3] ?? '',
+                'position' => $locationParts[4] ?? ''
+            ];
+        }
+        
+        return view('admin.books.copy-detail', compact('copy'));
+    }
+
     public function editCopy($id)
     {
-        $copy = BookCopy::findOrFail($id);
-        $books = Book::all();
-        return view('admin.books.edit-copy', compact('copy', 'books'));
+        $copy = BookCopy::with(['book', 'acquisition.source'])->findOrFail($id);
+        $acquisitionSources = AcquisitionSource::all();
+        
+        // Eğer raf konumu varsa parçalara ayır
+        if ($copy->shelf_location) {
+            $locationParts = explode('-', $copy->shelf_location);
+            $copy->locationDetails = [
+                'block' => $locationParts[0] ?? '',
+                'floor' => $locationParts[1] ?? '',
+                'row' => $locationParts[2] ?? '',
+                'shelf' => $locationParts[3] ?? '',
+                'position' => $locationParts[4] ?? ''
+            ];
+        }
+        
+        return view('admin.books.edit-copy', compact('copy', 'acquisitionSources'));
     }
 
     public function updateCopy(Request $request, $id)
     {
         $request->validate([
-            'book_id' => 'required|exists:books,id',
-            'shelf_location' => 'nullable|string|max:255',
-            'acquisition_date' => 'nullable|date',
-            'acquisition_source' => 'nullable|string|max:255',
-            'acquisition_cost' => 'nullable|numeric',
+            'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
             'status' => 'required|in:available,borrowed,reserved,lost',
+            'block' => 'required|in:A,B',
+            'floor' => 'required|in:0,1,2',
+            'row' => 'required|integer|min:1|max:21',
+            'shelf' => 'required|integer|min:1|max:20',
+            'position' => 'required|integer|min:1|max:150',
+            'acquisition_source_id' => 'required|exists:acquisition_sources,id',
+            'acquisition_date' => 'required|date',
+            'acquisition_cost' => 'nullable|numeric'
         ]);
 
-        $copy = BookCopy::findOrFail($id);
-        $copy->update($request->all());
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('admin.manageCopies')->with('success', 'Kitap kopyası başarıyla güncellendi.');
+            $copy = BookCopy::findOrFail($id);
+            
+            // Raf konumu güncelleme
+            $formattedLocation = sprintf("%s-%d-%d-%d-%d",
+                $request->block,
+                $request->floor,
+                $request->row,
+                $request->shelf,
+                $request->position
+            );
+            
+            $copy->shelf_location = $formattedLocation;
+            $copy->condition = $request->condition;
+            $copy->status = $request->status;
+            $copy->save();
+
+            // Raf konumu detaylarını güncelle
+            $copy->shelfLocation->update([
+                'block' => $request->block,
+                'floor' => $request->floor,
+                'row' => $request->row,
+                'shelf' => $request->shelf,
+                'position' => $request->position
+            ]);
+
+            // Edinme bilgilerini güncelle
+            $copy->acquisition->update([
+                'acquisition_source_id' => $request->acquisition_source_id,
+                'acquisition_date' => $request->acquisition_date,
+                'acquisition_cost' => $request->acquisition_cost,
+                'acquisition_place' => $request->acquisition_place,
+                'acquisition_invoice' => $request->acquisition_invoice
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.manageCopies')
+                ->with('success', 'Kitap kopyası başarıyla güncellendi.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Hata: ' . $e->getMessage());
+        }
     }
 
     public function deleteCopy($id)
     {
-        $copy = BookCopy::findOrFail($id);
-        $copy->delete();
-
-        return response()->json(['success' => true]);
+        try {
+            DB::beginTransaction();
+            
+            $copy = BookCopy::findOrFail($id);
+            
+            // İlişkili kayıtları sil
+            if ($copy->acquisition) {
+                $copy->acquisition->delete();
+            }
+            if ($copy->shelfLocation) {
+                $copy->shelfLocation->delete();
+            }
+            
+            $copy->delete();
+            
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     public function manageAuthors()
@@ -250,6 +351,83 @@ class AdminController extends Controller
     {
         $categories = Category::all();;
         return view('admin.books.categories', compact('categories'));     
+    }
+
+    public function createCategory(Request $request)
+    {
+        $request->validate([
+            'category_name' => 'required|string|max:255|unique:categories'
+        ]);
+
+        $category = new Category();
+        $category->category_name = $request->category_name;
+        $category->save();
+
+        return redirect()->route('admin.manageCategories')->with('success', 'Kategori başarıyla eklendi.');
+    }
+
+    public function deleteCategory($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $category = Category::findOrFail($id);
+            
+            // Önce kategoriye bağlı kitapları kontrol et
+            if($category->books()->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bu kategoriye ait kitaplar olduğu için silinemez.'
+                ]);
+            }
+
+            // İlişkili genre kayıtlarını sil
+            $category->genres()->delete();
+            
+            // Kategoriyi sil
+            $category->delete();
+            
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Kategori başarıyla silindi.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Kategori silinirken bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteAuthor($id)
+    {
+        try {
+            $author = Author::findOrFail($id);
+            if($author->books()->count() > 0) {
+                return response()->json(['success' => false, 'message' => 'Bu yazara ait kitaplar var. Önce kitapları silmelisiniz.']);
+            }
+            $author->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Yazar silinemedi: ' . $e->getMessage()]);
+        }
+    }
+
+    public function deletePublisher($id)
+    {
+        try {
+            $publisher = Publisher::findOrFail($id);
+            if($publisher->books()->count() > 0) {
+                return response()->json(['success' => false, 'message' => 'Bu yayınevine ait kitaplar var. Önce kitapları silmelisiniz.']);
+            }
+            $publisher->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Yayınevi silinemedi: ' . $e->getMessage()]);
+        }
     }
 
     public function addUser()
@@ -493,5 +671,28 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json(['success' => true]);
+    }
+
+    public function manageAcquisitionSources()
+    {
+        $sources = AcquisitionSource::all();
+        $acquisitions = Acquisition::with(['bookCopy.book', 'source'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('admin.books.acquisition-sources', compact('sources', 'acquisitions'));
+    }
+
+    public function storeAcquisitionSource(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
+
+        AcquisitionSource::create($request->all());
+
+        return redirect()->route('admin.manageAcquisitionSources')
+            ->with('success', 'Edinme türü başarıyla eklendi.');
     }
 }
