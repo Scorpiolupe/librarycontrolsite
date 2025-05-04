@@ -6,9 +6,8 @@
 <div class="container">
     <div class="row mb-4">
         <div class="col">
-            <h2 class="mb-4">Kitap Kopyaları Listesi</h2>
+            <h2 class="mb-4">Ödünç İşlemleri</h2>
             <div class="d-flex justify-content-between mb-3">
-                <a href="{{ url('/adminpanel/create-copy') }}" class="btn btn-primary">Yeni Kitap Kopyası Ekle</a>
                 <form class="d-flex gap-2" method="GET" action="{{ route('admin.manageCopies') }}">
                     <input type="text" name="search" class="form-control" placeholder="ISBN veya Barkod ile ara..." value="{{ request('search') }}">
                     <button type="submit" class="btn btn-outline-primary">Ara</button>
@@ -260,8 +259,11 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`/adminpanel/copies/${currentCopyId}/due-date`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Due date response:', data); // DEBUG: Gelen veriyi konsola yaz
                     if(data.due_date) {
                         document.getElementById('currentDueDate').textContent = data.due_date;
+                    } else if(data.message) {
+                        document.getElementById('currentDueDate').textContent = data.message;
                     } else {
                         document.getElementById('currentDueDate').textContent = 'Tarih bulunamadı';
                     }

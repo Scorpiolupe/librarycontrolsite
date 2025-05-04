@@ -354,11 +354,17 @@ class AdminController extends Controller
     {
         $borrowedBook = BorrowedBook::where('copy_id', $id)
             ->whereNull('returned_at')
+            ->where('status', 'borrowed')
             ->latest()
             ->first();
 
         return response()->json([
-            'due_date' => $borrowedBook ? $borrowedBook->due_date->format('d.m.Y') : null
+            'due_date' => $borrowedBook && $borrowedBook->return_date
+                ? $borrowedBook->return_date->format('d.m.Y H:i')
+                : null,
+            'message' => $borrowedBook && $borrowedBook->return_date
+                ? null
+                : 'Aktif ödünç kaydı veya teslim tarihi bulunamadı'
         ]);
     }
 

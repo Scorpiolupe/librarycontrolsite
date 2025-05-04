@@ -61,6 +61,44 @@
             opacity: 1;
             font-weight: 500;
         }
+
+        /* Toast Bildirimleri için Stiller */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast-notification {
+            padding: 12px 24px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: white;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.3s ease forwards, fadeOut 0.5s ease 2.5s forwards;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+        }
+        
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+        .toast-info { background-color: #17a2b8; }
     </style>
 </head>
 <body>  
@@ -89,7 +127,6 @@
                                 <a class="nav-link" href="/adminpanel">Yönetim Paneli</a>
                             </li>
                         @endif
-                        <!-- Navbar içindeki notification wrapper'ı güncelle -->
                         <li class="nav-item notifications-wrapper dropdown">
                             <a class="nav-link position-relative" href="{{ route('notifications.markAllAsRead') }}" id="notificationBtn" role="button">
                                 <i class="fas fa-bell"></i>
@@ -133,30 +170,24 @@
     </nav>
 
     <main class="container my-4">
-        @if(session('success'))
-            <div class="notification-card card bg-success text-white" id="successCard">
-                <div class="card-body">
-                    <h5 class="card-title">Başarılı!</h5>
-                    <p class="card-text">{{ session('success') }}</p>
+        <div class="toast-container">
+            @if(session('success'))
+                <div class="toast-notification toast-success">
+                    {{ session('success') }}
                 </div>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="notification-card card bg-danger text-white" id="errorCard">
-                <div class="card-body">
-                    <h5 class="card-title">Hata!</h5>
-                    <p class="card-text text-white">{{ session('error') }}</p>
+            @endif
+            @if(session('error'))
+                <div class="toast-notification toast-error">
+                    {{ session('error') }}
                 </div>
-            </div>
-        @endif
-        @if(session('info'))
-            <div class="notification-card card bg-info text-white" id="infoCard">
-                <div class="card-body">
-                    <h5 class="card-title">Bilgi</h5>
-                    <p class="card-text text-white">{{ session('info') }}</p>
+            @endif
+            @if(session('info'))
+                <div class="toast-notification toast-info">
+                    {{ session('info') }}
                 </div>
-            </div>
-        @endif
+            @endif
+        </div>
+        
         @yield('content')
     </main>
 
@@ -253,6 +284,18 @@
                     }
                 });
             }
+
+            // Toast bildirimleri için otomatik silme
+            const toasts = document.querySelectorAll('.toast-notification');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.addEventListener('animationend', function(e) {
+                        if (e.animationName === 'fadeOut') {
+                            toast.remove();
+                        }
+                    });
+                }, 100);
+            });
         });
     </script>
     @yield('js')

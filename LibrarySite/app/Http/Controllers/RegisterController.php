@@ -15,6 +15,7 @@ class RegisterController extends Controller
             'name'=>'required|string|max:255',
             'email'=>'required|string|email|max:255|unique:users',
             'tel'=>'required|string|max:20',
+            'tcno'=>'required|string|size:11|unique:users',
             'password'=>'required|string|min:6|confirmed',
         ]);
 
@@ -22,12 +23,12 @@ class RegisterController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $user= User::create([
+        $user = User::create([
             'name'=>$request->name,
             'email'=>$request->email,
             'tel'=>$request->tel,
+            'tcno'=>$request->tcno,
             'password'=>Hash::make($request->password),
-
         ]);
         
         Auth::login($user);

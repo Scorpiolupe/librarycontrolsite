@@ -87,6 +87,9 @@
             <input type="text" class="form-control" name="name" placeholder="Ad Soyad" required>
         </div>
         <div class="mb-3">
+            <input type="text" class="form-control" name="tcno" placeholder="TC Kimlik No" pattern="[0-9]{11}" maxlength="11" required>
+        </div>
+        <div class="mb-3">
             <input type="email" class="form-control" name="email" placeholder="E-posta" required>
         </div>
         <div class="mb-3">

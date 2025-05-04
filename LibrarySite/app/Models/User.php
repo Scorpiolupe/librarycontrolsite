@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password',
         'tel',
         'is_admin',
+        'tcno',
     ];
 
     protected $hidden =[
@@ -33,4 +34,8 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function borrowings()
+    {
+        return $this->hasMany(BorrowedBook::class);
+    }
 }

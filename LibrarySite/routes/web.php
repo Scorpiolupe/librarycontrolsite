@@ -53,6 +53,13 @@ Route::prefix('adminpanel')->group(function () {
     Route::get('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
     Route::post('/update-user/{id}', [AdminController::class, 'updateUser'])->name('admin.updateUser');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    Route::get('/adminpanel/user-profiles', [UserController::class, 'userProfiles'])->name('admin.userProfiles');
+    Route::get('/user-detail/{id}', [UserController::class, 'userDetail'])->name('admin.userDetail');
+    Route::post('/user/{id}/borrow-book', [UserController::class, 'userBorrowBook'])->name('admin.userBorrowBook');
+    Route::post('/borrowed-books/{id}/return', [UserController::class, 'returnBook'])->name('admin.returnBook');
+    Route::post('/borrowed-books/{id}/extend', [UserController::class, 'extendDueDate'])->name('admin.extendDueDate');
+    Route::post('/return-book/{id}', [UserController::class, 'returnBook'])->name('admin.returnBook');
+    Route::post('/extend-book/{id}', [UserController::class, 'extendDueDate'])->name('admin.extendDueDate');
 });
 
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');
