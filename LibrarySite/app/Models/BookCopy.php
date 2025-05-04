@@ -37,7 +37,12 @@ class BookCopy extends Model
 
     public function acquisition()
     {
-        return $this->hasOne(Acquisition::class);
+        return $this->hasOne(Acquisition::class, 'book_copy_id');
+    }
+
+    public function shelfLocation()
+    {
+        return $this->hasOne(ShelfLocation::class, 'book_copy_id');
     }
 
     public function getCoverImageUrlAttribute()

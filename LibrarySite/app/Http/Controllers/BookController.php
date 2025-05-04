@@ -10,6 +10,9 @@ use App\Models\BookReview;
 use App\Models\BookRating;
 use App\Models\BorrowRequest;
 use App\Models\BookCopy;
+use App\Models\Author;
+use App\Models\Publisher;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -205,28 +208,46 @@ class BookController extends Controller
         return back()->with('success', 'Puanınız kaydedildi.');
     }
 
-    public function edit(Book $book)
+    public function edit($id)
     {
+        $book = Book::findOrFail($id);
         $categories = Category::all();
-        $genres = Genre::all();
-        return view('books.edit', compact('book', 'categories', 'genres'));
+        $authors = Author::all();
+        $publishers = Publisher::all();
+        $languages = Language::all();
+        
+        return view('admin.books.edit', compact('book', 'categories', 'authors', 'publishers', 'languages'));
     }
 
-    public function update(Request $request, Book $book)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'published_date' => 'required|date',
+            'book_name' => 'required|string|max:255',
+            'author_id' => 'required|exists:authors,id',
+            'language_id' => 'required|exists:languages,id',
+            'publisher_id' => 'required|exists:publishers,id',
             'category_id' => 'required|exists:categories,id',
-            'genre_id' => 'required|exists:genres,id',
-            'description' => 'nullable|string',
-            'isbn' => 'nullable|string|max:13',
+            'isbn' => 'required|string|max:13|unique:books,isbn,'.$id,
+            'page_count' => 'required|integer',
+            'publish_year' => 'required|integer',
+            'description' => 'nullable|string'
         ]);
 
+        $book = Book::findOrFail($id);
         $book->update($request->all());
 
-        return redirect()->route('books.index')->with('success', 'Kitap başarıyla güncellendi.');
+        return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla güncellendi.');
+    }
+
+    public function delete($id)
+    {
+        $book = Book::findOrFail($id);
+        $book->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kitap başarıyla silindi.'
+        ]);
     }
 
     public function destroy(Book $book)

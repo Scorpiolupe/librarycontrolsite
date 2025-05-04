@@ -49,9 +49,7 @@
                             <td>{{ $category->category_name }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ url('/adminpanel/categories/'.$category->id.'/edit') }}" class="btn btn-warning btn-sm" title="Düzenle">
-                                        <i class="bi bi-pencil"></i> Düzenle
-                                    </a>
+                                    
                                     <button type="button" class="btn btn-danger btn-sm delete-category" data-id="{{ $category->id }}" title="Sil">
                                         <i class="bi bi-trash"></i> Sil
                                     </button>
@@ -78,31 +76,35 @@
 @section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Silme işlemi için
     const deleteButtons = document.querySelectorAll('.delete-category');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
             const categoryId = this.dataset.id;
-            if(confirm('Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem kategoriye ait kitapları etkileyebilir.')) {
-                // AJAX silme işlemi
-                fetch(`/adminpanel/categories/${categoryId}`, {
+            if(confirm('Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+                fetch(`/adminpanel/deleteCategory/${categoryId}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if(data.success) {
-                        window.location.reload();
+                        this.closest('tr').remove();
+                        alert('Kategori başarıyla silindi.');
                     } else {
-                        alert('Kategori silinirken bir hata oluştu!');
+                        alert(data.message || 'Kategori silinemedi.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Bir hata oluştu!');
+                    alert('Silme işlemi sırasında bir hata oluştu.');
                 });
             }
         });
