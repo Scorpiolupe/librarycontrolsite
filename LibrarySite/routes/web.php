@@ -52,6 +52,8 @@ Route::prefix('adminpanel')->group(function () {
     Route::get('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
     Route::post('/update-user/{id}', [AdminController::class, 'updateUser'])->name('admin.updateUser');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    Route::get('/acquisition-sources', [AdminController::class, 'manageAcquisitionSources'])->name('admin.manageAcquisitionSources');
+    Route::post('/acquisition-sources', [AdminController::class, 'storeAcquisitionSource'])->name('admin.storeAcquisitionSource');
 });
 
 Route::post('/register', [RegisterController::class, 'register']);

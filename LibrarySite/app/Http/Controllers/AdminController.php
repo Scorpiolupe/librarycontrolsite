@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Models\BorrowedBook;
 use App\Models\ShelfLocation;
 use App\Models\BorrowRequest;
+use App\Models\AcquisitionSource;
+use App\Models\Acquisition;
 use Illuminate\Support\Facades\DB;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
@@ -77,7 +79,7 @@ class AdminController extends Controller
     public function manageCopies(Request $request) {
         $search = $request->search;
         
-        $copies = BookCopy::with('book')
+        $copies = BookCopy::with(['book', 'acquisition.source'])
             ->when($search, function($query) use ($search) {
                 $query->whereHas('book', function($q) use ($search) {
                     $q->where('isbn', 'like', '%'.$search.'%');
@@ -108,10 +110,9 @@ class AdminController extends Controller
 
     public function createCopy()
     {
-        $books = Book::select('book_name')
-            ->distinct()
-            ->get();
-        return view('admin.books.create-copy', compact('books'));
+        $books = Book::select('book_name')->distinct()->get();
+        $acquisitionSources = AcquisitionSource::all();
+        return view('admin.books.create-copy', compact('books', 'acquisitionSources'));
     }
 
     public function storeCopy(Request $request)
@@ -123,18 +124,18 @@ class AdminController extends Controller
             'row' => 'required|integer|min:1|max:21',
             'shelf' => 'required|integer|min:1|max:20',
             'position' => 'required|integer|min:1|max:150',
-            'shelf_location' => 'nullable|string|max:255',
-            'acquisition_date' => 'nullable|date',
-            'acquisition_source' => 'nullable|in:Satın Alım,Bağış',
-            'acquisition_cost' => 'nullable|numeric',
             'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
             'status' => 'required|in:available,borrowed,reserved,lost',
+            'acquisition_source_id' => 'required|exists:acquisition_sources,id',
+            'acquisition_date' => 'required|date',
+            'acquisition_cost' => 'nullable|numeric',
+            'acquisition_place' => 'nullable|string',
+            'acquisition_invoice' => 'nullable|string'
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Formatlı raf konumu oluştur
             $formattedLocation = sprintf(
                 "%s-%d-%d-%d-%d",
                 $request->block,
@@ -144,18 +145,23 @@ class AdminController extends Controller
                 $request->position
             );
 
-            // Kitap kopyasını oluştur
             $bookCopy = BookCopy::create([
                 'book_id' => $request->book_id,
-                'shelf_location' => $formattedLocation, // Formatlı konumu kaydet
+                'shelf_location' => $formattedLocation,
                 'status' => $request->status,
-                'condition' => $request->condition,
-                'acquisition_date' => $request->acquisition_date,
-                'acquisition_source' => $request->acquisition_source,
-                'acquisition_cost' => $request->acquisition_cost,
+                'condition' => $request->condition
             ]);
 
-            // Detaylı raf konumu bilgisini kaydet
+            // Edinme bilgilerini kaydet
+            Acquisition::create([
+                'book_copy_id' => $bookCopy->id,
+                'acquisition_source_id' => $request->acquisition_source_id,
+                'acquisition_date' => $request->acquisition_date,
+                'acquisition_cost' => $request->acquisition_cost,
+                'acquisition_place' => $request->acquisition_place,
+                'acquisition_invoice' => $request->acquisition_invoice
+            ]);
+
             ShelfLocation::create([
                 'book_copy_id' => $bookCopy->id,
                 'block' => $request->block,
@@ -487,5 +493,28 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json(['success' => true]);
+    }
+
+    public function manageAcquisitionSources()
+    {
+        $sources = AcquisitionSource::all();
+        $acquisitions = Acquisition::with(['bookCopy.book', 'source'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('admin.books.acquisition-sources', compact('sources', 'acquisitions'));
+    }
+
+    public function storeAcquisitionSource(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string'
+        ]);
+
+        AcquisitionSource::create($request->all());
+
+        return redirect()->route('admin.manageAcquisitionSources')
+            ->with('success', 'Edinme türü başarıyla eklendi.');
     }
 }

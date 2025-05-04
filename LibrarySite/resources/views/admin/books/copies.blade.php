@@ -31,12 +31,11 @@
                             <th>ISBN</th>
                             <th>Barkod</th>
                             <th class="location-column">Yer Bilgisi</th>
-                            <th>Edinme Tarihi</th>
                             <th>Edinme Türü</th>
-                            <th>Edinme Maliyeti(₺)</th>
+                            <th>Edinme Tarihi</th>
+                            <th>Maliyet</th>
                             <th>Yıpranma Durumu</th>
                             <th>Durum</th>
-
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -48,9 +47,9 @@
                             <td>{{ $copy->book->isbn }}</td>
                             <td>{{ $copy->barcode }}</td>
                             <td class="location-column">{{ $copy->shelf_location ?? 'Belirtilmemiş' }}</td>
-                            <td>{{ $copy->acquisition_date }}</td>
-                            <td>{{ $copy->acquisition_source }}</td>
-                            <td>{{ $copy->acquisition_cost }}</td>
+                            <td>{{ $copy->acquisition->source->name ?? 'Belirtilmemiş' }}</td>
+                            <td>{{ $copy->acquisition->acquisition_date ? date('d/m/Y', strtotime($copy->acquisition->acquisition_date)) : 'Belirtilmemiş' }}</td>
+                            <td>{{ $copy->acquisition->acquisition_cost ? number_format($copy->acquisition->acquisition_cost, 2) . ' ₺' : 'Belirtilmemiş' }}</td>
                             <td>{{ $copy->condition}}</td>
                             <td>
                                 <span class="badge {{ $copy->status == 'available' ? 'bg-success' : 'bg-warning' }}">
