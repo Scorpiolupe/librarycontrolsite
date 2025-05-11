@@ -51,9 +51,11 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ url('/books/'.$book->id) }}" class="btn btn-info btn-sm" title="Detay">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                    @foreach($book->bookCopies as $copy)
+                                        <a href="{{ url('/books/'.$copy->id) }}" class="btn btn-info btn-sm" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    @endforeach
                                     <a href="{{ route('admin.editBook', $book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
                                         <i class="bi bi-pencil"></i>
                                     </a>

@@ -15,6 +15,8 @@ use App\Models\ShelfLocation;
 use App\Models\BorrowRequest;
 use App\Models\AcquisitionSource;
 use App\Models\Acquisition;
+use App\Models\Reservation;
+use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
 use Database\Seeders\Books;
 use Illuminate\Http\Request;
@@ -124,7 +126,7 @@ class AdminController extends Controller
             'row' => 'required|integer|min:1|max:21',
             'shelf' => 'required|integer|min:1|max:20',
             'position' => 'required|integer|min:1|max:150',
-            'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
+            'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',  
             'acquisition_source_id' => 'required|exists:acquisition_sources,id',
             'acquisition_date' => 'required|date',
             'acquisition_cost' => 'nullable|numeric',
@@ -694,5 +696,108 @@ class AdminController extends Controller
 
         return redirect()->route('admin.manageAcquisitionSources')
             ->with('success', 'Edinme türü başarıyla eklendi.');
+    }
+
+    public function manageReservations()
+    {
+        $pendingReservations = Reservation::with(['user', 'bookCopy.book'])
+            ->where('status', 'pending')
+            ->orderBy('request_date', 'desc')
+            ->get();
+
+        $approvedReservations = Reservation::with(['user', 'bookCopy.book'])
+            ->where('status', 'approved')
+            ->orderBy('approval_date', 'desc')
+            ->get();
+
+        return view('admin.stocks.manage-reservations', 
+            compact('pendingReservations', 'approvedReservations'));
+    }
+
+    public function approveReservation($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $reservation = Reservation::findOrFail($id);
+            $bookCopy = $reservation->bookCopy;
+            
+            if($bookCopy->status !== 'available') {
+                throw new \Exception('Bu kitap şu anda rezerve edilemez.');
+            }
+            
+            $reservation->status = 'approved';
+            $reservation->approval_date = now();
+            $reservation->save();
+            
+            $bookCopy->status = 'reserved';
+            $bookCopy->save();
+
+            // Bildirim: Rezervasyon onaylandı
+            Notification::create([
+                'user_id' => $reservation->user_id,
+                'message' => 'Rezervasyonunuz onaylandı: ' . $bookCopy->book->book_name . ' (Barkod: ' . $bookCopy->barcode . ')',
+                'notification_type' => 'success',
+                'read' => false,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function rejectReservation($id)
+    {
+        try {
+            $reservation = Reservation::findOrFail($id);
+            $reservation->status = 'rejected';
+            $reservation->save();
+
+            // Bildirim: Rezervasyon reddedildi
+            Notification::create([
+                'user_id' => $reservation->user_id,
+                'message' => 'Rezervasyonunuz reddedildi: ' . $reservation->bookCopy->book->book_name . ' (Barkod: ' . $reservation->bookCopy->barcode . ')',
+                'notification_type' => 'error',
+                'read' => false,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function cancelReservation($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $reservation = Reservation::findOrFail($id);
+            $bookCopy = $reservation->bookCopy;
+            
+            // Rezervasyonu iptal et
+            $reservation->status = 'cancelled';
+            $reservation->save();
+            
+            // Kitap durumunu müsait yap
+            $bookCopy->status = 'available';
+            $bookCopy->save();
+            
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false, 
+                'message' => 'Rezervasyon iptal edilirken bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
     }
 }

@@ -91,6 +91,11 @@ Route::prefix('adminpanel')->group(function () {
     Route::put('/publishers/{id}', [PublisherController::class, 'update'])->name('admin.publishers.update');
     Route::post('/publishers/store', [AdminController::class, 'createPublisher'])->name('admin.createPublisher');
     Route::delete('/publishers/{id}', [AdminController::class, 'deletePublisher'])->name('admin.deletePublisher');
+
+    Route::get('/manage-reservations', [AdminController::class, 'manageReservations'])->name('admin.manageReservations');
+    Route::post('/reservations/{id}/approve', [AdminController::class, 'approveReservation'])->name('admin.approveReservation');
+    Route::post('/reservations/{id}/reject', [AdminController::class, 'rejectReservation'])->name('admin.rejectReservation');
+    Route::post('/reservations/{id}/cancel', [AdminController::class, 'cancelReservation'])->name('admin.cancelReservation');
 });
 
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');
@@ -107,6 +112,7 @@ Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('au
 Route::post('/books/{id}/comment', [BookController::class, 'comment'])->middleware('auth');
 Route::post('/books/{copyId}/borrow', [BookController::class, 'borrowBook'])->name('books.borrow');
 Route::post('/books/{copyId}/return', [BookController::class, 'returnBook'])->name('books.return');
+Route::post('/books/{id}/reserve', [BookController::class, 'reserve'])->name('books.reserve')->middleware('auth');
 
 // Yeni route tanımlamaları
 Route::delete('/adminpanel/books/{id}/delete', [BookController::class, 'ajaxDelete'])->name('books.ajaxDelete');

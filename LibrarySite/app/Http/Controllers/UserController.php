@@ -6,6 +6,8 @@ use App\Models\BookCopy;
 use App\Models\BorrowedBook;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Reservation;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -54,11 +56,24 @@ class UserController extends Controller
 
     public function userDetail($id)
     {
-        $user = User::with(['borrowings' => function($query) {
-            $query->orderBy('purchase_date', 'desc');
-        }, 'borrowings.copy.book'])->findOrFail($id);
-        
-        return view('admin.user-detail', compact('user'));
+        $user = User::with(['borrowings.copy.book'])->findOrFail($id);
+
+        // --- Otomatik rezervasyon iptali ---
+        Reservation::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->whereNotNull('approval_date')
+            ->where('approval_date', '<', Carbon::now()->subDays(3))
+            ->update(['status' => 'expired']);
+
+        // Kullanıcının aktif rezervasyonları (onaylanmış ve süresi geçmemiş)
+        $activeReservations = Reservation::with(['bookCopy.book'])
+            ->where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->whereNotNull('approval_date')
+            ->where('approval_date', '>=', Carbon::now()->subDays(3))
+            ->get();
+
+        return view('admin.user-detail', compact('user', 'activeReservations'));
     }
 
     public function userBorrowBook(Request $request, $userId)

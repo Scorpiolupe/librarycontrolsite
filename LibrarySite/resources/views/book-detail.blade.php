@@ -165,7 +165,33 @@
                     @endauth
                 </div>
 
-               
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="card-text">{{ $book->description }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            @auth
+                                @if($bookCopy && $bookCopy->status == 'available')
+                                    <button type="button" class="btn btn-primary btn-lg w-100 mb-3 reserve-book" 
+                                            data-id="{{ $bookCopy->id }}" 
+                                            data-barcode="{{ $bookCopy->barcode }}">
+                                        <i class="bi bi-bookmark-plus"></i> 
+                                        Rezerve Et
+                                    </button>
+                                @else
+                                    <button class="btn btn-secondary btn-lg w-100 mb-3" disabled>
+                                        Bu kitap şu anda müsait değil
+                                    </button>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-secondary btn-lg w-100 mb-3">
+                                    Rezerve etmek için giriş yapın
+                                </a>
+                            @endauth
+                        </div>
+                    </div>
+                </div>
 
                 <div class="comments-section">
                     <h3>Yorumlar</h3>
@@ -252,6 +278,39 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentRating > 0) {
         highlightStars(currentRating);
     }
+
+    const reserveButtons = document.querySelectorAll('.reserve-book');
+    reserveButtons.forEach(reserveButton => {
+        reserveButton.addEventListener('click', function() {
+            const copyId = this.dataset.id;
+            const barcode = this.dataset.barcode;
+            if(confirm(`Kopya #${barcode} için rezervasyon yapmak istediğinizden emin misiniz?`)) {
+                fetch(`/books/${copyId}/reserve`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        alert('Rezervasyon isteğiniz alındı.');
+                        reserveButton.disabled = true;
+                        reserveButton.textContent = 'Rezervasyon İsteği Gönderildi';
+                        reserveButton.classList.replace('btn-primary', 'btn-secondary');
+                    } else {
+                        alert(data.message || 'Bir hata oluştu.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                });
+            }
+        });
+    });
 });
 </script>
 @endsection

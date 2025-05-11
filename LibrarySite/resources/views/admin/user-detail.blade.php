@@ -141,6 +141,59 @@
             </div>
         </div>
 
+        <!-- Rezerve Edilmiş Kitaplar -->
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Rezerve Edilmiş Kitaplar</h5>
+                    </div>
+                    <div class="card-body">
+                        @if(isset($activeReservations) && $activeReservations->count())
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Kitap</th>
+                                            <th>Barkod</th>
+                                            <th>Rezervasyon Onay Tarihi</th>
+                                            <th>Kalan Gün</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($activeReservations as $reservation)
+                                            <tr>
+                                                <td>{{ $reservation->bookCopy->book->book_name }}</td>
+                                                <td>{{ $reservation->bookCopy->barcode }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($reservation->approval_date)->format('d.m.Y H:i') }}</td>
+                                                <td>
+                                                    @php
+                                                        $daysLeft = $reservation->days_left;
+                                                    @endphp
+                                                    @if($daysLeft >= 0)
+                                                        <span class="badge bg-info">{{ (int)$daysLeft }} gün</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Süre doldu</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div class="alert alert-warning mt-2">
+                                    <strong>Not:</strong> Rezerve edilen kitaplar 3 gün içinde teslim alınmazsa rezervasyon otomatik olarak iptal edilir.
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-info mb-0">
+                                Aktif rezerve edilmiş kitap bulunmamaktadır.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Geçmiş Ödünç Kayıtları -->
         <div class="col-md-12">
             <div class="card">

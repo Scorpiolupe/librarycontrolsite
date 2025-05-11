@@ -13,6 +13,8 @@ use App\Models\BookCopy;
 use App\Models\Author;
 use App\Models\Publisher;
 use App\Models\Language;
+use App\Models\Reservation;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -143,17 +145,27 @@ class BookController extends Controller
 
     public function show($id)
     {
-        $book = Book::with(['category', 'comments.user', 'ratings', 'bookCopies', 'publisher', 'author', 'genres'])->findOrFail($id);
+        // Her zaman BookCopy'nin id'siyle çalış
+        $bookCopy = BookCopy::with([
+            'book.category',
+            'book.comments.user',
+            'book.ratings',
+            'book.publisher',
+            'book.author',
+            'book.genres'
+        ])->findOrFail($id);
+
+        $book = $bookCopy->book;
         $book->average_rating = $book->ratings()->avg('rating') ?? 0;
         $book->ratings_count = $book->ratings()->count();
-        
+
         if (Auth::check()) {
             $book->user_rating = $book->ratings()
                 ->where('user_id', Auth::id())
                 ->first();
         }
-        
-        return view('book-detail', compact('book'));
+
+        return view('book-detail', compact('book', 'bookCopy'));
     }
 
     public function comment(Request $request, $id)
@@ -312,6 +324,66 @@ class BookController extends Controller
         ]);
     }
 
-    
+    public function reserve($id)
+    {
+        try {
+            // Her zaman BookCopy'nin id'siyle çalış
+            $bookCopy = BookCopy::findOrFail($id);
+
+            if ($bookCopy->status !== 'available') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bu kitap kopyası şu anda rezerve edilemez.'
+                ]);
+            }
+
+            $existingReservation = Reservation::where('user_id', Auth::id())
+                ->where('book_copy_id', $id)
+                ->whereIn('status', ['pending', 'approved'])
+                ->first();
+
+            if ($existingReservation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bu kitap için zaten bir rezervasyon isteğiniz bulunmaktadır.'
+                ]);
+            }
+
+            Reservation::create([
+                'user_id' => Auth::id(),
+                'book_copy_id' => $id,
+                'status' => 'pending',
+                'request_date' => now()
+            ]);
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'activity_type' => 'reservation_request',
+                'activity_description' => Auth::user()->name . ' reserved ' . $bookCopy->book->book_name . ' (Barkod: ' . $bookCopy->barcode . ')',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Bildirim oluştur
+            Notification::create([
+                'user_id' => Auth::id(),
+                'message' => 'Rezervasyon isteğiniz alındı: ' . $bookCopy->book->book_name . ' (Barkod: ' . $bookCopy->barcode . ')',
+                'notification_type' => 'info',
+                'read' => false,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rezervasyon isteğiniz alındı.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
 
