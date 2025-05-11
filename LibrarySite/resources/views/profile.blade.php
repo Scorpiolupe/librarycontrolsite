@@ -3,19 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row">
-<<<<<<< HEAD
         <!-- Sol Kolon - Profil Bilgileri -->
         <div class="col-md-4 mb-4">
             <div class="card border-0 shadow-sm">
-
-
-=======
-        <div class="col-md-8 offset-md-2">
-            <div class="card mb-4">
-                <div class="card-header text-center">
-                    <h4>Profilim</h4>
-                </div>
->>>>>>> parent of d487398 (updated profile & book covers)
                 <div class="card-body text-center">
                     <div class="position-relative d-inline-block">
                         <img src="{{ asset('avatars/' . ($user->avatar ?? 'default-avatar.png')) }}" class="rounded-circle mb-3" alt="Profil Resmi" width="150" height="150">
@@ -50,8 +40,3 @@
 @endsection
 =======
 @endsection
-
-@push('styles')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
-@endpush
->>>>>>> parent of d487398 (updated profile & book covers)

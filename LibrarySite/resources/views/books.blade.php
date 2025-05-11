@@ -211,7 +211,6 @@ option {
             <form action="{{ request()->is('books/search') ? '/books/search' : '/books' }}" method="GET">
                 @if(request()->has('query'))
                     <input type="hidden" name="query" value="{{ request('query') }}">
-<<<<<<< HEAD
                 @endif
                 
                 <div class="mb-3">
@@ -283,87 +282,8 @@ option {
                         </a>
                     </div>
                     @endforeach
-=======
->>>>>>> parent of d487398 (updated profile & book covers)
                 @endif
-                
-                <div class="mb-3">
-                    <label class="form-label">Kategori</label>
-                    <select name="category" class="form-select">
-                        <option value="">Tümü</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $category->category_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-<<<<<<< HEAD
-        <div class="mt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="page-info">
-                    <p>Toplam {{ $copies->total() }} kitap, {{ $copies->lastPage() }} sayfa</p>
-                </div>
-                <div class="pagination">
-                    {{ $copies->links() }}
-                </div>
             </div>
-        </div>
-    </div>
-=======
-                
-
-                <div class="mb-3">
-                    <label class="form-label">Sayfa Aralığı</label>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <input type="number" class="form-control" name="min_pages" placeholder="Min" value="{{ request('min_pages') }}" min="0">
-                        </div>
-                        <div class="col-6">
-                            <input type="number" class="form-control" name="max_pages" placeholder="Max" value="{{ request('max_pages') }}" min="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Filtrele</button>
-                    @if(request()->anyFilled(['category', 'min_pages', 'max_pages', 'query']))
-                        <a href="{{ request()->is('books/search') ? '/books/search' : '/books' }}" class="btn btn-secondary">Filtreleri Temizle</a>
-                    @endif
-                </div>
-            </form>
-        </div>
-    </div>
-
- 
-    <div class="col-md-9">
-        <div class="row">
-            @foreach($copies as $copy)
-            <div class="col-12">
-                <a href="/books/{{ $copy->book->id }}" class="book-link">
-                    <div class="card book-card">
-                        <div class="card-body">
-                            <h5 class="card-title mb-2">{{ $copy->book->book_name }}</h5>
-                            <p class="card-text mb-2">{{ $copy->book->author->name }}</p>
-                           
-                            <div class="book-details">
-                                <p><strong>ISBN:</strong> {{ $copy->book->isbn }} | 
-                                <strong>Kategori:</strong> {{ $copy->book->category->category_name }} | 
-                                <strong>Sayfa:</strong> {{ $copy->book->page_count }} |  
-                                <strong>Yayınevi:</strong> {{ $copy->book->publisher->name }} | 
-                                <strong>Yayın Yılı:</strong> {{ $copy->book->publish_year }} | 
-                                <strong>Raf:</strong> {{ $copy->shelf_location ?? 'Belirtilmemiş' }} | <br>
-                                <strong>Durum:</strong> {{ $copy->status == 'available' ? 'Müsait' : 'Ödünç Alındı' }} 
-                            </p>
-
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            @endforeach
-        </div>
 
         <div class="mt-4">
             <div class="d-flex justify-content-between align-items-center">
@@ -376,6 +296,5 @@ option {
             </div>
         </div>
     </div>
->>>>>>> parent of d487398 (updated profile & book covers)
 </div>
 @endsection
