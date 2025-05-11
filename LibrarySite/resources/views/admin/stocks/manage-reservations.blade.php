@@ -34,7 +34,7 @@
                     <tbody>
                         @forelse($pendingReservations as $reservation)
                         <tr>
-                            <td>{{ $reservation->id }}</td>
+                            <td>{{ $reservation->id }}a</td>
                             <td>{{ $reservation->bookCopy->book->book_name }}</td>
                             <td>{{ $reservation->bookCopy->barcode }}</td>
                             <td>{{ $reservation->user->id }}</td>
