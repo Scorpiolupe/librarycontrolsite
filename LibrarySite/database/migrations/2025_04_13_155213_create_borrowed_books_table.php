@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('delay_day')->default(0);
             $table->integer('late_fee')->default(0);
             $table->text('notes')->nullable();
-            $table->integer('extension_count')->default(0)->after('status');
             $table->dateTimeTz('created_at')->nullable();
             $table->dateTimeTz('updated_at')->nullable();
         });

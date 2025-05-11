@@ -10,12 +10,7 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user()->load([
-            'borrowings.copy.book.author',
-            'ratings.book',
-            'reviews.book'
-        ]);
-        
+        $user = Auth::user();
         return view('profile', compact('user'));
     }
 

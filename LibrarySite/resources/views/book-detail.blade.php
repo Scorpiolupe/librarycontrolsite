@@ -116,16 +116,7 @@
 <div class="book-detail">
     <div class="row">
         <div class="col-md-4">
-            @if($book->book_cover)
-                <img src="{{ asset('storage/' . $book->book_cover) }}" 
-                     alt="{{ $book->book_name }}" 
-                     class="book-cover"
-                     onerror="this.onerror=null; this.src='{{ asset('images/default-book-cover.jpg') }}';">
-            @else
-                <img src="{{ asset('images/default-book-cover.jpg') }}" 
-                     alt="Default Cover" 
-                     class="book-cover">
-            @endif
+            <img src="{{ $book->book_cover }}" alt="{{ $book->book_name }}" class="book-cover">
         </div>
         <div class="col-md-8 book-info">
             <h1>{{ $book->book_name }}</h1>

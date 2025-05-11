@@ -38,14 +38,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(BorrowedBook::class);
     }
-
-    public function ratings()
-    {
-        return $this->hasMany(BookRating::class);
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(BookReview::class);
-    }
 }

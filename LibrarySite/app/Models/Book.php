@@ -81,19 +81,4 @@ class Book extends Model
     {
         return $this->belongsTo(Publisher::class, 'publisher_id');
     }
-
-    public function getBookCoverUrlAttribute()
-    {
-        if (!$this->book_cover) {
-            return asset('images/default-book-cover.jpg');
-        }
-        
-        // For external URLs
-        if (filter_var($this->book_cover, FILTER_VALIDATE_URL)) {
-            return $this->book_cover;
-        }
-        
-        // For local storage files
-        return asset('storage/' . $this->book_cover);
-    }
 }
