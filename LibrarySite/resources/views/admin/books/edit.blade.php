@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.updateBook', $book->id) }}" method="POST">
+    <form action="{{ route('admin.updateBook', $book->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -86,6 +86,24 @@
             <div class="col-12 mb-3">
                 <label for="description" class="form-label">Açıklama</label>
                 <textarea class="form-control" id="description" name="description" rows="3">{{ $book->description }}</textarea>
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="book_cover" class="form-label">Kitap Kapağı</label>
+                @if($book->book_cover)
+                    <div class="mb-2">
+                        <img src="{{ $book->book_cover_url }}" alt="Mevcut kapak" style="max-height: 200px;" class="img-thumbnail">
+                    </div>
+                @endif
+                <input type="file" 
+                       class="form-control @error('book_cover') is-invalid @enderror" 
+                       id="book_cover" 
+                       name="book_cover" 
+                       accept="image/jpeg,image/png,image/gif,image/jpg">
+                @error('book_cover')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">Yeni bir kapak fotoğrafı yüklemek için seçin. Boş bırakırsanız mevcut kapak korunacaktır.</small>
             </div>
 
             <div class="col-12">
