@@ -14,6 +14,15 @@
                     <form action="{{ route('admin.storeUser') }}" method="POST">
                         @csrf
                         <div class="mb-3">
+                            <label for="tcno" class="form-label">TC Kimlik No</label>
+                            <input type="text" class="form-control @error('tcno') is-invalid @enderror" 
+                                   id="tcno" name="tcno" value="{{ old('tcno') }}" required 
+                                   pattern="[0-9]{11}" maxlength="11">
+                            @error('tcno')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+<br>
+                        <div class="mb-3">
                             <label for="name" class="form-label">Ad Soyad</label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" 
                                    id="name" name="name" value="{{ old('name') }}" required>

@@ -57,6 +57,8 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Kitap Adı</th>
+                                    <th>ISBN</th>
+                                    <th>Barkod</th>
                                     <th>Edinme Türü</th>
                                     <th>Edinme Tarihi</th>
                                     <th>Maliyet</th>
@@ -69,6 +71,8 @@
                                     <tr>
                                         <td>{{ $acquisition->id }}</td>
                                         <td>{{ $acquisition->bookCopy->book->book_name }}</td>
+                                        <td>{{ $acquisition->bookCopy->book->isbn }}</td>
+                                        <td>{{ $acquisition->bookCopy->barcode }}</td>
                                         <td>{{ $acquisition->source->name }}</td>
                                         <td>{{ $acquisition->acquisition_date ? date('d/m/Y', strtotime($acquisition->acquisition_date)) : '-' }}</td>
                                         <td>{{ $acquisition->acquisition_cost ? number_format($acquisition->acquisition_cost, 2) . ' ₺' : '-' }}</td>

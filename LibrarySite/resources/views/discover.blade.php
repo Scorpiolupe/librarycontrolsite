@@ -3,10 +3,8 @@
 @section('title', 'Keşfet - Kütüphane')
 
 @section('content')
-    <div class="header">
-        <h1>Keşfet</h1>
-    </div>
-    <!-- Post Creation Section -->
+    
+
     <div class="card mb-4">
         <div class="card-body">
             <form action="/post/create" method="POST">
@@ -19,7 +17,7 @@
         </div>
     </div>
 
-    <!-- Filters Section -->
+
     <div class="card mb-4">
         <div class="card-body">
             <div class="row">
@@ -43,9 +41,9 @@
         </div>
     </div>
 
-    <!-- Posts Section -->
+
     <div class="posts">
-        <!-- Sample Post Card -->
+
         <div class="card mb-4">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
@@ -74,7 +72,7 @@
             </div>
         </div>
 
-        <!-- Another Sample Post -->
+
         <div class="card mb-4">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">

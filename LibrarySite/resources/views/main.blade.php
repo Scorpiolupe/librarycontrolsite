@@ -3,7 +3,7 @@
 @section('title', 'Ana Sayfa - Kütüphane')
 
 @section('content')
-    <!-- Hero Section -->
+
     <div class="hero-section text-center py-5 mb-4">
         <h1>Hoş Geldiniz</h1>
         <p class="lead">Kitapları keşfedin, arkadaşlarınızla paylaşın ve okuma deneyiminizi zenginleştirin.</p>
@@ -17,35 +17,37 @@
         </div>
     </div>
 
-    <!-- Featured Books Section -->
+
     <div class="row mb-4">
         <div class="col-12">
             <h3 class="mb-4">Öne Çıkan Kitaplar</h3>
         </div>
         @foreach($featuredBooks as $book)
         <div class="col-md-4 mb-3">
-            <div class="card h-100">
-                <img src="{{ $book->book_cover ?? 'https://via.placeholder.com/350x200' }}" class="card-img-top" alt="{{ $book->book_name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $book->book_name }}</h5>
-                    <p class="card-text">{{ $book->author }}</p>
-                    <div class="text-warning mb-2">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= round($book->ratings_avg_rating))
-                                ⭐
-                            @else
-                                ☆
-                            @endif
-                        @endfor
-                        ({{ number_format($book->ratings_avg_rating, 1) }})
+            <a href="/books/{{ $book->id }}" class="text-decoration-none">
+                <div class="card h-100">
+                    <img src="{{ $book->book_cover ?? 'https://via.placeholder.com/350x500' }}" class="card-img-top book-cover" alt="{{ $book->book_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">{{ $book->book_name }}</h5>
+                        <p class="card-text text-secondary">{{ $book->author->name }}</p>
+                        <div class="text-warning mb-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= round($book->avg_rating ?? 0))
+                                    ⭐
+                                @else
+                                    ☆
+                                @endif
+                            @endfor
+                            <span class="text-secondary">({{ number_format($book->avg_rating ?? 0, 1) }})</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         @endforeach
     </div>
 
-    <!-- Recent Activities Section -->
+
     <div class="row">
         <div class="col-12">
             <h3 class="mb-4">Son Aktiviteler</h3>
@@ -87,6 +89,10 @@
     .list-group-item {
         border-left: none;
         border-right: none;
+    }
+    .book-cover {
+        height: 400px;
+        object-fit: cover;
     }
 </style>
 @endsection

@@ -20,6 +20,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>TC Kimlik No</th>
                             <th>Ad Soyad</th>
                             <th>E-posta</th>
                             <th>Telefon</th>
@@ -32,6 +33,7 @@
                         @forelse($users as $user)
                         <tr>
                             <td>{{ $user->id }}</td>
+                            <td>{{ $user->tcno }}</td>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>

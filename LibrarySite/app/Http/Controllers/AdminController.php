@@ -125,7 +125,6 @@ class AdminController extends Controller
             'shelf' => 'required|integer|min:1|max:20',
             'position' => 'required|integer|min:1|max:150',
             'condition' => 'required|in:yıpranmamış,az yıpranmış,yıpranmış,çok yıpranmış',
-            'status' => 'required|in:available,borrowed,reserved,lost',
             'acquisition_source_id' => 'required|exists:acquisition_sources,id',
             'acquisition_date' => 'required|date',
             'acquisition_cost' => 'nullable|numeric',
@@ -149,11 +148,10 @@ class AdminController extends Controller
             $bookCopy = BookCopy::create([
                 'book_id' => $request->book_id,
                 'shelf_location' => $formattedLocation,
-                'status' => $request->status,
+                'status' => 'available',
                 'condition' => $request->condition
             ]);
 
-            // Edinme bilgilerini kaydet
             Acquisition::create([
                 'book_copy_id' => $bookCopy->id,
                 'acquisition_source_id' => $request->acquisition_source_id,
@@ -618,6 +616,7 @@ class AdminController extends Controller
     public function storeUser(Request $request)
     {
         $request->validate([
+            'tcno' => 'required|string|size:11|unique:users',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
@@ -626,6 +625,7 @@ class AdminController extends Controller
         ]);
 
         $user = User::create([
+            'tcno' => $request->tcno,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),

@@ -191,9 +191,6 @@ option {
 @endsection
 
 @section('content')
-<div class="header">
-    <h1>Kitaplar</h1>
-</div>
 
 <!-- Move search section here -->
 <div class="search-section">
@@ -207,7 +204,7 @@ option {
 </div>
 
 <div class="row">
-    <!-- Filters -->
+  
     <div class="col-md-3 mb-4">
         <div class="filter-card">
             <h5 class="mb-3">Filtreler</h5>
@@ -252,7 +249,7 @@ option {
         </div>
     </div>
 
-    <!-- Books List -->
+ 
     <div class="col-md-9">
         <div class="row">
             @foreach($copies as $copy)

@@ -3,9 +3,7 @@
 @section('title', 'Arkadaşlar')
 
 @section('content')
-<div class="header">
-    <h1>Arkadaşlar</h1>
-</div>
+
 <div class="container">
     <div class="row mb-4">
         <div class="col">

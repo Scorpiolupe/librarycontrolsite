@@ -4,10 +4,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12 mb-4">
-        <h2>Yönetim Paneli</h2>
-        <hr>
-    </div>
+    
 
 
     <div class="col-md-3 mb-4">

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('barcode')->unique();
             $table->string('shelf_location')->nullable();
             $table->string('condition')->default('Yeni');
-            $table->enum('status', ['available', 'borrowed', 'reserved', 'lost'])->default('available'); // not nullable, has default
+            $table->enum('status', ['available', 'borrowed', 'reserved', 'lost'])->default('available');
             $table->boolean('is_reference')->default(false);
             $table->string('cover_image')->nullable();
             $table->text('notes')->nullable();
