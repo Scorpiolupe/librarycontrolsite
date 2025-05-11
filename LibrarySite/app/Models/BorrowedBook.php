@@ -16,7 +16,8 @@ class BorrowedBook extends Model
         'status',
         'delay_day',
         'late_fee',
-        'notes'
+        'notes',
+        'extension_count',
     ];
 
     protected $dates = [

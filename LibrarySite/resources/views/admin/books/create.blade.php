@@ -94,7 +94,15 @@
 
             <div class="col-md-12 mb-3">
                 <label for="book_cover" class="form-label">Kitap Kapağı</label>
-                <input type="file" class="form-control" id="book_cover" name="book_cover" accept="image/*">
+                <input type="file" 
+                       class="form-control @error('book_cover') is-invalid @enderror" 
+                       id="book_cover" 
+                       name="book_cover" 
+                       accept="image/jpeg,image/png,image/gif,image/jpg">
+                @error('book_cover')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">İzin verilen formatlar: JPEG, PNG, JPG, GIF (Max: 2MB)</small>
             </div>
 
             <div class="col-12">

@@ -15,6 +15,7 @@ use App\Models\Publisher;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BookController extends Controller
 {
@@ -78,6 +79,15 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->hasFile('book_cover')) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['book_cover' => 'Lütfen bir kitap kapağı yükleyin.']);
+        }
+
+        $file = $request->file('book_cover');
+        
+        // Validate file
         $request->validate([
             'book_name' => 'required|string|max:255',
             'author_id' => 'required|exists:authors,id',
@@ -88,36 +98,67 @@ class BookController extends Controller
             'publisher_id' => 'required|exists:publishers,id',
             'publish_year' => 'required|integer',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'book_cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $existingBook = Book::where('isbn', $request->isbn)->first();
+        try {
+            $data = $request->except('book_cover');
+            
+            if ($request->hasFile('book_cover')) {
+                try {
+                    $file = $request->file('book_cover');
+                    
+                    // Debug info
+                    Log::info('File upload attempt', [
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize()
+                    ]);
+                    
+                    $extension = $file->getClientOriginalExtension();
+                    $fileName = time() . '_' . str_replace(' ', '_', $request->book_name) . '.' . $extension;
+                    
+                    // Make sure directory exists
+                    $storage_path = storage_path('app/public/books');
+                    if (!file_exists($storage_path)) {
+                        mkdir($storage_path, 0755, true);
+                    }
+                    
+                    // Store with absolute path
+                    $path = $file->storeAs('books', $fileName, 'public');
+                    
+                    Log::info('File stored at: ' . $path);
+                    
+                    if (!$path) {
+                        throw new \Exception('File could not be saved');
+                    }
+                    
+                    // Update data with correct path
+                    $data['book_cover'] = $path;
+                    
+                } catch (\Exception $e) {
+                    Log::error('Book cover upload failed: ' . $e->getMessage());
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['book_cover' => 'Dosya yüklenemedi: ' . $e->getMessage()]);
+                }
+            }
 
-        if ($existingBook) {
-            return redirect()->back()->with('error', 'Bu ISBN numarasına sahip bir kitap zaten mevcut.');
+            $book = Book::create($data);
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'activity_type' => 'book_creation',
+                'activity_description' => 'Created book: ' . $request->book_name,
+            ]);
+
+            return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla oluşturuldu.');
+        } catch (\Exception $e) {
+            Log::error('Book cover upload error: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['book_cover' => 'Dosya yüklenirken bir hata oluştu: ' . $e->getMessage()]);
         }
-
-        $data = $request->all();
-        
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->extension();
-            $image->move(public_path('storage/books'), $imageName);
-            $data['image'] = 'books/' . $imageName;
-        }
-
-        $book = Book::create($data);
-
-
-        Activity::create([
-            'user_id' => Auth::id(),
-            'activity_type' => 'book_creation',
-            'activity_description' => 'Created book: ' . $request->book_name,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-
-        return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla oluşturuldu.');
     }
 
     public function books(Request $request)
@@ -230,11 +271,30 @@ class BookController extends Controller
             'isbn' => 'required|string|max:13|unique:books,isbn,'.$id,
             'page_count' => 'required|integer',
             'publish_year' => 'required|integer',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'book_cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $book = Book::findOrFail($id);
-        $book->update($request->all());
+        $data = $request->except('book_cover');
+
+        if ($request->hasFile('book_cover')) {
+            // Delete old cover if exists
+            if ($book->book_cover && !filter_var($book->book_cover, FILTER_VALIDATE_URL)) {
+                $oldPath = storage_path('app/public/' . $book->book_cover);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            // Store new cover
+            $file = $request->file('book_cover');
+            $fileName = time() . '_' . str_replace(' ', '_', $request->book_name) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('books', $fileName, 'public');
+            $data['book_cover'] = $path;
+        }
+
+        $book->update($data);
 
         return redirect()->route('admin.listBooks')->with('success', 'Kitap başarıyla güncellendi.');
     }
