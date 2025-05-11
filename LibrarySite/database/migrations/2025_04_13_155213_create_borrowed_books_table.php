@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', ['borrowed', 'returned', 'overdue'])->default('borrowed');
             $table->integer('delay_day')->default(0);
             $table->integer('late_fee')->default(0);
+            $table->integer('extension_count')->default(0);
             $table->text('notes')->nullable();
             $table->dateTimeTz('created_at')->nullable();
             $table->dateTimeTz('updated_at')->nullable();

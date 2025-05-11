@@ -18,6 +18,7 @@ class User extends Authenticatable
         'tel',
         'is_admin',
         'tcno',
+        'avatar',
     ];
 
     protected $hidden =[
@@ -37,5 +38,15 @@ class User extends Authenticatable
     public function borrowings()
     {
         return $this->hasMany(BorrowedBook::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(BookReview::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(BookRating::class);
     }
 }

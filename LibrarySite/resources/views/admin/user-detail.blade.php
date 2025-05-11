@@ -253,7 +253,12 @@
                 <h5 class="modal-title">Kitap Ödünç Ver</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('admin.userBorrowBook', $user->id) }}" method="POST">
+            @if(session('borrow_error'))
+                <div class="alert alert-danger m-3 mb-0">
+                    {{ session('borrow_error') }}
+                </div>
+            @endif
+            <form action="{{ route('admin.userBorrowBook', $user->id) }}" method="POST" id="borrowForm">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -274,6 +279,14 @@
         </div>
     </div>
 </div>
+@if(session('borrow_error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var borrowModal = new bootstrap.Modal(document.getElementById('borrowBookModal'));
+        borrowModal.show();
+    });
+</script>
+@endif
 @endsection
 
 @push('styles')

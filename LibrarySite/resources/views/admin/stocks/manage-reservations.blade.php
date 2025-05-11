@@ -2,8 +2,8 @@
 
 @section('title', 'Rezervasyonları Yönet')
 
-@section('content')
 <div class="container">
+    @section('content')
     <h2 class="mb-4">Rezervasyon İşlemleri</h2>
 
     <ul class="nav nav-tabs mb-4">
@@ -23,6 +23,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Kitap Adı</th>
+                            <th>ISBN</th>
                             <th>Barkod</th>
                             <th>Kullanıcı ID</th>
                             <th>Üye</th>
@@ -34,8 +35,9 @@
                     <tbody>
                         @forelse($pendingReservations as $reservation)
                         <tr>
-                            <td>{{ $reservation->id }}a</td>
+                            <td>{{ $reservation->id }}</td>
                             <td>{{ $reservation->bookCopy->book->book_name }}</td>
+                            <td>{{ $reservation->bookCopy->book->isbn }}</td>
                             <td>{{ $reservation->bookCopy->barcode }}</td>
                             <td>{{ $reservation->user->id }}</td>
                             <td>{{ $reservation->user->name }}</td>
@@ -52,7 +54,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center">Bekleyen rezervasyon isteği yok</td>
+                            <td colspan="9" class="text-center">Bekleyen rezervasyon isteği yok</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -65,9 +67,13 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                        <th>ID</th>
                             <th>Kitap Adı</th>
+                            <th>ISBN</th>
+                            <th>Barkod</th>
+                            <th>Kullanıcı ID</th>
                             <th>Üye</th>
+                            <th>Telefon</th>
                             <th>Onay Tarihi</th>
                             <th>Durum</th>
                             <th>İşlemler</th> <!-- Yeni kolon eklendi -->
@@ -76,9 +82,13 @@
                     <tbody>
                         @forelse($approvedReservations as $reservation)
                         <tr>
-                            <td>{{ $reservation->id }}</td>
+                        <td>{{ $reservation->id }}</td>
                             <td>{{ $reservation->bookCopy->book->book_name }}</td>
+                            <td>{{ $reservation->bookCopy->book->isbn }}</td>
+                            <td>{{ $reservation->bookCopy->barcode }}</td>
+                            <td>{{ $reservation->user->id }}</td>
                             <td>{{ $reservation->user->name }}</td>
+                            <td>{{ $reservation->user->tel }}</td>
                             <td>{{ $reservation->approval_date }}</td>
                             <td>
                                 <span class="badge bg-success">Onaylandı</span>
@@ -99,6 +109,7 @@
             </div>
         </div>
     </div>
+    @endsection
 </div>
 
 @section('js')

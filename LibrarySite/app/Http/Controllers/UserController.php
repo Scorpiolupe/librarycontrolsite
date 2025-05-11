@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Reservation;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -83,9 +84,15 @@ class UserController extends Controller
             'return_date' => 'required|date|after:today'
         ]);
 
-        $copy = BookCopy::where('barcode', $request->barcode)
-                       ->where('status', 'available')
-                       ->firstOrFail();
+        $copy = BookCopy::where('barcode', $request->barcode)->first();
+
+        if (!$copy) {
+            return back()->with('borrow_error', 'Bu barkod numarasına sahip kitap bulunamadı.')->withInput();
+        }
+
+        if ($copy->status !== 'available') {
+            return back()->with('borrow_error', 'Bu kitap ödünç vermeye uygun değil.')->withInput();
+        }
 
         $borrowedBook = BorrowedBook::create([
             'user_id' => $userId,
@@ -125,5 +132,30 @@ class UserController extends Controller
         $borrow->save();
 
         return redirect()->back()->with('success', 'Süre başarıyla uzatıldı.');
+    }
+
+    public function extendBorrowDate(BorrowedBook $borrow)
+    {
+        // Check if user owns this borrow or is admin
+        if (Auth::id() != $borrow->user_id) {
+            return back()->with('error', 'Bu işlem için yetkiniz yok.');
+        }
+
+        // Check if book is still borrowed
+        if ($borrow->status != 'borrowed') {
+            return back()->with('error', 'Bu kitap için süre uzatılamaz.');
+        }
+
+        // Check extension limit
+        if ($borrow->extension_count >= 3) {
+            return back()->with('error', 'Bu kitap için maksimum uzatma sayısına ulaşıldı.');
+        }
+
+        // Extend return date by 7 days and increment extension count
+        $borrow->return_date = Carbon::parse($borrow->return_date)->addDays(7);
+        $borrow->extension_count = ($borrow->extension_count ?? 0) + 1;
+        $borrow->save();
+
+        return back()->with('success', 'İade süresi başarıyla uzatıldı.');
     }
 }

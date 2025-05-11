@@ -239,51 +239,53 @@ option {
                     </div>
                 </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Filtrele</button>
-                        @if(request()->anyFilled(['category', 'min_pages', 'max_pages', 'query']))
-                            <a href="{{ request()->is('books/search') ? '/books/search' : '/books' }}" class="btn btn-secondary">Filtreleri Temizle</a>
-                        @endif
-                    </div>
-                </form>
-            </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Filtrele</button>
+                    @if(request()->anyFilled(['category', 'min_pages', 'max_pages', 'query']))
+                        <a href="{{ request()->is('books/search') ? '/books/search' : '/books' }}" class="btn btn-secondary">Filtreleri Temizle</a>
+                    @endif
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="col-md-9">
-            <div class="row">
-                @if($copies->isEmpty())
-                    <div class="col-12">
-                        <div class="alert alert-info" role="alert">
-                            Aradığınız kriterlere uygun kitap bulunamadı.
-                        </div>
-                    </div>
-                @else
-                    @foreach($copies as $copy)
-                    <div class="col-12">
-                        <a href="/books/{{ $copy->book->id }}" class="book-link">
-                            <div class="card book-card">
-                                <div class="card-body">
-                                    <h5 class="card-title mb-2">{{ $copy->book->book_name }}</h5>
-                                    <p class="card-text mb-2">{{ $copy->book->author->name }}</p>
-                                   
-                                    <div class="book-details">
-                                        <p><strong>ISBN:</strong> {{ $copy->book->isbn }} | 
-                                        <strong>Kategori:</strong> {{ $copy->book->category->category_name }} | 
-                                        <strong>Sayfa:</strong> {{ $copy->book->page_count }} |  
-                                        <strong>Yayınevi:</strong> {{ $copy->book->publisher->name }} | 
-                                        <strong>Yayın Yılı:</strong> {{ $copy->book->publish_year }} | 
-                                        <strong>Raf:</strong> {{ $copy->shelf_location ?? 'Belirtilmemiş' }} | <br>
-                                        <strong>Durum:</strong> {{ $copy->status == 'available' ? 'Müsait' : 'Ödünç Alındı' }} 
-                                    </p>
-
-                                    </div>
-                                </div>
+ 
+    <div class="col-md-9">
+        <div class="row">
+            @foreach($copies as $copy)
+            <div class="col-12">
+                <div class="card book-card">
+                    <a href="{{ url('/books/'.$copy->id) }}" class="book-link">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">{{ $copy->book->book_name }}</h5>
+                            <p class="card-text mb-2">{{ $copy->book->author->name }}</p>
+                           
+                            <div class="book-details">
+                                <p>
+                                    <strong>ISBN:</strong> {{ $copy->book->isbn }} | 
+                                    <strong>Kategori:</strong> {{ $copy->book->category->category_name }} | 
+                                    <strong>Sayfa:</strong> {{ $copy->book->page_count }} |  
+                                    <strong>Yayınevi:</strong> {{ $copy->book->publisher->name }} | 
+                                    <strong>Yayın Yılı:</strong> {{ $copy->book->publish_year }} | 
+                                    <strong>Raf:</strong> {{ $copy->shelf_location ?? 'Belirtilmemiş' }} | <br>
+                                    <strong>Durum:</strong>
+                                    @if($copy->status == 'available')
+                                        Müsait
+                                    @elseif($copy->status == 'borrowed')
+                                        Ödünç Alındı
+                                    @elseif($copy->status == 'reserved')
+                                        Rezerve Edildi
+                                    @else
+                                        {{ ucfirst($copy->status) }}
+                                    @endif
+                                </p>
                             </div>
-                        </a>
-                    </div>
-                    @endforeach
-                @endif
+                        </div>
+                    </a>
+                </div>
             </div>
+            @endforeach
+        </div>
 
         <div class="mt-4">
             <div class="d-flex justify-content-between align-items-center">
