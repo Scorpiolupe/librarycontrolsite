@@ -105,7 +105,7 @@
                                     <option value="1">1. Kat</option>
                                     <option value="2">2. Kat</option>
                                 </select>
-                            </div>
+                            </div>ss
                             <div class="col-md-4 mb-3">
                                 <label for="row" class="form-label">Sıra No</label>
                                 <select class="form-select" id="row" name="row" required>
