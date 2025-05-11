@@ -17,7 +17,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\AuthorController;
-use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\PublisherController;
 
 
@@ -124,8 +123,6 @@ Route::get('/api/genres', function (Request $request) {
     $genres = Genre::where('category_id', $categoryId)->get();
     return response()->json($genres);
 });
-
-Route::post('/borrowing/{borrowing}/extend', [BorrowingController::class, 'extend'])->name('borrowing.extend');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
