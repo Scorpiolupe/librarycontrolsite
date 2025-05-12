@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row"><!-- books-list -->
     @forelse($copies as $copy)
     <div class="col-12">
         <div class="card book-card">

@@ -146,7 +146,7 @@
                         <strong>Ortalama Puan:</strong> {{ number_format($book->average_rating, 1) }}/5.0 
                         ({{ $book->ratings_count }} oylama)
                     </div>
-                    
+                    <!-- -->
                     @auth
                     <form action="/books/{{ $book->id }}/rate" method="POST" id="ratingForm">
                         @csrf

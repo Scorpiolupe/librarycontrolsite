@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const booksList = document.getElementById('books-list');
     const clearBtn = document.getElementById('clear-search');
     let timer = null;
-
+// asda
     function fetchBooks() {
         const params = new URLSearchParams(new FormData(filterForm));
         params.set('search', searchInput.value);

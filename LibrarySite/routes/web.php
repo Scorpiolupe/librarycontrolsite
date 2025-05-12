@@ -59,7 +59,7 @@ Route::prefix('adminpanel')->group(function () {
     Route::get('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
     Route::post('/update-user/{id}', [AdminController::class, 'updateUser'])->name('admin.updateUser');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
-
+//a
     Route::get('/adminpanel/user-profiles', [UserController::class, 'userProfiles'])->name('admin.userProfiles');
     Route::get('/user-detail/{id}', [UserController::class, 'userDetail'])->name('admin.userDetail');
     Route::post('/user/{id}/borrow-book', [UserController::class, 'userBorrowBook'])->name('admin.userBorrowBook');
