@@ -22,19 +22,43 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        // BookCopy modelinden başlayıp book ilişkisini yüklüyoruz
         $query = BookCopy::with(['book' => function($q) {
             $q->with(['category', 'genres', 'author', 'publisher']);
         }]);
 
-        // Eski sistem: kitap adı veya yazar adına göre arama
         $search = $request->get('search');
+        $searchType = $request->get('search_type', 'all');
         if ($search) {
-            $query->whereHas('book', function($q) use ($search) {
-                $q->where('book_name', 'like', "%{$search}%")
-                  ->orWhereHas('author', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+            $query->whereHas('book', function($q) use ($search, $searchType) {
+                if ($searchType === 'all') {
+                    $q->where('book_name', 'like', "%{$search}%")
+                      ->orWhereHas('author', function($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      })
+                      ->orWhere('isbn', 'like', "%{$search}%")
+                      ->orWhereHas('category', function($q) use ($search) {
+                          $q->where('category_name', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('publisher', function($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      });
+                } elseif ($searchType === 'book_name') {
+                    $q->where('book_name', 'like', "%{$search}%");
+                } elseif ($searchType === 'author') {
+                    $q->whereHas('author', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+                } elseif ($searchType === 'isbn') {
+                    $q->where('isbn', 'like', "%{$search}%");
+                } elseif ($searchType === 'category') {
+                    $q->whereHas('category', function($q) use ($search) {
+                        $q->where('category_name', 'like', "%{$search}%");
+                    });
+                } elseif ($searchType === 'publisher') {
+                    $q->whereHas('publisher', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+                }
             });
         }
 
@@ -377,11 +401,37 @@ class BookController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->whereHas('book', function($q) use ($search) {
-                $q->where('book_name', 'like', "%{$search}%")
-                  ->orWhereHas('author', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+            $searchType = $request->get('search_type', 'all');
+            $query->whereHas('book', function($q) use ($search, $searchType) {
+                if ($searchType === 'all') {
+                    $q->where('book_name', 'like', "%{$search}%")
+                      ->orWhereHas('author', function($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      })
+                      ->orWhere('isbn', 'like', "%{$search}%")
+                      ->orWhereHas('category', function($q) use ($search) {
+                          $q->where('category_name', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('publisher', function($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      });
+                } elseif ($searchType === 'book_name') {
+                    $q->where('book_name', 'like', "%{$search}%");
+                } elseif ($searchType === 'author') {
+                    $q->whereHas('author', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+                } elseif ($searchType === 'isbn') {
+                    $q->where('isbn', 'like', "%{$search}%");
+                } elseif ($searchType === 'category') {
+                    $q->whereHas('category', function($q) use ($search) {
+                        $q->where('category_name', 'like', "%{$search}%");
+                    });
+                } elseif ($searchType === 'publisher') {
+                    $q->whereHas('publisher', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+                }
             });
         }
 

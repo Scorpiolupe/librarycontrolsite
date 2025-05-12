@@ -26,8 +26,8 @@
                             <th>Kategori</th>
                             <th>Yayınevi</th>
                             <th>Yayın Yılı</th>
-                            <th>Baskı</th>
-                            <th>Durum</th>
+                           
+                           
                             <th>İşlemler</th>
                         </tr>
                     </thead>
@@ -43,19 +43,11 @@
                             <td>{{ $book->category->category_name }}</td>
                             <td>{{ $book->publisher->name }}</td>
                             <td>{{ $book->publish_year }}</td>
-                            <td>{{ $book->edition ?? '-' }}</td>
-                            <td>
-                                <span class="badge {{ $book->status == 'available' ? 'bg-success' : 'bg-warning' }}">
-                                    {{ $book->status }}
-                                </span>
-                            </td>
+                            
+                           
                             <td>
                                 <div class="btn-group" role="group">
-                                    @foreach($book->bookCopies as $copy)
-                                        <a href="{{ url('/books/'.$copy->id) }}" class="btn btn-info btn-sm" title="Detay">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    @endforeach
+                                    
                                     <a href="{{ route('admin.editBook', $book->id) }}" class="btn btn-warning btn-sm" title="Düzenle">
                                         <i class="bi bi-pencil"></i>
                                     </a>

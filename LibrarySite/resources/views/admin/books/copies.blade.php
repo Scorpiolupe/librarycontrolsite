@@ -60,8 +60,19 @@
                             <td>{{ $copy->acquisition->acquisition_cost ? number_format($copy->acquisition->acquisition_cost, 2) . ' ₺' : 'Belirtilmemiş' }}</td>
                             <td>{{ $copy->condition}}</td>
                             <td>
-                                <span class="badge {{ $copy->status == 'available' ? 'bg-success' : 'bg-warning' }}">
-                                     {{$copy->status}}
+                                <span class="badge 
+                                    {{ $copy->status == 'available' ? 'bg-success' : ($copy->status == 'borrowed' ? 'bg-warning' : ($copy->status == 'reserved' ? 'bg-info' : 'bg-secondary')) }}">
+                                    @if($copy->status == 'available')
+                                        Mevcut
+                                    @elseif($copy->status == 'borrowed')
+                                        Ödünç Verildi
+                                    @elseif($copy->status == 'reserved')
+                                        Rezerve
+                                    @elseif($copy->status == 'lost')
+                                        Kayıp
+                                    @else
+                                        {{ ucfirst($copy->status) }}
+                                    @endif
                                 </span>
                             </td>
                             
