@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             Categories::class,
             Genres::class,
             Admin::class,
+            Users::class,     
             Publishers::class,
             Authors::class,
             Languages::class,
