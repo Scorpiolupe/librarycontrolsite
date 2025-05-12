@@ -80,17 +80,44 @@ class AdminController extends Controller
 
     public function manageCopies(Request $request) {
         $search = $request->search;
-        
+        $searchType = $request->search_type ?? 'all';
+
         $copies = BookCopy::with(['book', 'acquisition.source'])
-            ->when($search, function($query) use ($search) {
-                $query->whereHas('book', function($q) use ($search) {
-                    $q->where('isbn', 'like', '%'.$search.'%');
-                })->orWhere('barcode', 'like', '%'.$search.'%');
+            ->when($search, function($query) use ($search, $searchType) {
+                $query->where(function($q) use ($search, $searchType) {
+                    if ($searchType === 'all') {
+                        $q->whereHas('book', function($b) use ($search) {
+                            $b->where('book_name', 'like', "%{$search}%")
+                              ->orWhere('isbn', 'like', "%{$search}%");
+                        })
+                        ->orWhere('barcode', 'like', "%{$search}%")
+                        ->orWhereHas('acquisition.source', function($a) use ($search) {
+                            $a->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhere('shelf_location', 'like', "%{$search}%");
+                    } elseif ($searchType === 'book_name') {
+                        $q->whereHas('book', function($b) use ($search) {
+                            $b->where('book_name', 'like', "%{$search}%");
+                        });
+                    } elseif ($searchType === 'isbn') {
+                        $q->whereHas('book', function($b) use ($search) {
+                            $b->where('isbn', 'like', "%{$search}%");
+                        });
+                    } elseif ($searchType === 'barcode') {
+                        $q->where('barcode', 'like', "%{$search}%");
+                    } elseif ($searchType === 'acquisition_source') {
+                        $q->whereHas('acquisition.source', function($a) use ($search) {
+                            $a->where('name', 'like', "%{$search}%");
+                        });
+                    } elseif ($searchType === 'shelf_location') {
+                        $q->where('shelf_location', 'like', "%{$search}%");
+                    }
+                });
             })
             ->orderBy('id', 'desc')
             ->paginate(10)
             ->withQueryString();
-            
+
         return view('admin.books.copies', compact('copies'));
     }
 

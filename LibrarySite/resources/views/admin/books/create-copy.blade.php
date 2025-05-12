@@ -20,20 +20,15 @@
         @csrf
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="book_id" class="form-label">Kitap</label>
-                <select class="form-select" id="book_id" name="book_id" required>
-                    <option value="">Kitap Seçin</option>
-                    @foreach($books as $book)
-                        <option value="{{ $book->book_name }}">{{ $book->book_name }}</option>
-                    @endforeach
-                </select>
+                <label for="book_search" class="form-label">Kitap</label>
+                <input type="text" class="form-control" id="book_search" name="book_search" placeholder="Kitap ismi girin..." autocomplete="off" required>
+                <input type="hidden" id="selected_book_id" name="book_id">
+                <div id="book_search_list" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="isbn" class="form-label">ISBN</label>
-                <select class="form-select" id="isbn" name="isbn" required>
-                    <option value="">Önce kitap seçin</option>
-                </select>
+                <label for="isbn_input" class="form-label">ISBN</label>
+                <input type="text" class="form-control" id="isbn_input" name="isbn_input" placeholder="ISBN girin..." autocomplete="off">
             </div>
 
             <div class="col-md-6 mb-3">
@@ -105,7 +100,7 @@
                                     <option value="1">1. Kat</option>
                                     <option value="2">2. Kat</option>
                                 </select>
-                            </div>ss
+                            </div>
                             <div class="col-md-4 mb-3">
                                 <label for="row" class="form-label">Sıra No</label>
                                 <select class="form-select" id="row" name="row" required>
@@ -137,8 +132,6 @@
             </div>
         </div>
 
-        <input type="hidden" id="selected_book_id" name="book_id">
-
         <button type="submit" class="btn btn-primary">Ekle</button>
     </form>
 </div>
@@ -147,55 +140,103 @@
 @section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const bookSelect = document.getElementById('book_id');
-    const isbnSelect = document.getElementById('isbn');
+    const bookSearchInput = document.getElementById('book_search');
+    const bookSearchList = document.getElementById('book_search_list');
+    const isbnInput = document.getElementById('isbn_input');
     const publisherInput = document.getElementById('publisher');
     const selectedBookIdInput = document.getElementById('selected_book_id');
 
-    bookSelect.addEventListener('change', function() {
-        const bookName = this.value;
-        isbnSelect.innerHTML = '<option value="">ISBN yükleniyor...</option>';
-        publisherInput.value = '';
-        selectedBookIdInput.value = '';
+    let debounceTimeout = null;
 
-        if (bookName) {
-            fetch(`/adminpanel/books/${encodeURIComponent(bookName)}/isbns`)
+    // Kitap ismine göre arama
+    bookSearchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        selectedBookIdInput.value = '';
+        isbnInput.value = '';
+        publisherInput.value = '';
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+        if (query.length < 2) {
+            bookSearchList.innerHTML = '';
+            bookSearchList.style.display = 'none';
+            return;
+        }
+        debounceTimeout = setTimeout(() => {
+            fetch(`/api/books/search?query=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
-                    isbnSelect.innerHTML = '<option value="">ISBN Seçin</option>';
-                    if (!data.error && data.books.length > 0) {
-                        data.books.forEach(book => {
-                            const option = document.createElement('option');
-                            option.value = book.isbn;
-                            option.textContent = book.isbn;
-                            option.dataset.id = book.id;
-                            option.dataset.publisher = book.publisher;
-                            isbnSelect.appendChild(option);
+                    bookSearchList.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(book => {
+                            const item = document.createElement('button');
+                            item.type = 'button';
+                            item.className = 'list-group-item list-group-item-action';
+                            item.textContent = book.book_name
+                                + (book.author ? ' - ' + book.author : '')
+                                + (book.isbn ? ' - ' + book.isbn : '');
+                            item.dataset.id = book.id;
+                            item.dataset.name = book.book_name;
+                            bookSearchList.appendChild(item);
                         });
+                        bookSearchList.style.display = 'block';
                     } else {
-                        isbnSelect.innerHTML = '<option value="">ISBN bulunamadı</option>';
+                        bookSearchList.style.display = 'none';
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    isbnSelect.innerHTML = '<option value="">Bir hata oluştu</option>';
                 });
-        } else {
-            isbnSelect.innerHTML = '<option value="">Önce kitap seçin</option>';
+        }, 250);
+    });
+
+    // Kitap seçildiğinde
+    bookSearchList.addEventListener('click', function(e) {
+        if (e.target && e.target.matches('.list-group-item')) {
+            bookSearchInput.value = e.target.dataset.name;
+            selectedBookIdInput.value = e.target.dataset.id;
+            bookSearchList.innerHTML = '';
+            bookSearchList.style.display = 'none';
+            // Seçilen kitap id'siyle kitap bilgilerini getir
+            fetch(`/api/books/search-by-id?id=${encodeURIComponent(e.target.dataset.id)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.book) {
+                        isbnInput.value = data.book.isbn || '';
+                        publisherInput.value = data.book.publisher || '';
+                    } else {
+                        isbnInput.value = '';
+                        publisherInput.value = '';
+                    }
+                });
         }
     });
 
-    isbnSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        if (selectedOption.dataset.id) {
-            selectedBookIdInput.value = selectedOption.dataset.id;
-            publisherInput.value = selectedOption.dataset.publisher;
-        } else {
+    // ISBN input ile kitap bulma
+    isbnInput.addEventListener('input', function() {
+        const isbn = this.value.trim();
+        if (isbn.length < 5) {
+            bookSearchInput.value = '';
             selectedBookIdInput.value = '';
             publisherInput.value = '';
+            return;
+        }
+        fetch(`/api/books/search-by-isbn?isbn=${encodeURIComponent(isbn)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.book) {
+                    bookSearchInput.value = data.book.book_name || '';
+                    selectedBookIdInput.value = data.book.id || '';
+                    publisherInput.value = data.book.publisher || '';
+                } else {
+                    bookSearchInput.value = '';
+                    selectedBookIdInput.value = '';
+                    publisherInput.value = '';
+                }
+            });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!bookSearchInput.contains(e.target) && !bookSearchList.contains(e.target)) {
+            bookSearchList.innerHTML = '';
+            bookSearchList.style.display = 'none';
         }
     });
 });
-
 </script>
 @endsection

@@ -24,13 +24,12 @@ class BookController extends Controller
     {
         // BookCopy modelinden başlayıp book ilişkisini yüklüyoruz
         $query = BookCopy::with(['book' => function($q) {
-            // Book ile ilişkili diğer modelleri de yüklüyoruz
-            $q->with(['category', 'genres', 'author']);
+            $q->with(['category', 'genres', 'author', 'publisher']);
         }]);
 
-        // Arama filtresi - kitap adı veya yazar adına göre
-        if ($request->has('search')) {
-            $search = $request->get('search');
+        // Eski sistem: kitap adı veya yazar adına göre arama
+        $search = $request->get('search');
+        if ($search) {
             $query->whereHas('book', function($q) use ($search) {
                 $q->where('book_name', 'like', "%{$search}%")
                   ->orWhereHas('author', function($q) use ($search) {
@@ -40,31 +39,29 @@ class BookController extends Controller
         }
 
         // Kategori filtresi
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $query->whereHas('book', function($q) use ($request) {
                 $q->where('category_id', $request->category);
             });
         }
 
-        // Tür filtresi
-        if ($request->has('genre')) {
-            $query->whereHas('book.genres', function($q) use ($request) {
-                $q->where('genre_id', $request->genre);
-            });
-        }
-
-        // Sayfa sayısı filtresi
-        if ($request->has('page_count_min') && $request->has('page_count_max')) {
-            $query->whereHas('book', function($q) use ($request) {
-                $q->whereBetween('page_count', [
-                    $request->page_count_min, 
-                    $request->page_count_max
-                ]);
+        // Sayfa aralığı filtresi
+        $minPages = $request->get('min_pages');
+        $maxPages = $request->get('max_pages');
+        if ($minPages !== null || $maxPages !== null) {
+            $query->whereHas('book', function($q) use ($minPages, $maxPages) {
+                if ($minPages !== null && $maxPages !== null) {
+                    $q->whereBetween('page_count', [$minPages, $maxPages]);
+                } elseif ($minPages !== null) {
+                    $q->where('page_count', '>=', $minPages);
+                } elseif ($maxPages !== null) {
+                    $q->where('page_count', '<=', $maxPages);
+                }
             });
         }
 
         // Kopyaları paginate ile getir
-        $copies = $query->paginate(9);
+        $copies = $query->paginate(9)->withQueryString();
         $categories = Category::all();
         $genres = Genre::all();
 
@@ -287,20 +284,6 @@ class BookController extends Controller
         return redirect()->route('books.index')->with('success', 'Kitap başarıyla silindi.');
     }
 
-    public function search(Request $request)
-    {
-        $query = $request->get('query');
-        
-        $books = Book::where('book_name', 'like', "%{$query}%")
-                     ->orWhere('author', 'like', "%{$query}%")
-                     ->paginate(9);
-                     
-        $categories = Category::all();
-        $genres = Genre::all();
-
-        return view('books', compact('books', 'categories', 'genres'));
-    }
-
     public function toggleStatus($id)
     {
         $book = Book::findOrFail($id);
@@ -384,6 +367,41 @@ class BookController extends Controller
                 'message' => 'Bir hata oluştu: ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function filter(Request $request)
+    {
+        $query = BookCopy::with(['book' => function($q) {
+            $q->with(['category', 'genres', 'author', 'publisher']);
+        }]);
+
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->whereHas('book', function($q) use ($search) {
+                $q->where('book_name', 'like', "%{$search}%")
+                  ->orWhereHas('author', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $minPages = $request->get('min_pages');
+        $maxPages = $request->get('max_pages');
+        if ($minPages !== null || $maxPages !== null) {
+            $query->whereHas('book', function($q) use ($minPages, $maxPages) {
+                if ($minPages !== null && $maxPages !== null) {
+                    $q->whereBetween('page_count', [$minPages, $maxPages]);
+                } elseif ($minPages !== null) {
+                    $q->where('page_count', '>=', $minPages);
+                } elseif ($maxPages !== null) {
+                    $q->where('page_count', '<=', $maxPages);
+                }
+            });
+        }
+
+        $copies = $query->paginate(9);
+
+        return response()->view('partials.books-list', compact('copies'));
     }
 }
 

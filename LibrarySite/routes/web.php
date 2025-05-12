@@ -105,7 +105,7 @@ Route::post('/login', [RegisterController::class, 'login']);
 Route::get('/logout', [RegisterController::class, 'logout']);
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
-Route::get('/books/search', [BookController::class, 'search'])->name('books.search');
+Route::get('/books/filter', [BookController::class, 'filter'])->name('books.filter');
 Route::post('/books/create', [BookController::class, 'store'])->name('books.store');
 Route::get('/books/{id}', [BookController::class, 'show']);
 Route::post('/books/{id}/rate', [BookController::class, 'rate'])->middleware('auth');
@@ -128,6 +128,59 @@ Route::get('/api/genres', function (Request $request) {
     $categoryId = $request->get('category_id');
     $genres = Genre::where('category_id', $categoryId)->get();
     return response()->json($genres);
+});
+
+Route::get('/api/books/search', function (Request $request) {
+    $query = $request->get('query');
+    $books = \App\Models\Book::with('author')
+        ->where('book_name', 'like', "%{$query}%")
+        ->limit(10)
+        ->get()
+        ->map(function($book) {
+            return [
+                'id' => $book->id,
+                'book_name' => $book->book_name,
+                'author' => $book->author ? $book->author->name : null,
+                'isbn' => $book->isbn // <-- eklendi
+            ];
+        });
+    return response()->json($books);
+});
+
+Route::get('/api/books/search-by-isbn', function (Request $request) {
+    $isbn = $request->get('isbn');
+    $book = \App\Models\Book::with('publisher')
+        ->where('isbn', $isbn)
+        ->first();
+    if ($book) {
+        return response()->json([
+            'book' => [
+                'id' => $book->id,
+                'book_name' => $book->book_name,
+                'isbn' => $book->isbn,
+                'publisher' => $book->publisher ? $book->publisher->name : null
+            ]
+        ]);
+    }
+    return response()->json(['book' => null]);
+});
+
+Route::get('/api/books/search-by-id', function (Request $request) {
+    $id = $request->get('id');
+    $book = \App\Models\Book::with('publisher')
+        ->where('id', $id)
+        ->first();
+    if ($book) {
+        return response()->json([
+            'book' => [
+                'id' => $book->id,
+                'book_name' => $book->book_name,
+                'isbn' => $book->isbn,
+                'publisher' => $book->publisher ? $book->publisher->name : null
+            ]
+        ]);
+    }
+    return response()->json(['book' => null]);
 });
 
 Route::middleware(['auth'])->group(function () {

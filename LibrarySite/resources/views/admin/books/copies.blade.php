@@ -10,7 +10,15 @@
             <div class="d-flex justify-content-between mb-3">
                 <a href="{{ url('/adminpanel/create-copy') }}" class="btn btn-primary">Yeni Kitap Kopyası Ekle</a>
                 <form class="d-flex gap-2" method="GET" action="{{ route('admin.manageCopies') }}">
-                    <input type="text" name="search" class="form-control" placeholder="ISBN veya Barkod ile ara..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="Arama..." value="{{ request('search') }}">
+                    <select name="search_type" class="form-select" style="width:auto;">
+                        <option value="all" {{ request('search_type', 'all') == 'all' ? 'selected' : '' }}>Tümü</option>
+                        <option value="book_name" {{ request('search_type') == 'book_name' ? 'selected' : '' }}>Kitap Adı</option>
+                        <option value="isbn" {{ request('search_type') == 'isbn' ? 'selected' : '' }}>ISBN</option>
+                        <option value="barcode" {{ request('search_type') == 'barcode' ? 'selected' : '' }}>Barkod</option>
+                        <option value="acquisition_source" {{ request('search_type') == 'acquisition_source' ? 'selected' : '' }}>Edinme Türü</option>
+                        <option value="shelf_location" {{ request('search_type') == 'shelf_location' ? 'selected' : '' }}>Yer Bilgisi</option>
+                    </select>
                     <button type="submit" class="btn btn-outline-primary">Ara</button>
                     @if(request('search'))
                         <a href="{{ route('admin.manageCopies') }}" class="btn btn-outline-secondary">Temizle</a>

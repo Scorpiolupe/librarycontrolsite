@@ -170,7 +170,6 @@ option {
     font-weight: 600;
 }
 
-/* Add these new styles */
 .search-section {
     display: flex;
     justify-content: flex-end;
@@ -191,112 +190,103 @@ option {
 @endsection
 
 @section('content')
-
-<!-- Move search section here -->
 <div class="search-section">
-    <form action="/books/search" method="GET" class="search-form">
-        <input type="text" name="query" class="form-control" placeholder="Kitap adı veya yazar ara..." value="{{ request('query') }}">
+    <form id="live-search-form" class="search-form" autocomplete="off">
+        <input type="text" name="search" id="live-search-input" class="form-control" placeholder="Arama..." value="">
+        <select name="search_type" id="live-search-type" class="form-select">
+            <option value="all" selected>Tümü</option>
+            <option value="book_name">Kitap Adı</option>
+            <option value="author">Yazar</option>
+            <option value="isbn">ISBN</option>
+            <option value="category">Kategori</option>
+            <option value="publisher">Yayın Evi</option>
+        </select>
         <button type="submit" class="btn btn-primary">Ara</button>
-        @if(request('query'))
-            <a href="/books" class="btn btn-secondary">Temizle</a>
-        @endif
+        <button type="button" id="clear-search" class="btn btn-secondary" style="display:none;">Temizle</button>
     </form>
 </div>
 
 <div class="row">
-  
     <div class="col-md-3 mb-4">
         <div class="filter-card">
             <h5 class="mb-3">Filtreler</h5>
-            <form action="{{ request()->is('books/search') ? '/books/search' : '/books' }}" method="GET">
-                @if(request()->has('query'))
-                    <input type="hidden" name="query" value="{{ request('query') }}">
-                @endif
-                
+            <form id="live-filter-form">
                 <div class="mb-3">
                     <label class="form-label">Kategori</label>
-                    <select name="category" class="form-select">
+                    <select name="category" class="form-select" id="filter-category">
                         <option value="">Tümü</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $category->category_name }}
-                            </option>
+                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                         @endforeach
                     </select>
                 </div>
-
-                
-
                 <div class="mb-3">
                     <label class="form-label">Sayfa Aralığı</label>
                     <div class="row g-2">
                         <div class="col-6">
-                            <input type="number" class="form-control" name="min_pages" placeholder="Min" value="{{ request('min_pages') }}" min="0">
+                            <input type="number" class="form-control" name="min_pages" id="filter-min-pages" placeholder="Min" min="0">
                         </div>
                         <div class="col-6">
-                            <input type="number" class="form-control" name="max_pages" placeholder="Max" value="{{ request('max_pages') }}" min="0">
+                            <input type="number" class="form-control" name="max_pages" id="filter-max-pages" placeholder="Max" min="0">
                         </div>
                     </div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Filtrele</button>
-                    @if(request()->anyFilled(['category', 'min_pages', 'max_pages', 'query']))
-                        <a href="{{ request()->is('books/search') ? '/books/search' : '/books' }}" class="btn btn-secondary">Filtreleri Temizle</a>
-                    @endif
                 </div>
             </form>
         </div>
     </div>
-
- 
     <div class="col-md-9">
-        <div class="row">
-            @foreach($copies as $copy)
-            <div class="col-12">
-                <div class="card book-card">
-                    <a href="{{ url('/books/'.$copy->id) }}" class="book-link">
-                        <div class="card-body">
-                            <h5 class="card-title mb-2">{{ $copy->book->book_name }}</h5>
-                            <p class="card-text mb-2">{{ $copy->book->author->name }}</p>
-                           
-                            <div class="book-details">
-                                <p>
-                                    <strong>ISBN:</strong> {{ $copy->book->isbn }} | 
-                                    <strong>Kategori:</strong> {{ $copy->book->category->category_name }} | 
-                                    <strong>Sayfa:</strong> {{ $copy->book->page_count }} |  
-                                    <strong>Yayınevi:</strong> {{ $copy->book->publisher->name }} | 
-                                    <strong>Yayın Yılı:</strong> {{ $copy->book->publish_year }} | 
-                                    <strong>Raf:</strong> {{ $copy->shelf_location ?? 'Belirtilmemiş' }} | <br>
-                                    <strong>Durum:</strong>
-                                    @if($copy->status == 'available')
-                                        Müsait
-                                    @elseif($copy->status == 'borrowed')
-                                        Ödünç Alındı
-                                    @elseif($copy->status == 'reserved')
-                                        Rezerve Edildi
-                                    @else
-                                        {{ ucfirst($copy->status) }}
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        <div class="mt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="page-info">
-                    <p>Toplam {{ $copies->total() }} kitap, {{ $copies->lastPage() }} sayfa</p>
-                </div>
-                <div class="pagination">
-                    {{ $copies->links() }}
-                </div>
-            </div>
+        <div id="books-list">
+            @include('partials.books-list', ['copies' => $copies])
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('live-search-input');
+    const searchType = document.getElementById('live-search-type');
+    const searchForm = document.getElementById('live-search-form');
+    const filterForm = document.getElementById('live-filter-form');
+    const booksList = document.getElementById('books-list');
+    const clearBtn = document.getElementById('clear-search');
+    let timer = null;
+
+    function fetchBooks() {
+        const params = new URLSearchParams(new FormData(filterForm));
+        params.set('search', searchInput.value);
+        params.set('search_type', searchType.value);
+
+        fetch('/books/filter?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            booksList.innerHTML = html;
+        });
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(fetchBooks, 300);
+        clearBtn.style.display = this.value ? 'inline-block' : 'none';
+    });
+
+    searchType.addEventListener('change', fetchBooks);
+
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        fetchBooks();
+        this.style.display = 'none';
+    });
+
+    filterForm.addEventListener('change', fetchBooks);
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetchBooks();
+    });
+});
+</script>
 @endsection
