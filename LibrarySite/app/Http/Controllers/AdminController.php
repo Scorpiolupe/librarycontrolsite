@@ -827,4 +827,72 @@ class AdminController extends Controller
             ]);
         }
     }
+
+    public function checkBarcode(Request $request, $userId)
+    {
+        if($request->has('action') && $request->action === 'borrow') {
+            return $this->userBorrowBook($request, $userId);
+        }
+
+        $bookCopy = BookCopy::where('barcode', $request->barcode)
+            ->with(['book.author', 'book.publisher'])
+            ->first();
+
+        if (!$bookCopy) {
+            return back()->with('book_error', 'Kitap bulunamadı')->withInput();
+        }
+
+        if ($bookCopy->is_borrowed || $bookCopy->is_reserved) {
+            return back()->with('book_error', 'Bu kitap şu anda ödünç verilemez')->withInput();
+        }
+
+        return back()->with('book_details', [
+            'name' => $bookCopy->book->book_name,
+            'author' => $bookCopy->book->author->name,
+            'isbn' => $bookCopy->book->isbn,
+            'publisher' => $bookCopy->book->publisher->name,
+            'pages' => $bookCopy->book->page_count
+        ])->withInput();
+    }
+
+    public function userBorrowBook(Request $request, $userId)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $bookCopy = BookCopy::where('barcode', $request->barcode)
+                ->with('book')
+                ->first();
+
+            if (!$bookCopy) {
+                return back()->with('borrow_error', 'Kitap bulunamadı.');
+            }
+
+            if ($bookCopy->is_borrowed || $bookCopy->is_reserved) {
+                return back()->with('borrow_error', 'Bu kitap şu anda ödünç verilemez.');
+            }
+
+            // Ödünç verme kaydı oluştur
+            $borrowing = BorrowedBook::create([
+                'user_id' => $userId,
+                'copy_id' => $bookCopy->id,
+                'purchase_date' => now(),
+                'return_date' => $request->return_date,
+                'status' => 'borrowed'
+            ]);
+
+            // Kitap durumunu güncelle
+            $bookCopy->update([
+                'status' => 'borrowed',
+                'is_borrowed' => true
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Kitap başarıyla ödünç verildi.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('borrow_error', 'Bir hata oluştu: ' . $e->getMessage());
+        }
+    }
 }

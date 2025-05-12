@@ -453,5 +453,21 @@ class BookController extends Controller
 
         return response()->view('partials.books-list', compact('copies'));
     }
+
+    public function getByBarcode($barcode)
+    {
+        $bookCopy = BookCopy::where('barcode', $barcode)
+            ->with('book:id,book_name,isbn', 'book.author:id,name')
+            ->first();
+
+        return response()->json([
+            'success' => $bookCopy ? true : false,
+            'book' => $bookCopy ? [
+                'book_name' => $bookCopy->book->book_name,
+                'isbn' => $bookCopy->book->isbn,
+                'author' => $bookCopy->book->author->name
+            ] : null
+        ]);
+    }
 }
 

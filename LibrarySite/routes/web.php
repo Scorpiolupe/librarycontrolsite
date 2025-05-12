@@ -96,6 +96,11 @@ Route::prefix('adminpanel')->group(function () {
     Route::post('/reservations/{id}/approve', [AdminController::class, 'approveReservation'])->name('admin.approveReservation');
     Route::post('/reservations/{id}/reject', [AdminController::class, 'rejectReservation'])->name('admin.rejectReservation');
     Route::post('/reservations/{id}/cancel', [AdminController::class, 'cancelReservation'])->name('admin.cancelReservation');
+
+    Route::get('books/getByBarcode/{barcode}', [BookController::class, 'getByBarcode'])
+        ->name('admin.books.getByBarcode');
+
+    Route::post('/user/{id}/check-barcode', [AdminController::class, 'checkBarcode'])->name('admin.checkBarcode');
 });
 
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');

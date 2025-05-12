@@ -46,13 +46,60 @@
 
         <!-- Aktif Ödünç Alınan Kitaplar -->
         <div class="col-md-12 mb-4">
+            <!-- Yeni Kitap Ödünç Verme Kartı -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0">Yeni Kitap Ödünç Ver</h6>
+                </div>
+                <div class="card-body py-3">
+                    <form action="{{ route('admin.checkBarcode', $user->id) }}" method="POST" class="row g-2">
+                        @csrf
+                        <div class="col-md-4">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="barcode" name="barcode" 
+                                       value="{{ old('barcode') }}" placeholder="Barkod No" required>
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-search"></i> Ara
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control form-control-sm" id="return_date" 
+                                   name="return_date" value="{{ old('return_date', date('Y-m-d', strtotime('+14 days'))) }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="action" value="borrow" 
+                                    class="btn btn-primary btn-sm w-100" 
+                                    {{ !session('book_details') ? 'disabled' : '' }}>
+                                <i class="bi bi-plus-lg"></i> Ödünç Ver
+                            </button>
+                        </div>
+                        
+                        @if(session('book_details'))
+                            <div class="col-12 mt-2">
+                                <div class="d-flex gap-3">
+                                    <div><strong>Kitap:</strong> {{ session('book_details.name') }}</div>
+                                    <div><strong>Yazar:</strong> {{ session('book_details.author') }}</div>
+                                    <div><strong>ISBN:</strong> {{ session('book_details.isbn') }}</div>
+                                    <div><strong>Yayınevi:</strong> {{ session('book_details.publisher') }}</div>
+                                    <div><strong>Sayfa:</strong> {{ session('book_details.pages') }}</div>
+                                </div>
+                            </div>
+                        @endif
+                        @if(session('book_error'))
+                            <div class="col-12 mt-2">
+                                <span class="text-danger">{{ session('book_error') }}</span>
+                            </div>
+                        @endif
+                    </form>
+                </div>
+            </div>
+
+            <!-- Aktif Ödünç Tablosu -->
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Aktif Ödünç Alınan Kitaplar</h5>
-                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#borrowBookModal">
-                            <i class="bi bi-plus-lg"></i> Kitap Ödünç Ver
-                        </button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -245,105 +292,7 @@
     </div>
 </div>
 
-<!-- Modal ekliyoruz (sayfanın sonuna) -->
-<div class="modal fade" id="borrowBookModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Kitap Ödünç Ver</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            @if(session('borrow_error'))
-                <div class="alert alert-danger m-3 mb-0">
-                    {{ session('borrow_error') }}
-                </div>
-            @endif
-            <form action="{{ route('admin.userBorrowBook', $user->id) }}" method="POST" id="borrowForm">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="barcode" class="form-label">Kitap Barkod No</label>
-                        <input type="text" class="form-control" id="barcode" name="barcode" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="return_date" class="form-label">İade Tarihi</label>
-                        <input type="date" class="form-control" id="return_date" name="return_date" 
-                               value="{{ date('Y-m-d', strtotime('+14 days')) }}" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Ödünç Ver</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@if(session('borrow_error'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var borrowModal = new bootstrap.Modal(document.getElementById('borrowBookModal'));
-        borrowModal.show();
-    });
-</script>
-@endif
-@endsection
-
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 @endpush
-
-@push('scripts')
-<script>
-function returnBook(borrowId) {
-    if(confirm('Kitabı teslim almak istediğinize emin misiniz?')) {
-        fetch('/adminpanel/borrowed-books/' + borrowId + '/return', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                location.reload();
-            } else {
-                alert('Bir hata oluştu!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Bir hata oluştu!');
-        });
-    }
-}
-
-function extendDueDate(borrowId) {
-    const days = prompt('Kaç gün uzatmak istiyorsunuz?', '7');
-    if(days) {
-        fetch('/adminpanel/borrowed-books/' + borrowId + '/extend', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ days: parseInt(days) })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                location.reload();
-            } else {
-                alert('Bir hata oluştu!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Bir hata oluştu!');
-        });
-    }
-}
-</script>
-@endpush
+@endsection
