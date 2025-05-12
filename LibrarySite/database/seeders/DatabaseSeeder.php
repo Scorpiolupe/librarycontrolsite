@@ -24,7 +24,9 @@ class DatabaseSeeder extends Seeder
             Publishers::class,
             Authors::class,
             Languages::class,
-            Books::class, // Yeni eklenen satır
+            Books::class,
+            AcquisitionSourcesSeeder::class, // <-- önce bu
+            BookCopiesSeeder::class,         // <-- sonra bu
         ]);
 
         Notification::create([

@@ -55,9 +55,9 @@
                             <td>{{ $copy->book->isbn }}</td>
                             <td>{{ $copy->barcode }}</td>
                             <td class="location-column">{{ $copy->shelf_location ?? 'Belirtilmemiş' }}</td>
-                            <td>{{ $copy->acquisition->source->name ?? 'Belirtilmemiş' }}</td>
-                            <td>{{ $copy->acquisition->acquisition_date ? date('d/m/Y', strtotime($copy->acquisition->acquisition_date)) : 'Belirtilmemiş' }}</td>
-                            <td>{{ $copy->acquisition->acquisition_cost ? number_format($copy->acquisition->acquisition_cost, 2) . ' ₺' : 'Belirtilmemiş' }}</td>
+                            <td>{{ $copy->acquisition && $copy->acquisition->source ? $copy->acquisition->source->name : 'Belirtilmemiş' }}</td>
+                            <td>{{ $copy->acquisition && $copy->acquisition->acquisition_date ? date('d/m/Y', strtotime($copy->acquisition->acquisition_date)) : 'Belirtilmemiş' }}</td>
+                            <td>{{ $copy->acquisition && $copy->acquisition->acquisition_cost ? number_format($copy->acquisition->acquisition_cost, 2) . ' ₺' : 'Belirtilmemiş' }}</td>
                             <td>{{ $copy->condition}}</td>
                             <td>
                                 <span class="badge 
