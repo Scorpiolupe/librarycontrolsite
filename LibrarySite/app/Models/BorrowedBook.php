@@ -14,6 +14,7 @@ class BorrowedBook extends Model
         'return_date',
         'returned_at',
         'status',
+        'extension_count',
         'delay_day',
         'late_fee',
         'notes'
@@ -81,13 +82,10 @@ class BorrowedBook extends Model
 
     public function getDaysRemainingAttribute()
     {
-        if ($this->returned_at || !$this->return_date) {
+        if ($this->status === 'returned') {
             return 0;
         }
-        
-        $returnDate = Carbon::parse($this->return_date);
-        $now = Carbon::now();
-        return $now->diffInDays($returnDate, false);
+        return (int)now()->startOfDay()->diffInDays($this->return_date->startOfDay(), false);
     }
 
     public function getStatusTextAttribute()

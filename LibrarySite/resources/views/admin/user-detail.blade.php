@@ -140,12 +140,63 @@
                                                     <i class="bi bi-check-lg"></i> Teslim Al
                                                 </button>
                                             </form>
+                                            
+                                            <button type="button" class="btn btn-sm btn-info" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#detailsModal{{ $borrow->id }}">
+                                                <i class="bi bi-info-circle"></i> Detaylar
+                                            </button>
 
                                             <button type="button" class="btn btn-sm btn-warning" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#extendModal{{ $borrow->id }}">
                                                 <i class="bi bi-calendar-plus"></i> Süre Uzat
                                             </button>
+                                        </div>
+
+                                        <!-- Detaylar Modalı -->
+                                        <div class="modal fade" id="detailsModal{{ $borrow->id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Ödünç Detayları</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <h6>Kitap Bilgileri</h6>
+                                                            <p class="mb-1"><strong>Kitap Adı:</strong> {{ $borrow->copy->book->book_name }}</p>
+                                                            <p class="mb-1"><strong>Yazar:</strong> {{ $borrow->copy->book->author->name }}</p>
+                                                            <p class="mb-1"><strong>ISBN:</strong> {{ $borrow->copy->book->isbn }}</p>
+                                                            <p class="mb-1"><strong>Barkod:</strong> {{ $borrow->copy->barcode }}</p>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <h6>Ödünç Bilgileri</h6>
+                                                            <p class="mb-1"><strong>Alış Tarihi:</strong> {{ $borrow->purchase_date->format('d.m.Y H:i') }}</p>
+                                                            <p class="mb-1"><strong>Son Teslim:</strong> {{ $borrow->return_date->format('d.m.Y H:i') }}</p>
+                                                            <p class="mb-1"><strong>Kalan Gün:</strong> {{ $borrow->days_remaining }} gün</p>
+                                                            <p class="mb-1"><strong>Yapılan Uzatma:</strong> {{ $borrow->extension_count ?? 0 }}/3</p>
+                                                            @if($borrow->delay_day > 0)
+                                                                <p class="mb-1 text-danger">
+                                                                    <strong>Gecikme:</strong> {{ $borrow->delay_day }} gün
+                                                                    @if($borrow->late_fee)
+                                                                        (Ceza: {{ number_format($borrow->late_fee, 2) }} ₺)
+                                                                    @endif
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                        @if($borrow->notes)
+                                                            <div class="mb-3">
+                                                                <h6>Notlar</h6>
+                                                                <p class="mb-0">{{ $borrow->notes }}</p>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Süre Uzatma Modalı -->

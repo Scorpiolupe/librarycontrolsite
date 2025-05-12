@@ -575,35 +575,33 @@ class AdminController extends Controller
 
     public function extendDueDate(Request $request, $id)
     {
-        $request->validate([
-            'days' => 'required|integer|min:1'
-        ]);
+        $borrowedBook = BorrowedBook::findOrFail($id);
 
-        $borrowedBook = BorrowedBook::where('copy_id', $id)
-            ->whereNull('returned_at')
-            ->where('status', 'borrowed')
-            ->latest()
-            ->first();
-
-        if (!$borrowedBook) {
+        // Maksimum uzatma hakkı kontrolü (3 kez)
+        if ($borrowedBook->extension_count >= 3) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ödünç alma kaydı bulunamadı'
+                'message' => 'Maksimum uzatma hakkı (3) kullanılmış.'
             ]);
         }
 
         try {
+            DB::beginTransaction();
+
             $borrowedBook->return_date = $borrowedBook->return_date->addDays($request->days);
+            $borrowedBook->extension_count = ($borrowedBook->extension_count ?? 0) + 1;
             $borrowedBook->save();
 
+            DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Süre başarıyla uzatıldı'
+                'message' => 'Süre başarıyla uzatıldı. Kalan uzatma hakkı: ' . (3 - $borrowedBook->extension_count)
             ]);
         } catch (\Exception $e) {
+            DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Süre uzatma işlemi başarısız oldu'
+                'message' => 'Süre uzatma işlemi başarısız oldu: ' . $e->getMessage()
             ]);
         }
     }
