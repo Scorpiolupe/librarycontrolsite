@@ -58,7 +58,7 @@ class UserController extends Controller
     public function userDetail($id)
     {
         $user = User::with(['borrowings.copy.book'])->findOrFail($id);
-
+        $bookCopies = BookCopy::all();
         // --- Otomatik rezervasyon iptali ---
         Reservation::where('user_id', $user->id)
             ->where('status', 'approved')
@@ -74,7 +74,7 @@ class UserController extends Controller
             ->where('approval_date', '>=', Carbon::now()->subDays(3))
             ->get();
 
-        return view('admin.user-detail', compact('user', 'activeReservations'));
+        return view('admin.user-detail', compact('user', 'activeReservations', 'bookCopies'));
     }
 
     public function userBorrowBook(Request $request, $userId)
