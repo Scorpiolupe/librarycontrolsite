@@ -22,74 +22,13 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $query = BookCopy::with(['book' => function($q) {
-            $q->with(['category', 'genres', 'author', 'publisher']);
-        }]);
-
-        $search = $request->get('search');
-        $searchType = $request->get('search_type', 'all');
-        if ($search) {
-            $query->whereHas('book', function($q) use ($search, $searchType) {
-                if ($searchType === 'all') {
-                    $q->where('book_name', 'like', "%{$search}%")
-                      ->orWhereHas('author', function($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
-                      })
-                      ->orWhere('isbn', 'like', "%{$search}%")
-                      ->orWhereHas('category', function($q) use ($search) {
-                          $q->where('category_name', 'like', "%{$search}%");
-                      })
-                      ->orWhereHas('publisher', function($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
-                      });
-                } elseif ($searchType === 'book_name') {
-                    $q->where('book_name', 'like', "%{$search}%");
-                } elseif ($searchType === 'author') {
-                    $q->whereHas('author', function($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-                } elseif ($searchType === 'isbn') {
-                    $q->where('isbn', 'like', "%{$search}%");
-                } elseif ($searchType === 'category') {
-                    $q->whereHas('category', function($q) use ($search) {
-                        $q->where('category_name', 'like', "%{$search}%");
-                    });
-                } elseif ($searchType === 'publisher') {
-                    $q->whereHas('publisher', function($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-                }
-            });
-        }
-
-        // Kategori filtresi
-        if ($request->filled('category')) {
-            $query->whereHas('book', function($q) use ($request) {
-                $q->where('category_id', $request->category);
-            });
-        }
-
-        // Sayfa aralığı filtresi
-        $minPages = $request->get('min_pages');
-        $maxPages = $request->get('max_pages');
-        if ($minPages !== null || $maxPages !== null) {
-            $query->whereHas('book', function($q) use ($minPages, $maxPages) {
-                if ($minPages !== null && $maxPages !== null) {
-                    $q->whereBetween('page_count', [$minPages, $maxPages]);
-                } elseif ($minPages !== null) {
-                    $q->where('page_count', '>=', $minPages);
-                } elseif ($maxPages !== null) {
-                    $q->where('page_count', '<=', $maxPages);
-                }
-            });
-        }
-
-        // Kopyaları paginate ile getir
-        $copies = $query->paginate(9)->withQueryString();
         $categories = Category::all();
-        $genres = Genre::all();
-
-        return view('books', compact('copies', 'categories', 'genres'));
+        $publishers = Publisher::all();
+        $authors = Author::all();
+        
+        $copies = $this->filter($request)->original->copies;
+        
+        return view('books', compact('copies', 'categories', 'publishers', 'authors'));
     }
 
     public function create()
@@ -184,7 +123,7 @@ class BookController extends Controller
             $book->user_rating = $book->ratings()
                 ->where('user_id', Auth::id())
                 ->first();
-        }
+        }//asdas
 
         return view('book-detail', compact('book', 'bookCopy'));
     }
@@ -399,6 +338,7 @@ class BookController extends Controller
             $q->with(['category', 'genres', 'author', 'publisher']);
         }]);
 
+        // Arama filtresi
         if ($request->filled('search')) {
             $search = $request->get('search');
             $searchType = $request->get('search_type', 'all');
@@ -435,22 +375,59 @@ class BookController extends Controller
             });
         }
 
-        $minPages = $request->get('min_pages');
-        $maxPages = $request->get('max_pages');
-        if ($minPages !== null || $maxPages !== null) {
-            $query->whereHas('book', function($q) use ($minPages, $maxPages) {
-                if ($minPages !== null && $maxPages !== null) {
-                    $q->whereBetween('page_count', [$minPages, $maxPages]);
-                } elseif ($minPages !== null) {
-                    $q->where('page_count', '>=', $minPages);
-                } elseif ($maxPages !== null) {
-                    $q->where('page_count', '<=', $maxPages);
+        // Kategori filtresi
+        if ($request->filled('category')) {
+            $query->whereHas('book', function($q) use ($request) {
+                $q->where('category_id', $request->category);
+            });
+        }
+
+        // Yayınevi filtresi
+        if ($request->filled('publisher')) {
+            $query->whereHas('book', function($q) use ($request) {
+                $q->where('publisher_id', $request->publisher);
+            });
+        }
+
+        // Yazar filtresi
+        if ($request->filled('author')) {
+            $query->whereHas('book', function($q) use ($request) {
+                $q->where('author_id', $request->author);
+            });
+        }
+
+        // Durum filtresi
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Yayın yılı filtresi
+        if ($request->filled('min_year') || $request->filled('max_year')) {
+            $query->whereHas('book', function($q) use ($request) {
+                if ($request->filled('min_year') && $request->filled('max_year')) {
+                    $q->whereBetween('publish_year', [$request->min_year, $request->max_year]);
+                } elseif ($request->filled('min_year')) {
+                    $q->where('publish_year', '>=', $request->min_year);
+                } elseif ($request->filled('max_year')) {
+                    $q->where('publish_year', '<=', $request->max_year);
+                }
+            });
+        }
+
+        // Sayfa sayısı filtresi
+        if ($request->filled('min_pages') || $request->filled('max_pages')) {
+            $query->whereHas('book', function($q) use ($request) {
+                if ($request->filled('min_pages') && $request->filled('max_pages')) {
+                    $q->whereBetween('page_count', [$request->min_pages, $request->max_pages]);
+                } elseif ($request->filled('min_pages')) {
+                    $q->where('page_count', '>=', $request->min_pages);
+                } elseif ($request->filled('max_pages')) {
+                    $q->where('page_count', '<=', $request->max_pages);
                 }
             });
         }
 
         $copies = $query->paginate(9);
-
         return response()->view('partials.books-list', compact('copies'));
     }
 

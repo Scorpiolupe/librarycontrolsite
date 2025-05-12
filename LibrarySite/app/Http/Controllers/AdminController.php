@@ -69,11 +69,12 @@ class AdminController extends Controller
 
         $books = $books->get();
         return view('admin.stocks.manage-stocks', compact('books', 'sort'));
-    }
+    }// asa
 
     public function listBooks()
     {
         $books = Book::with('category', 'genres', 'bookCopy')->get();
+
         return view('admin.books.list', compact('books'));
     }
 
