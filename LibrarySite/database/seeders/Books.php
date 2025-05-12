@@ -22,6 +22,18 @@ class Books extends Seeder
                 'description' => 'Yaşar Kemal\'in en ünlü romanı',
                 'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:6663013/wh:true/wi:220'
             ],
+             [
+                'book_name' => 'İnce Memed',
+                'author_id' => 1, // Yaşar Kemal
+                'page_count' => 450,
+                'category_id' => 2,
+                'isbn' => '9789750800021',
+                'publisher_id' => 9,
+                'publish_year' => 1959,
+                'language_id' => 1,
+                'description' => 'Yaşar Kemal\'in en ünlü romanı',
+                'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:6663013/wh:true/wi:220'
+            ],
             [
                 'book_name' => 'Kırmızı Saçlı Kadın',
                 'author_id' => 2, // Orhan Pamuk
@@ -47,6 +59,18 @@ class Books extends Seeder
                 'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:1105919/wh:true/wi:220'
             ],
             [
+                'book_name' => 'Kuyucaklı Yusuf',
+                'author_id' => 4, // Sabahattin Ali
+                'page_count' => 220,
+                'category_id' => 2,
+                'isbn' => '9789750800022',
+                'publisher_id' => 7,
+                'publish_year' => 1944,
+                'language_id' => 1,
+                'description' => 'Türk edebiyatının klasiklerinden',
+                'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:1105919/wh:true/wi:220'
+            ],
+            [
                 'book_name' => 'Tutunamayanlar',
                 'author_id' => 6, // Oğuz Atay
                 'page_count' => 724,
@@ -54,6 +78,18 @@ class Books extends Seeder
                 'isbn' => '9789750800004',
                 'publisher_id' => 3,
                 'publish_year' => 1972,
+                'language_id' => 1,
+                'description' => 'Modern Türk edebiyatının başyapıtlarından',
+                'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:11462655/wh:true/wi:220'
+            ],
+            [
+                'book_name' => 'Tutunamayanlar',
+                'author_id' => 6, // Oğuz Atay
+                'page_count' => 724,
+                'category_id' => 2,
+                'isbn' => '9789750800023',
+                'publisher_id' => 5,
+                'publish_year' => 1979,
                 'language_id' => 1,
                 'description' => 'Modern Türk edebiyatının başyapıtlarından',
                 'book_cover' => 'https://img.kitapyurdu.com/v1/getImage/fn:11462655/wh:true/wi:220'

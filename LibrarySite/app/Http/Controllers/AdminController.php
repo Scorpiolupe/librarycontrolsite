@@ -115,8 +115,7 @@ class AdminController extends Controller
                 });
             })
             ->orderBy('id', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
         return view('admin.books.copies', compact('copies'));
     }
