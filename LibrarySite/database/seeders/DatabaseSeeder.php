@@ -20,11 +20,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             Categories::class,
             Genres::class,
-            //Books::class,
             Admin::class,
             Publishers::class,
             Authors::class,
             Languages::class,
+            Books::class, // Yeni eklenen satır
         ]);
 
         Notification::create([
