@@ -15,6 +15,7 @@
     --gray-200: #e5e7eb;
     --gray-300: #d1d5db;
     --gray-500: #6b7280;
+    --gray-600: #4b5563;
     --gray-700: #374151;
     --gray-900: #111827;
     --box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -72,13 +73,60 @@ option {
 }
 
 .pagination {
+    display: flex;
     justify-content: center;
+    gap: 8px;
+    margin: 24px 0;
+}
+
+.pagination .page-item {
+    list-style: none;
+}
+
+.pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    background: white;
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    text-decoration: none;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination .page-item.disabled .page-link {
+    background: var(--gray-100);
+    color: var(--gray-400);
+    pointer-events: none;
 }
 
 .page-info {
     text-align: center;
-    margin-top: 12px;
     color: var(--gray-500);
+    font-size: 0.9rem;
+    margin-top: 12px;
+    padding: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
 }
 
 .filter-card {
@@ -119,10 +167,24 @@ option {
 .book-card {
     border-radius: 8px;
     overflow: hidden;
-    height: 100%;
+    height: 250px;
     position: relative;
     border: 1px solid rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    width: 100%;
+}
+
+.book-card:hover {
+    position: absolute;
+    height: auto;
+    min-height: 250px;
+    max-height: 80vh;
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px rgba(0,0,0,0.1);
+    z-index: 100;
+    left: 0;
+    right: 0;
 }
 
 .book-card::before {
@@ -149,6 +211,17 @@ option {
     padding: 20px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    overflow: hidden;
+}
+
+/* Scroll barı kaldır */
+.book-card .card-body::-webkit-scrollbar {
+    display: none;
+}
+
+.book-card .card-body {
+    -ms-overflow-style: none;  /* IE ve Edge için */
+    scrollbar-width: none;  /* Firefox için */
 }
 
 .book-title {
@@ -166,6 +239,16 @@ option {
     border-radius: 8px;
     padding: 15px;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+}
+
+.book-card:hover .book-info {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
 }
 
 .book-header {
@@ -176,9 +259,14 @@ option {
     -webkit-backdrop-filter: blur(12px);
     padding: 15px;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.book-card:not(:hover) .book-header {
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .book-author {
@@ -192,13 +280,23 @@ option {
 .info-row {
     display: flex;
     justify-content: space-between;
+    font-size: small;
     padding: 4px 0;
     color: #4a5568;
     margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: calc(var(--index) * 0.05s);
 }
 
 .info-row:last-child {
     margin-bottom: 0;
+}
+
+.book-card:hover .info-row {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .info-label {
@@ -370,6 +468,65 @@ option {
     color: white;
 }
 
+.col-md-6, .col-lg-4 {
+    position: relative;
+}
+
+.custom-pagination {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    background: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.page-btn {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    color: var(--gray-700);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.page-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-dots {
+    color: var(--gray-500);
+    padding: 0 0.5rem;
+}
+
 @media (max-width: 768px) {
     .search-form {
         flex-wrap: wrap;
@@ -430,8 +587,51 @@ option {
                         @endforeach
                     </select>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Sayfa Aralığı</label>
+                    <label class="form-label">Yayınevi</label>
+                    <select name="publisher" class="form-select" id="filter-publisher">
+                        <option value="">Tümü</option>
+                        @foreach($publishers as $publisher)
+                            <option value="{{ $publisher->id }}">{{ $publisher->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Yazar</label>
+                    <select name="author" class="form-select" id="filter-author">
+                        <option value="">Tümü</option>
+                        @foreach($authors as $author)
+                            <option value="{{ $author->id }}">{{ $author->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Durum</label>
+                    <select name="status" class="form-select" id="filter-status">
+                        <option value="">Tümü</option>
+                        <option value="available">Müsait</option>
+                        <option value="borrowed">Ödünç Alınmış</option>
+                        <option value="reserved">Rezerve Edilmiş</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Yayın Yılı</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="min_year" id="filter-min-year" placeholder="Min" min="1800" max="{{ date('Y') }}">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="max_year" id="filter-max-year" placeholder="Max" min="1800" max="{{ date('Y') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Sayfa Sayısı</label>
                     <div class="row g-2">
                         <div class="col-6">
                             <input type="number" class="form-control" name="min_pages" id="filter-min-pages" placeholder="Min" min="0">
@@ -497,6 +697,33 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         fetchBooks();
     });
+
+    window.changePage = function(page) {
+        const params = new URLSearchParams();
+        
+        // Form verilerini ekle
+        const formData = new FormData(filterForm);
+        for(let pair of formData.entries()) {
+            params.append(pair[0], pair[1]);
+        }
+        
+        // Arama verilerini ekle
+        params.set('search', searchInput.value);
+        params.set('search_type', searchType.value);
+        params.set('page', page);
+
+        fetch('/books/filter?' + params.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            booksList.innerHTML = html;
+            window.scrollTo({top: booksList.offsetTop - 100, behavior: 'smooth'});
+        })
+        .catch(error => console.error('Pagination error:', error));
+    };
 });
 </script>
 @endsection
