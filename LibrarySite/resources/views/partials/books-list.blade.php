@@ -1,4 +1,4 @@
-<div class="row g-4">
+<div class="row g-4"> <!-- Bootstrap grid system for responsive layout -->
     @forelse($copies as $copy)
     <div class="col-md-6 col-lg-4">
         <div class="book-card" style="background-image: url('{{ $copy->book->book_cover ?? 'https://via.placeholder.com/400x600?text=No+Cover' }}');">

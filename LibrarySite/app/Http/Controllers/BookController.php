@@ -123,7 +123,7 @@ class BookController extends Controller
             $book->user_rating = $book->ratings()
                 ->where('user_id', Auth::id())
                 ->first();
-        }
+        }//asdas
 
         return view('book-detail', compact('book', 'bookCopy'));
     }

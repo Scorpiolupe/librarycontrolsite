@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.changePage = function(page) {
         const params = new URLSearchParams();
         
-        // Form verilerini ekle
+        // Form verilerini ekleasd
         const formData = new FormData(filterForm);
         for(let pair of formData.entries()) {
             params.append(pair[0], pair[1]);
