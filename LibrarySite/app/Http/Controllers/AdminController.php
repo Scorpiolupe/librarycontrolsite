@@ -73,8 +73,7 @@ class AdminController extends Controller
 
     public function listBooks()
     {
-        $books = Book::with('category', 'genres', 'bookCopy')->paginate(10);
-        
+        $books = Book::with('category', 'genres', 'bookCopy')->get();
         return view('admin.books.list', compact('books'));
     }
 
