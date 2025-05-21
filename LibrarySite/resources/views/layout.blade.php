@@ -232,15 +232,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/books">Kitaplar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/discover">Keşfet</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/friends">Arkadaşlar</a>
-                    </li>
+                    
                 </ul>
                 <ul class="navbar-nav">
                     @auth
@@ -249,6 +241,12 @@
                                 <a class="nav-link" href="/adminpanel">Yönetim Paneli</a>
                             </li>
                         @endif
+                        
+                    @endauth
+                    <li class="nav-item">
+                            <a class="nav-link" href="/books">Kitaplar</a>
+                        </li>
+                    @auth
                         <li class="nav-item notifications-wrapper dropdown">
                             <a class="nav-link position-relative" href="{{ route('notifications.markAllAsRead') }}" id="notificationBtn" role="button">
                                 <i class="fas fa-bell"></i>

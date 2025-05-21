@@ -13,9 +13,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('book_copy_id')->constrained('book_copies')->onDelete('cascade');
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
-            $table->timestamp('request_date')->useCurrent();
-            $table->timestamp('approval_date')->nullable();
-            $table->timestamps();
+            $table->dateTimeTz('request_date')->useCurrent();
+            $table->dateTimeTz('approval_date')->nullable();
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 

@@ -75,7 +75,7 @@
     
 
     <!-- Yönetim Kartları -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">Kitap Yönetimi</h5>
@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 mb-4">
+    <div class="col-md-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">Üye Yönetimi</h5>
@@ -104,8 +104,7 @@
                     <a href="{{ route('admin.createUser') }}" class="list-group-item list-group-item-action">Üye Ekle</a>
                     <a href="{{ route('admin.listUsers') }}" class="list-group-item list-group-item-action">Üyeleri Listele</a> 
                     <a href="{{ route('admin.userProfiles') }}" class="list-group-item list-group-item-action">Kullanıcı Profilleri</a>
-                    <a href="/adminpanel/manage-fines" class="list-group-item list-group-item-action">Cezaları Yönet</a>
-                    <a href="/adminpanel/manage-reviews" class="list-group-item list-group-item-action">Yorumları Yönet</a>
+               
                 </div>
             </div>
         </div>
@@ -119,7 +118,6 @@
             <div class="card-body">
                 <div class="list-group">
                     <a href="/adminpanel/manage-stocks" class="list-group-item list-group-item-action">Stokları Yönet</a>
-                    <a href="/adminpanel/manage-borrowings" class="list-group-item list-group-item-action">Ödünç İşlemleri</a>
                     <a href="/adminpanel/manage-reservations" class="list-group-item list-group-item-action">Rezervasyon İşlemleri</a>
                 </div>
             </div>

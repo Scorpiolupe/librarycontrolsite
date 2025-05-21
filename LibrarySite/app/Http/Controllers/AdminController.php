@@ -463,7 +463,7 @@ class AdminController extends Controller
 
     public function listUsers()
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        $users = User::orderBy('created_at', 'desc')->get();
         return view('admin.members.list', compact('users'));
     }
 

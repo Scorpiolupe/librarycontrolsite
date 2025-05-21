@@ -12,7 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // Satın Alım, Bağış vb.
             $table->string('description')->nullable();
-            $table->timestamps();
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }
 

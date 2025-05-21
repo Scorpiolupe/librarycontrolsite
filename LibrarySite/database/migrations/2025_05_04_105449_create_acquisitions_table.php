@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('acquisition_cost')->nullable();
             $table->string('acquisition_place')->nullable();
             $table->string('acquisition_invoice')->nullable();
-            $table->timestamps();
+            $table->dateTimeTz('created_at')->nullable();
+            $table->dateTimeTz('updated_at')->nullable();
         });
     }       
 

@@ -25,7 +25,6 @@
                         <th>ISBN</th>
                         @endif
                         <th>Kopya Sayısı</th>
-                        <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,10 +35,6 @@
                             <td>{{ $book->isbn }}</td>
                             @endif
                             <td>{{ $book->copies_count }}</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm edit-stock" data-id="{{ $book->id ?? '' }}">Düzenle</button>
-                                <button class="btn btn-danger btn-sm delete-stock" data-id="{{ $book->id ?? '' }}">Sil</button>
-                            </td>
                         </tr>
                     @endforeach
                 </tbody>

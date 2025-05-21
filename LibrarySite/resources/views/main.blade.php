@@ -24,7 +24,7 @@
         </div>
         @foreach($featuredBooks as $book)
         <div class="col-md-4 mb-3">
-            <a href="/books/{{ $book->id }}" class="text-decoration-none">
+            <a href="/books" class="text-decoration-none">
                 <div class="card h-100">
                     <img src="{{ $book->book_cover ?? 'https://via.placeholder.com/350x500' }}" class="card-img-top book-cover" alt="{{ $book->book_name }}">
                     <div class="card-body">
