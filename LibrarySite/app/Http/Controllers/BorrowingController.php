@@ -10,12 +10,12 @@ class BorrowingController extends Controller
 {
     public function index()
     {
-        // Existing code for index method
+
     }
 
     public function store(Request $request)
     {
-        // Existing code for store method
+
     }
 
     public function extend(BorrowedBook $borrowing)

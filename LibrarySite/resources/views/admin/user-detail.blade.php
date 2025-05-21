@@ -70,7 +70,7 @@
                         <div class="col-md-4">
                             <button type="submit" name="action" value="borrow" 
                                     class="btn btn-primary btn-sm w-100" 
-                                    {{ !session('book_details') ? 'disabled' : '' }}>
+                                    {{ session('book_error') ? 'disabled' : '' }}>
                                 <i class="bi bi-plus-lg"></i> Ödünç Ver
                             </button>
                         </div>

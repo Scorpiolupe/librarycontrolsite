@@ -511,6 +511,9 @@ class AdminController extends Controller
     public function borrowBook(Request $request, $id)
     {
         $copy = BookCopy::findOrFail($id);
+        if ($copy->status != 'available') {
+            return redirect()->back()->with('error', 'Bu kitap şu anda ödünç verilemez.');
+        }
         $copy->status = 'borrowed';
         $copy->save();
 
@@ -836,11 +839,17 @@ class AdminController extends Controller
             ->first();
 
         if (!$bookCopy) {
-            return back()->with('book_error', 'Kitap bulunamadı')->withInput();
+            return back()->with('book_error', 'Kitap bulunamadı');
         }
 
-        if ($bookCopy->is_borrowed || $bookCopy->is_reserved) {
-            return back()->with('book_error', 'Bu kitap şu anda ödünç verilemez')->withInput();
+        if ($bookCopy->status != 'available') {
+            return back()->with('book_details', [
+                'name' => $bookCopy->book->book_name,
+                'author' => $bookCopy->book->author->name,
+                'isbn' => $bookCopy->book->isbn,
+                'publisher' => $bookCopy->book->publisher->name,
+                'pages' => $bookCopy->book->page_count,
+            ])->withInput()->with('book_error', 'Bu kitap şu anda ödünç verilemez.');
         }
 
         return back()->with('book_details', [
@@ -865,7 +874,7 @@ class AdminController extends Controller
                 return back()->with('borrow_error', 'Kitap bulunamadı.');
             }
 
-            if ($bookCopy->is_borrowed || $bookCopy->is_reserved) {
+            if ($bookCopy->status != 'available') {
                 return back()->with('borrow_error', 'Bu kitap şu anda ödünç verilemez.');
             }
 
