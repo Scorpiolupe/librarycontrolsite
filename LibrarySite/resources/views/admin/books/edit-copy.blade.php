@@ -59,15 +59,15 @@
                             <div class="col-md-3">
                                 <label for="block" class="form-label">Blok</label>
                                 <select class="form-select" name="block" required>
-                                    <option value="A" {{ $copy->shelfLocation->block == 'A' ? 'selected' : '' }}>A Blok</option>
-                                    <option value="B" {{ $copy->shelfLocation->block == 'B' ? 'selected' : '' }}>B Blok</option>
+                                    <option value="A" {{ optional($copy->shelfLocation)->block == 'A' ? 'selected' : '' }}>A Blok</option>
+                                    <option value="B" {{ optional($copy->shelfLocation)->block == 'B' ? 'selected' : '' }}>B Blok</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label for="floor" class="form-label">Kat</label>
                                 <select class="form-select" name="floor" required>
                                     @for($i = 0; $i <= 2; $i++)
-                                        <option value="{{ $i }}" {{ $copy->shelfLocation->floor == $i ? 'selected' : '' }}>{{ $i }}. Kat</option>
+                                        <option value="{{ $i }}" {{ optional($copy->shelfLocation)->floor == $i ? 'selected' : '' }}>{{ $i }}. Kat</option>
                                     @endfor
                                 </select>
                             </div>
@@ -75,7 +75,7 @@
                                 <label for="row" class="form-label">Sıra</label>
                                 <select class="form-select" name="row" required>
                                     @for($i = 1; $i <= 21; $i++)
-                                        <option value="{{ $i }}" {{ $copy->shelfLocation->row == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        <option value="{{ $i }}" {{ optional($copy->shelfLocation)->row == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
                             </div>
@@ -83,14 +83,14 @@
                                 <label for="shelf" class="form-label">Raf</label>
                                 <select class="form-select" name="shelf" required>
                                     @for($i = 1; $i <= 20; $i++)
-                                        <option value="{{ $i }}" {{ $copy->shelfLocation->shelf == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        <option value="{{ $i }}" {{ optional($copy->shelfLocation)->shelf == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label for="position" class="form-label">Pozisyon</label>
                                 <input type="number" class="form-control" name="position" 
-                                       value="{{ $copy->shelfLocation->position }}"
+                                       value="{{ optional($copy->shelfLocation)->position }}"
                                        min="1" max="150" required>
                             </div>
                         </div>

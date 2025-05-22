@@ -185,7 +185,7 @@
                                     </button>
                                 @endif
                             @else
-                                <a href="{{ route('login') }}" class="btn btn-secondary btn-lg w-100 mb-3">
+                                <a href="/auth" class="btn btn-secondary btn-lg w-100 mb-3">
                                     Rezerve etmek için giriş yapın
                                 </a>
                             @endauth

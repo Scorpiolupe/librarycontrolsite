@@ -105,9 +105,9 @@ Route::prefix('adminpanel')->group(function () {
 
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->middleware('auth');
 
-Route::post('/register', [RegisterController::class, 'register']);
-Route::post('/login', [RegisterController::class, 'login']);
-Route::get('/logout', [RegisterController::class, 'logout']);
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+Route::post('/login', [RegisterController::class, 'login'])->name('login');
+Route::get('/logout', [RegisterController::class, 'logout'])->name('logout');
 
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/filter', [BookController::class, 'filter'])->name('books.filter');
