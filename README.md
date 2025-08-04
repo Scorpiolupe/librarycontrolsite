@@ -1,49 +1,49 @@
 # 📚 Library Control Site
 
-Bu proje, **kütüphane yönetim sistemi** işlevi gören bir web uygulamasıdır. Kullanıcılar kitapları görüntüleyebilir, ödünç alabilir ve iade edebilir. Admin paneli ile kitap ve kullanıcı yönetimi yapılabilir.
+This project is a **web-based library management system**. Users can view, borrow, and return books. The admin panel allows for book and user management.
 
-## 🚀 Özellikler
+## 🚀 Features
 
-* 📖 Kitap listesi görüntüleme
-* 👤 Kullanıcı kaydı ve girişi
-* 📅 Kitap ödünç alma ve iade
-* 🔒 Admin girişi
-* 🛠️ Kitap ekleme, silme, düzenleme (Admin Panel)
+* 📖 View book list
+* 👤 User registration and login
+* 🗕️ Borrow and return books
+* 🔐 Admin login
+* 🛠️ Add, delete, and edit books (Admin Panel)
 
-## 🧰 Kullanılan Teknolojiler
+## 🧰 Technologies Used
 
-* PHP (SQLSRV sürücüsü ile)
+* PHP (with SQLSRV driver)
 * HTML / CSS / JavaScript
 * Microsoft SQL Server
 * Bootstrap
 
-## 🛠️ Kurulum Adımları
+## 🛠️ Installation Steps
 
-1. Bu repoyu klonlayın:
+1. Clone this repository:
 
    ```bash
    git clone https://github.com/Scorpiolupe/librarycontrolsite.git
    ```
 
-2. Proje dosyalarını web sunucunuzun kök dizinine taşıyın:
-   Örn: `C:\xampp\htdocs\librarycontrolsite`
+2. Move the project files to your web server's root directory:
+   Example: `C:\xampp\htdocs\librarycontrolsite`
 
-3. [Microsoft Drivers for PHP for SQL Server](https://learn.microsoft.com/en-us/sql/connect/php/download-drivers-php-sql-server) eklentisini yükleyin ve `php.ini` dosyanıza şu satırı eklediğinizden emin olun:
+3. Install the [Microsoft Drivers for PHP for SQL Server](https://learn.microsoft.com/en-us/sql/connect/php/download-drivers-php-sql-server) and make sure to enable the driver in your `php.ini` file:
 
    ```
    extension=php_sqlsrv.dll
    ```
 
-4. SQL Server Management Studio ile `library` adında bir veritabanı oluşturun ve ilgili tabloları içeren `.sql` betiğini içe aktarın.
+4. Using SQL Server Management Studio, create a database named `library` and import the `.sql` script that contains the necessary tables.
 
-5. `config.php` veya bağlantı dosyasındaki SQLSRV ayarlarını aşağıdaki gibi yapılandırın:
+5. Configure the SQLSRV connection settings in `config.php` (or your connection file) like this:
 
    ```php
    $serverName = "localhost";
    $connectionOptions = array(
        "Database" => "library",
-       "Uid" => "kullanici_adiniz",
-       "PWD" => "sifreniz"
+       "Uid" => "your_username",
+       "PWD" => "your_password"
    );
 
    $conn = sqlsrv_connect($serverName, $connectionOptions);
@@ -53,20 +53,19 @@ Bu proje, **kütüphane yönetim sistemi** işlevi gören bir web uygulamasıdı
    }
    ```
 
-6. Projeyi tarayıcıda açın:
+6. Open the project in your browser:
 
    ```
    http://localhost/librarycontrolsite
    ```
 
-## 🔐 Varsayılan Giriş Bilgileri
+## 🔐 Default Login Credentials
 
 **Admin:**
 
-* Kullanıcı Adı: `admin`
-* Şifre: `admin123`
+* Username: `admin`
+* Password: `admin123`
 
-**Kullanıcı:**
+**User:**
 
-* Yeni kullanıcı oluşturabilirsiniz.
-
+* You can register a new user through the system.
